@@ -6,6 +6,10 @@ type BeatMode = "binaural" | "monaural" | "isochronic";
 type Waveform = OscillatorType;
 type LayerKey = "beat" | "veil" | "pulse" | "drone";
 type LayerState = Record<LayerKey, { gain: number; pan: number; muted: boolean; solo: boolean }>;
+type TubeKey = "ECC83" | "12AU7" | "6V6" | "EL34";
+type AutomationParam = "carrier" | "beat" | "master" | "bpm" | "pulseDepth" | "drift" | "beatGain" | "veilGain" | "pulseGain" | "droneGain" | "beatPan" | "veilPan" | "pulsePan" | "dronePan";
+type AutomationPoint = { id: string; time: number; value: number };
+type AutomationTrack = { id: string; parameter: AutomationParam; points: AutomationPoint[]; selectedPointId?: string };
 
 type AudioGraph = {
   ctx: AudioContext;
@@ -20,8 +24,34 @@ type AudioGraph = {
   layerPans: Record<LayerKey, StereoPannerNode>;
   carriers: { left?: OscillatorNode; right?: OscillatorNode; pulse?: OscillatorNode; drone?: OscillatorNode; isoLfo?: OscillatorNode; rhythmLfo?: OscillatorNode };
   pulseDepth?: GainNode;
+  tubeStages: WaveShaperNode[];
   beatMode: BeatMode;
 };
+
+const TUBE_KEYS: TubeKey[] = ["ECC83", "12AU7", "6V6", "EL34"];
+const TUBE_DESCRIPTIONS: Record<TubeKey, string> = {
+  ECC83: "Asymmetric preamp warmth",
+  "12AU7": "Gentle even-harmonic bloom",
+  "6V6": "Rounded power-stage compression",
+  EL34: "Forward presence and edge",
+};
+
+const AUTOMATION_CONTROLS: { key: AutomationParam; label: string; min: number; max: number; step: number; unit: string }[] = [
+  { key: "carrier", label: "Carrier frequency", min: 80, max: 1000, step: 1, unit: " Hz" },
+  { key: "beat", label: "Beat difference", min: .5, max: 40, step: .1, unit: " Hz" },
+  { key: "master", label: "Master output", min: 0, max: 1, step: .01, unit: "" },
+  { key: "bpm", label: "Sync pulse tempo", min: 30, max: 180, step: 1, unit: " BPM" },
+  { key: "pulseDepth", label: "Sync pulse depth", min: 0, max: 1, step: .01, unit: "" },
+  { key: "drift", label: "Organic drift", min: 0, max: 1, step: .01, unit: "" },
+  { key: "beatGain", label: "Binaural layer gain", min: 0, max: 1, step: .01, unit: "" },
+  { key: "veilGain", label: "Noise veil gain", min: 0, max: 1, step: .01, unit: "" },
+  { key: "pulseGain", label: "Sync pulse gain", min: 0, max: 1, step: .01, unit: "" },
+  { key: "droneGain", label: "Substrate gain", min: 0, max: 1, step: .01, unit: "" },
+  { key: "beatPan", label: "Binaural layer pan", min: -1, max: 1, step: .05, unit: "" },
+  { key: "veilPan", label: "Noise veil pan", min: -1, max: 1, step: .05, unit: "" },
+  { key: "pulsePan", label: "Sync pulse pan", min: -1, max: 1, step: .05, unit: "" },
+  { key: "dronePan", label: "Substrate pan", min: -1, max: 1, step: .05, unit: "" },
+];
 
 const initialLayers: LayerState = {
   beat: { gain: 0.44, pan: 0, muted: false, solo: false },
@@ -45,6 +75,82 @@ function formatTime(seconds: number) {
   const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
   const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
   return `${mins}:${secs}`;
+}
+
+function makeTubeCurve(kind: TubeKey, amount: number) {
+  const size = 4096;
+  const curve = new Float32Array(size);
+  const drive = 1 + amount * (kind === "ECC83" ? 5.5 : kind === "12AU7" ? 3.2 : kind === "6V6" ? 4.3 : 6.6);
+  for (let i = 0; i < size; i++) {
+    const x = (i / (size - 1)) * 2 - 1;
+    let shaped = x;
+    if (kind === "ECC83") shaped = (Math.tanh(drive * (x + amount * .055)) - Math.tanh(drive * amount * .055)) / Math.tanh(drive);
+    if (kind === "12AU7") shaped = Math.tanh(drive * x) / Math.tanh(drive) + amount * .035 * (1 - x * x);
+    if (kind === "6V6") shaped = Math.sin(Math.atan(drive * x)) / Math.sin(Math.atan(drive));
+    if (kind === "EL34") shaped = Math.atan(drive * x) / Math.atan(drive) + amount * .025 * x * x * Math.sign(x);
+    curve[i] = clamp(x * (1 - amount) + shaped * amount, -1, 1);
+  }
+  return curve;
+}
+
+function flatPoints(value: number): AutomationPoint[] {
+  return [{ id: `p-${Date.now()}-a`, time: 0, value }, { id: `p-${Date.now()}-b`, time: 1, value }];
+}
+
+function sampleAutomation(points: AutomationPoint[], time: number) {
+  const sorted = [...points].sort((a, b) => a.time - b.time);
+  if (time <= sorted[0].time) return sorted[0].value;
+  if (time >= sorted[sorted.length - 1].time) return sorted[sorted.length - 1].value;
+  const index = Math.max(0, sorted.findIndex((point) => point.time >= time) - 1);
+  const p0 = sorted[Math.max(0, index - 1)];
+  const p1 = sorted[index];
+  const p2 = sorted[Math.min(sorted.length - 1, index + 1)];
+  const p3 = sorted[Math.min(sorted.length - 1, index + 2)];
+  const local = (time - p1.time) / Math.max(.0001, p2.time - p1.time);
+  const local2 = local * local, local3 = local2 * local;
+  return clamp(.5 * ((2 * p1.value) + (-p0.value + p2.value) * local + (2 * p0.value - 5 * p1.value + 4 * p2.value - p3.value) * local2 + (-p0.value + 3 * p1.value - 3 * p2.value + p3.value) * local3), 0, 1);
+}
+
+function AutomationGraph({ points, selectedId, progress, onChange, onSelect }: { points: AutomationPoint[]; selectedId?: string; progress: number; onChange: (points: AutomationPoint[]) => void; onSelect: (id?: string) => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const dragging = useRef<string | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const dpr = window.devicePixelRatio || 1, width = canvas.clientWidth, height = canvas.clientHeight;
+    canvas.width = Math.max(1, width * dpr); canvas.height = Math.max(1, height * dpr); context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    context.clearRect(0, 0, width, height);
+    context.strokeStyle = "rgba(80,140,132,.16)"; context.lineWidth = 1;
+    for (let i = 0; i <= 8; i++) { context.beginPath(); context.moveTo((i / 8) * width, 0); context.lineTo((i / 8) * width, height); context.stroke(); }
+    for (let i = 0; i <= 4; i++) { context.beginPath(); context.moveTo(0, (i / 4) * height); context.lineTo(width, (i / 4) * height); context.stroke(); }
+    const sorted = [...points].sort((a, b) => a.time - b.time);
+    const toX = (p: AutomationPoint) => p.time * width, toY = (p: AutomationPoint) => (1 - p.value) * (height - 16) + 8;
+    context.beginPath(); context.moveTo(toX(sorted[0]), toY(sorted[0]));
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const p0 = sorted[Math.max(0, i - 1)], p1 = sorted[i], p2 = sorted[i + 1], p3 = sorted[Math.min(sorted.length - 1, i + 2)];
+      context.bezierCurveTo(toX(p1) + (toX(p2) - toX(p0)) / 6, toY(p1) + (toY(p2) - toY(p0)) / 6, toX(p2) - (toX(p3) - toX(p1)) / 6, toY(p2) - (toY(p3) - toY(p1)) / 6, toX(p2), toY(p2));
+    }
+    context.strokeStyle = "#68d9cf"; context.lineWidth = 2; context.shadowColor = "#54cfc5"; context.shadowBlur = 7; context.stroke(); context.shadowBlur = 0;
+    for (const point of sorted) {
+      context.beginPath(); context.arc(toX(point), toY(point), point.id === selectedId ? 6 : 4.5, 0, Math.PI * 2);
+      context.fillStyle = point.id === selectedId ? "#f0bd68" : "#111917"; context.fill(); context.strokeStyle = point.id === selectedId ? "#ffe0a0" : "#c99a4d"; context.lineWidth = 1.5; context.stroke();
+    }
+    context.beginPath(); context.moveTo(progress * width, 0); context.lineTo(progress * width, height); context.strokeStyle = "#e75847"; context.lineWidth = 1; context.shadowColor = "#e75847"; context.shadowBlur = 5; context.stroke();
+  }, [points, progress, selectedId]);
+
+  const locate = (clientX: number, clientY: number) => {
+    const canvas = canvasRef.current!; const rect = canvas.getBoundingClientRect();
+    return { x: clamp((clientX - rect.left) / rect.width, 0, 1), y: clamp(1 - (clientY - rect.top - 8) / Math.max(1, rect.height - 16), 0, 1), width: rect.width, height: rect.height };
+  };
+  const nearest = (clientX: number, clientY: number) => {
+    const canvas = canvasRef.current!; const rect = canvas.getBoundingClientRect();
+    return points.find((point) => Math.hypot(point.time * rect.width - (clientX - rect.left), (1 - point.value) * (rect.height - 16) + 8 - (clientY - rect.top)) < 13);
+  };
+
+  return <canvas ref={canvasRef} className="automation-canvas" aria-label="Draggable automation spline" onPointerDown={(event) => { const point = nearest(event.clientX, event.clientY); dragging.current = point?.id || null; onSelect(point?.id); if (point) event.currentTarget.setPointerCapture(event.pointerId); }} onPointerMove={(event) => { if (!dragging.current) return; const pos = locate(event.clientX, event.clientY); const sorted = [...points].sort((a, b) => a.time - b.time); const index = sorted.findIndex((point) => point.id === dragging.current); const point = sorted[index]; const nextTime = index === 0 ? 0 : index === sorted.length - 1 ? 1 : clamp(pos.x, sorted[index - 1].time + .005, sorted[index + 1].time - .005); onChange(points.map((item) => item.id === point.id ? { ...item, time: nextTime, value: pos.y } : item).sort((a, b) => a.time - b.time)); }} onPointerUp={() => { dragging.current = null; }} onDoubleClick={(event) => { const point = nearest(event.clientX, event.clientY); if (point && point.time > 0 && point.time < 1) { onChange(points.filter((item) => item.id !== point.id)); onSelect(undefined); } }} />;
 }
 
 function Knob({
@@ -245,9 +351,40 @@ export default function Home() {
   const [drift, setDrift] = useState(0.18);
   const [preset, setPreset] = useState<keyof typeof presets>("Focus");
   const safeMode = true;
-  const [selectedLane, setSelectedLane] = useState("Beat Frequency");
+  const [tubeDrive, setTubeDrive] = useState<Record<TubeKey, number>>({ ECC83: .18, "12AU7": 0, "6V6": 0, EL34: 0 });
+  const [automationTracks, setAutomationTracks] = useState<AutomationTrack[]>([
+    { id: "track-carrier", parameter: "carrier", points: flatPoints((400 - 80) / (1000 - 80)) },
+  ]);
+  const progress = clamp(elapsed / (sessionLength * 60), 0, 1);
 
   const updateLayer = (key: LayerKey, patch: Partial<LayerState[LayerKey]>) => setLayers((current) => ({ ...current, [key]: { ...current[key], ...patch } }));
+
+  const currentControlValue = useCallback((parameter: AutomationParam) => {
+    if (parameter === "carrier") return carrier;
+    if (parameter === "beat") return beat;
+    if (parameter === "master") return master;
+    if (parameter === "bpm") return bpm;
+    if (parameter === "pulseDepth") return pulseDepth;
+    if (parameter === "drift") return drift;
+    const [layerName, property] = parameter.replace("Gain", ":gain").replace("Pan", ":pan").split(":") as [LayerKey, "gain" | "pan"];
+    return layers[layerName][property];
+  }, [beat, bpm, carrier, drift, layers, master, pulseDepth]);
+
+  const applyAutomatedValue = useCallback((parameter: AutomationParam, normalized: number) => {
+    const spec = AUTOMATION_CONTROLS.find((control) => control.key === parameter)!;
+    const raw = spec.min + normalized * (spec.max - spec.min);
+    const value = Math.round(raw / spec.step) * spec.step;
+    if (parameter === "carrier") setCarrier(value);
+    else if (parameter === "beat") setBeat(value);
+    else if (parameter === "master") setMaster(value);
+    else if (parameter === "bpm") setBpm(value);
+    else if (parameter === "pulseDepth") setPulseDepth(value);
+    else if (parameter === "drift") setDrift(value);
+    else {
+      const [layerName, property] = parameter.replace("Gain", ":gain").replace("Pan", ":pan").split(":") as [LayerKey, "gain" | "pan"];
+      setLayers((current) => ({ ...current, [layerName]: { ...current[layerName], [property]: value } }));
+    }
+  }, []);
 
   const stopAudio = useCallback(() => {
     const graph = graphRef.current;
@@ -268,7 +405,8 @@ export default function Home() {
     const limiter = ctx.createDynamicsCompressor(); limiter.threshold.value = -3; limiter.knee.value = 1; limiter.ratio.value = 20; limiter.attack.value = .003; limiter.release.value = .16;
     const analyser = ctx.createAnalyser(); analyser.fftSize = 4096; analyser.smoothingTimeConstant = .82;
     const splitter = ctx.createChannelSplitter(2); const analyserL = ctx.createAnalyser(); const analyserR = ctx.createAnalyser(); analyserL.fftSize = analyserR.fftSize = 2048;
-    masterNode.connect(limiter).connect(analyser).connect(ctx.destination); analyser.connect(splitter); splitter.connect(analyserL, 0); splitter.connect(analyserR, 1);
+    const tubeStages = TUBE_KEYS.map((key) => { const stage = ctx.createWaveShaper(); stage.curve = makeTubeCurve(key, tubeDrive[key]); stage.oversample = "4x"; return stage; });
+    masterNode.connect(tubeStages[0]); tubeStages[0].connect(tubeStages[1]); tubeStages[1].connect(tubeStages[2]); tubeStages[2].connect(tubeStages[3]); tubeStages[3].connect(limiter).connect(analyser).connect(ctx.destination); analyser.connect(splitter); splitter.connect(analyserL, 0); splitter.connect(analyserR, 1);
     const layerGains = {} as Record<LayerKey, GainNode>; const layerPans = {} as Record<LayerKey, StereoPannerNode>;
     (["beat", "veil", "pulse", "drone"] as LayerKey[]).forEach((key) => { layerGains[key] = ctx.createGain(); layerPans[key] = ctx.createStereoPanner(); layerGains[key].connect(layerPans[key]).connect(masterNode); });
     const oscillators: OscillatorNode[] = []; const sources: AudioBufferSourceNode[] = [];
@@ -293,12 +431,30 @@ export default function Home() {
     const drone = ctx.createOscillator(); drone.type = "triangle"; drone.frequency.value = carrier / 4; const droneFilter = ctx.createBiquadFilter(); droneFilter.type = "lowpass"; droneFilter.frequency.value = 680; drone.connect(droneFilter).connect(layerGains.drone); drone.start(); oscillators.push(drone); carriers.drone = drone;
     const buffer = ctx.createBuffer(2, ctx.sampleRate * 4, ctx.sampleRate); for (let ch = 0; ch < 2; ch++) { const data = buffer.getChannelData(ch); let brown = 0; for (let i = 0; i < data.length; i++) { const white = Math.random() * 2 - 1; brown = (brown + .02 * white) / 1.02; data[i] = noiseColor === "BROWN" ? brown * 3.4 : white; } }
     const noise = ctx.createBufferSource(); noise.buffer = buffer; noise.loop = true; const noiseFilter = ctx.createBiquadFilter(); noiseFilter.type = noiseColor === "PINK" ? "lowpass" : "lowpass"; noiseFilter.frequency.value = noiseColor === "PINK" ? 4200 : 1200; noise.connect(noiseFilter).connect(layerGains.veil); noise.start(); sources.push(noise);
-    const graph: AudioGraph = { ctx, master: masterNode, limiter, analyser, analyserL, analyserR, oscillators, sources, layerGains, layerPans, carriers, pulseDepth: pulseDepthNode, beatMode: mode };
+    const graph: AudioGraph = { ctx, master: masterNode, limiter, analyser, analyserL, analyserR, oscillators, sources, layerGains, layerPans, carriers, pulseDepth: pulseDepthNode, tubeStages, beatMode: mode };
     graphRef.current = graph; setRunning(true); setGraphVersion((v) => v + 1);
     const now = ctx.currentTime; masterNode.gain.setValueAtTime(0, now); masterNode.gain.linearRampToValueAtTime(master * .58, now + .8);
-  }, [beat, bpm, carrier, master, mode, noiseColor, pulseDepth, stopAudio, waveform]);
+  }, [beat, bpm, carrier, master, mode, noiseColor, pulseDepth, stopAudio, tubeDrive, waveform]);
 
   useEffect(() => () => { graphRef.current?.ctx.close(); }, []);
+
+  useEffect(() => {
+    const graph = graphRef.current;
+    if (!graph) return;
+    graph.carriers.left && (graph.carriers.left.type = waveform);
+    graph.carriers.right && (graph.carriers.right.type = waveform);
+  }, [graphVersion, waveform]);
+
+  useEffect(() => {
+    const graph = graphRef.current;
+    if (!graph) return;
+    TUBE_KEYS.forEach((key, index) => { graph.tubeStages[index].curve = makeTubeCurve(key, tubeDrive[key]); });
+  }, [graphVersion, tubeDrive]);
+
+  useEffect(() => {
+    if (!automation) return;
+    automationTracks.forEach((track) => applyAutomatedValue(track.parameter, sampleAutomation(track.points, progress)));
+  }, [applyAutomatedValue, automation, automationTracks, progress]);
 
   useEffect(() => {
     const graph = graphRef.current; if (!graph) return; const now = graph.ctx.currentTime;
@@ -332,9 +488,50 @@ export default function Home() {
     setLayers((current) => ({ ...current, beat: { ...current.beat, gain: next.layers.beat }, veil: { ...current.veil, gain: next.layers.veil }, pulse: { ...current.pulse, gain: next.layers.pulse }, drone: { ...current.drone, gain: next.layers.drone } }));
   };
 
+  const changeTrackParameter = (trackId: string, parameter: AutomationParam) => {
+    const spec = AUTOMATION_CONTROLS.find((control) => control.key === parameter)!;
+    const normalized = clamp((currentControlValue(parameter) - spec.min) / (spec.max - spec.min), 0, 1);
+    setAutomationTracks((tracks) => tracks.map((track) => track.id === trackId ? { ...track, parameter, points: flatPoints(normalized), selectedPointId: undefined } : track));
+  };
+
+  const addAutomationPoint = (trackId: string) => {
+    setAutomationTracks((tracks) => tracks.map((track) => {
+      if (track.id !== trackId) return track;
+      const sorted = [...track.points].sort((a, b) => a.time - b.time);
+      let gapIndex = 0;
+      for (let i = 1; i < sorted.length - 1; i++) if (sorted[i + 1].time - sorted[i].time > sorted[gapIndex + 1].time - sorted[gapIndex].time) gapIndex = i;
+      const time = (sorted[gapIndex].time + sorted[gapIndex + 1].time) / 2;
+      const point = { id: `p-${Date.now()}-${Math.random().toString(16).slice(2)}`, time, value: sampleAutomation(sorted, time) };
+      return { ...track, points: [...sorted, point].sort((a, b) => a.time - b.time), selectedPointId: point.id };
+    }));
+  };
+
+  const deleteAutomationPoint = (trackId: string) => {
+    setAutomationTracks((tracks) => tracks.map((track) => {
+      if (track.id !== trackId || !track.selectedPointId) return track;
+      const selected = track.points.find((point) => point.id === track.selectedPointId);
+      if (!selected || selected.time === 0 || selected.time === 1) return track;
+      return { ...track, points: track.points.filter((point) => point.id !== track.selectedPointId), selectedPointId: undefined };
+    }));
+  };
+
+  const addAutomationTrack = () => {
+    if (automationTracks.length >= 6) return;
+    const used = new Set(automationTracks.map((track) => track.parameter));
+    const parameter = AUTOMATION_CONTROLS.find((control) => !used.has(control.key))?.key || "carrier";
+    const spec = AUTOMATION_CONTROLS.find((control) => control.key === parameter)!;
+    const normalized = clamp((currentControlValue(parameter) - spec.min) / (spec.max - spec.min), 0, 1);
+    setAutomationTracks((tracks) => [...tracks, { id: `track-${Date.now()}`, parameter, points: flatPoints(normalized) }]);
+  };
+
+  const formatAutomationValue = (parameter: AutomationParam) => {
+    const spec = AUTOMATION_CONTROLS.find((control) => control.key === parameter)!;
+    const value = currentControlValue(parameter);
+    return `${value.toFixed(spec.step < .1 ? 2 : spec.step < 1 ? 1 : 0)}${spec.unit}`;
+  };
+
   const band = beat < 4 ? "DELTA" : beat < 8 ? "THETA" : beat < 13 ? "ALPHA" : beat < 30 ? "BETA" : "EXPERIMENTAL";
   const graph = graphRef.current;
-  const progress = clamp(elapsed / (sessionLength * 60), 0, 1);
   const channels = useMemo(() => [
     { key: "beat" as const, number: "I", name: "BINAURAL", detail: `${carrier.toFixed(0)}Hz · ${beat.toFixed(1)}Δ`, color: "amber" },
     { key: "veil" as const, number: "II", name: "NOISE VEIL", detail: noiseColor, color: "cyan" },
@@ -414,25 +611,29 @@ export default function Home() {
         </article>
 
         <article className="panel valves-panel">
-          <PanelHeading roman="V" title="Thermionic Monitor" subtitle="Dual channel programme level" />
+          <PanelHeading roman="V" title="Thermionic Monitor" subtitle="Metering & four-stage harmonic colour" />
           <div className="vu-pair"><VUMeter analyser={graph?.analyserL || null} label="LEFT" running={running} /><VUMeter analyser={graph?.analyserR || null} label="RIGHT" running={running} /></div>
-          <div className="tube-bank">{["ECC83", "12AU7", "6V6", "EL34"].map((tube, index) => <div key={tube} className={running ? "energized" : ""} style={{ animationDelay: `${index * .13}s` }}><span /><i /><b>{tube}</b></div>)}</div>
-          <div className="hardware-stats"><span><small>LATENCY</small><b>{running && graph ? Math.round(graph.ctx.baseLatency * 1000) : 0} ms</b></span><span><small>ENGINE</small><b>WEB AUDIO</b></span><span><small>LIMITER</small><b>{safeMode ? "ARMED" : "BYPASS"}</b></span></div>
+          <div className="tube-bank">{TUBE_KEYS.map((tube, index) => <div key={tube} className={`tube-stage ${running && tubeDrive[tube] > 0 ? "energized" : ""}`} style={{ "--tube-drive": tubeDrive[tube], animationDelay: `${index * .13}s` } as React.CSSProperties} title={TUBE_DESCRIPTIONS[tube]}><button aria-label={`${tube} ${TUBE_DESCRIPTIONS[tube]}`} onClick={() => setTubeDrive((current) => ({ ...current, [tube]: current[tube] > 0 ? 0 : .3 }))}><span /><i /><b>{tube}</b></button><input aria-label={`${tube} drive`} type="range" min="0" max="1" step="0.01" value={tubeDrive[tube]} onChange={(event) => setTubeDrive((current) => ({ ...current, [tube]: Number(event.target.value) }))} /><small>{(tubeDrive[tube] * 100).toFixed(0)}%</small></div>)}</div>
+          <div className="tube-legend"><span>PREAMP WARMTH</span><span>EVEN BLOOM</span><span>POWER SAG</span><span>PRESENCE</span></div>
+          <div className="hardware-stats"><span><small>LATENCY</small><b>{running && graph ? Math.round(graph.ctx.baseLatency * 1000) : 0} ms</b></span><span><small>COLOUR</small><b>{TUBE_KEYS.filter((tube) => tubeDrive[tube] > 0).length} STAGES</b></span><span><small>LIMITER</small><b>{safeMode ? "ARMED" : "BYPASS"}</b></span></div>
         </article>
 
         <article className="panel automation-panel">
-          <PanelHeading roman="VI" title="Temporal Automation" subtitle="Session score · bounded variation" />
-          <div className="automation-toolbar"><Toggle active={automation} label="AUTOMATION" onClick={() => setAutomation(!automation)} /><div className="bpm"><button onClick={() => setBpm(clamp(bpm - 1, 30, 180))}>−</button><b>{bpm}</b><span>BPM</span><button onClick={() => setBpm(clamp(bpm + 1, 30, 180))}>+</button></div><div className="drift"><label>ORGANIC DRIFT <b>{drift.toFixed(2)}</b></label><input type="range" min="0" max="1" step="0.01" value={drift} onChange={(e) => setDrift(Number(e.target.value))} /></div><button className="write-button">WRITE</button></div>
-          <div className="timeline">
-            <div className="timeline-labels">{["Beat Frequency", "Carrier Drift", "Noise Veil", "Pulse Depth"].map((lane) => <button key={lane} className={selectedLane === lane ? "active" : ""} onClick={() => setSelectedLane(lane)}><i />{lane}</button>)}</div>
-            <div className="timeline-grid">
-              <div className="ruler">{[0, 5, 10, 15, 20, 25, 30].map((n) => <span key={n}>{n}:00</span>)}</div>
-              <div className="lane beat-curve"><i /><b /><i /><b /><i /></div>
-              <div className="lane drift-curve"><i /><b /><i /><b /></div>
-              <div className="lane noise-curve"><i /><b /><i /></div>
-              <div className="lane pulse-curve"><i /><b /><i /><b /></div>
-              <div className="playhead" style={{ left: `${progress * 100}%` }}><span>{formatTime(elapsed)}</span></div>
-            </div>
+          <PanelHeading roman="VI" title="Temporal Automation" subtitle="Live parameter splines · no write pass required" />
+          <div className="automation-toolbar"><Toggle active={automation} label="LIVE AUTOMATION" onClick={() => setAutomation(!automation)} /><div className="bpm"><button onClick={() => setBpm(clamp(bpm - 1, 30, 180))}>−</button><b>{bpm}</b><span>BPM</span><button onClick={() => setBpm(clamp(bpm + 1, 30, 180))}>+</button></div><div className="drift"><label>ORGANIC DRIFT <b>{drift.toFixed(2)}</b></label><input type="range" min="0" max="1" step="0.01" value={drift} onChange={(e) => setDrift(Number(e.target.value))} /></div><div className="drift"><label>PULSE DEPTH <b>{pulseDepth.toFixed(2)}</b></label><input type="range" min="0" max="1" step="0.01" value={pulseDepth} onChange={(e) => setPulseDepth(Number(e.target.value))} /></div><button className="add-track" disabled={automationTracks.length >= 6} onClick={addAutomationTrack}>＋ ADD CONTROL</button></div>
+          <div className="automation-help"><span>SELECT A CONTROL</span><p>Lines begin flat. Add a handle, then drag it vertically for value and horizontally for time. Double-click an interior handle to delete it.</p><b>{automation ? `LIVE · ${formatTime(elapsed)}` : "BYPASSED"}</b></div>
+          <div className="automation-ruler">{[0, .25, .5, .75, 1].map((value) => <span key={value}>{Math.round(value * sessionLength)}:00</span>)}</div>
+          <div className="automation-tracks">
+            {automationTracks.map((track) => <div className="automation-track" key={track.id}>
+              <div className="track-controls">
+                <select aria-label="Automated control" value={track.parameter} onChange={(event) => changeTrackParameter(track.id, event.target.value as AutomationParam)}>{AUTOMATION_CONTROLS.map((control) => <option key={control.key} value={control.key}>{control.label}</option>)}</select>
+                <output>{formatAutomationValue(track.parameter)}</output>
+                <button title="Add control handle" onClick={() => addAutomationPoint(track.id)}>＋ HANDLE</button>
+                <button title="Delete selected handle" disabled={!track.selectedPointId || !!track.points.find((point) => point.id === track.selectedPointId && (point.time === 0 || point.time === 1))} onClick={() => deleteAutomationPoint(track.id)}>− HANDLE</button>
+                <button className="remove-track" title="Remove automation track" disabled={automationTracks.length === 1} onClick={() => setAutomationTracks((tracks) => tracks.filter((item) => item.id !== track.id))}>×</button>
+              </div>
+              <AutomationGraph points={track.points} selectedId={track.selectedPointId} progress={progress} onSelect={(selectedPointId) => setAutomationTracks((tracks) => tracks.map((item) => item.id === track.id ? { ...item, selectedPointId } : item))} onChange={(points) => setAutomationTracks((tracks) => tracks.map((item) => item.id === track.id ? { ...item, points } : item))} />
+            </div>)}
           </div>
         </article>
       </section>

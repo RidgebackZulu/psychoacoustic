@@ -23,6 +23,9 @@ test("server-renders the Nocturne research console", async () => {
   assert.match(html, /Auditory Beat Engine/);
   assert.match(html, /Fourfold Layer Matrix/);
   assert.match(html, /Temporal Automation/);
+  assert.match(html, /ADD CONTROL/);
+  assert.match(html, /HANDLE/);
+  assert.match(html, /ECC83/);
   assert.match(html, /ENGAGE SESSION/);
   assert.match(html, /og:image/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/);
@@ -39,8 +42,13 @@ test("ships the interactive audio engine and social card", async () => {
   assert.match(page, /createChannelMerger/);
   assert.match(page, /createDynamicsCompressor/);
   assert.match(page, /createAnalyser/);
+  assert.match(page, /createWaveShaper/);
   assert.match(page, /beatMode === "isochronic"/);
+  assert.match(page, /carriers\.left\.type = waveform/);
+  assert.match(page, /sampleAutomation/);
+  assert.match(page, /AutomationGraph/);
   assert.match(page, /requestAnimationFrame/);
+  assert.doesNotMatch(page, />WRITE</);
   assert.match(layout, /summary_large_image/);
   assert.match(packageJson, /nocturne-psychoacoustic-console/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
