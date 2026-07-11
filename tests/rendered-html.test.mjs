@@ -47,6 +47,8 @@ test("ships the interactive audio engine and social card", async () => {
   assert.match(page, /carriers\.left\.type = waveform/);
   assert.match(page, /sampleAutomation/);
   assert.match(page, /AutomationGraph/);
+  assert.match(page, /sessionOriginRef/);
+  assert.match(page, /onSeek=\{seekSession\}/);
   assert.match(page, /requestAnimationFrame/);
   assert.doesNotMatch(page, />WRITE</);
   assert.match(layout, /summary_large_image/);

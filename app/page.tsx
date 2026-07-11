@@ -111,9 +111,10 @@ function sampleAutomation(points: AutomationPoint[], time: number) {
   return clamp(.5 * ((2 * p1.value) + (-p0.value + p2.value) * local + (2 * p0.value - 5 * p1.value + 4 * p2.value - p3.value) * local2 + (-p0.value + 3 * p1.value - 3 * p2.value + p3.value) * local3), 0, 1);
 }
 
-function AutomationGraph({ points, selectedId, progress, onChange, onSelect }: { points: AutomationPoint[]; selectedId?: string; progress: number; onChange: (points: AutomationPoint[]) => void; onSelect: (id?: string) => void }) {
+function AutomationGraph({ points, selectedId, progress, onChange, onSelect, onSeek }: { points: AutomationPoint[]; selectedId?: string; progress: number; onChange: (points: AutomationPoint[]) => void; onSelect: (id?: string) => void; onSeek: (progress: number) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dragging = useRef<string | null>(null);
+  const seeking = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -138,7 +139,8 @@ function AutomationGraph({ points, selectedId, progress, onChange, onSelect }: {
       context.beginPath(); context.arc(toX(point), toY(point), point.id === selectedId ? 6 : 4.5, 0, Math.PI * 2);
       context.fillStyle = point.id === selectedId ? "#f0bd68" : "#111917"; context.fill(); context.strokeStyle = point.id === selectedId ? "#ffe0a0" : "#c99a4d"; context.lineWidth = 1.5; context.stroke();
     }
-    context.beginPath(); context.moveTo(progress * width, 0); context.lineTo(progress * width, height); context.strokeStyle = "#e75847"; context.lineWidth = 1; context.shadowColor = "#e75847"; context.shadowBlur = 5; context.stroke();
+    context.beginPath(); context.moveTo(progress * width, 0); context.lineTo(progress * width, height); context.strokeStyle = "#e75847"; context.lineWidth = 1.5; context.shadowColor = "#e75847"; context.shadowBlur = 6; context.stroke();
+    context.beginPath(); context.moveTo(progress * width - 6, 0); context.lineTo(progress * width + 6, 0); context.lineTo(progress * width, 9); context.closePath(); context.fillStyle = "#e75847"; context.fill(); context.shadowBlur = 0;
   }, [points, progress, selectedId]);
 
   const locate = (clientX: number, clientY: number) => {
@@ -150,7 +152,7 @@ function AutomationGraph({ points, selectedId, progress, onChange, onSelect }: {
     return points.find((point) => Math.hypot(point.time * rect.width - (clientX - rect.left), (1 - point.value) * (rect.height - 16) + 8 - (clientY - rect.top)) < 13);
   };
 
-  return <canvas ref={canvasRef} className="automation-canvas" aria-label="Draggable automation spline" onPointerDown={(event) => { const point = nearest(event.clientX, event.clientY); dragging.current = point?.id || null; onSelect(point?.id); if (point) event.currentTarget.setPointerCapture(event.pointerId); }} onPointerMove={(event) => { if (!dragging.current) return; const pos = locate(event.clientX, event.clientY); const sorted = [...points].sort((a, b) => a.time - b.time); const index = sorted.findIndex((point) => point.id === dragging.current); const point = sorted[index]; const nextTime = index === 0 ? 0 : index === sorted.length - 1 ? 1 : clamp(pos.x, sorted[index - 1].time + .005, sorted[index + 1].time - .005); onChange(points.map((item) => item.id === point.id ? { ...item, time: nextTime, value: pos.y } : item).sort((a, b) => a.time - b.time)); }} onPointerUp={() => { dragging.current = null; }} onDoubleClick={(event) => { const point = nearest(event.clientX, event.clientY); if (point && point.time > 0 && point.time < 1) { onChange(points.filter((item) => item.id !== point.id)); onSelect(undefined); } }} />;
+  return <canvas ref={canvasRef} className="automation-canvas" aria-label="Draggable automation spline and session playhead" onPointerDown={(event) => { const pos = locate(event.clientX, event.clientY); const rect = event.currentTarget.getBoundingClientRect(); if (Math.abs(pos.x - progress) * rect.width < 14) { seeking.current = true; dragging.current = null; onSelect(undefined); onSeek(pos.x); event.currentTarget.setPointerCapture(event.pointerId); return; } const point = nearest(event.clientX, event.clientY); dragging.current = point?.id || null; onSelect(point?.id); if (point) event.currentTarget.setPointerCapture(event.pointerId); }} onPointerMove={(event) => { const pos = locate(event.clientX, event.clientY); if (seeking.current) { onSeek(pos.x); return; } if (!dragging.current) { const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.cursor = Math.abs(pos.x - progress) * rect.width < 14 ? "ew-resize" : nearest(event.clientX, event.clientY) ? "grab" : "crosshair"; return; } const sorted = [...points].sort((a, b) => a.time - b.time); const index = sorted.findIndex((point) => point.id === dragging.current); const point = sorted[index]; const nextTime = index === 0 ? 0 : index === sorted.length - 1 ? 1 : clamp(pos.x, sorted[index - 1].time + .005, sorted[index + 1].time - .005); onChange(points.map((item) => item.id === point.id ? { ...item, time: nextTime, value: pos.y } : item).sort((a, b) => a.time - b.time)); }} onPointerUp={() => { dragging.current = null; seeking.current = false; }} onPointerCancel={() => { dragging.current = null; seeking.current = false; }} onDoubleClick={(event) => { const point = nearest(event.clientX, event.clientY); if (point && point.time > 0 && point.time < 1) { onChange(points.filter((item) => item.id !== point.id)); onSelect(undefined); } }} />;
 }
 
 function Knob({
@@ -334,6 +336,7 @@ function Fader({ value, onChange, label }: { value: number; onChange: (n: number
 
 export default function Home() {
   const graphRef = useRef<AudioGraph | null>(null);
+  const sessionOriginRef = useRef(0);
   const [running, setRunning] = useState(false);
   const [graphVersion, setGraphVersion] = useState(0);
   const [carrier, setCarrier] = useState(400);
@@ -394,7 +397,7 @@ export default function Home() {
     graph.master.gain.setValueAtTime(graph.master.gain.value, now);
     graph.master.gain.linearRampToValueAtTime(0, now + .12);
     window.setTimeout(() => graph.ctx.close(), 150);
-    graphRef.current = null; setRunning(false); setElapsed(0); setGraphVersion((v) => v + 1);
+    graphRef.current = null; sessionOriginRef.current = 0; setRunning(false); setElapsed(0); setGraphVersion((v) => v + 1);
   }, []);
 
   const startAudio = useCallback(async () => {
@@ -432,9 +435,9 @@ export default function Home() {
     const buffer = ctx.createBuffer(2, ctx.sampleRate * 4, ctx.sampleRate); for (let ch = 0; ch < 2; ch++) { const data = buffer.getChannelData(ch); let brown = 0; for (let i = 0; i < data.length; i++) { const white = Math.random() * 2 - 1; brown = (brown + .02 * white) / 1.02; data[i] = noiseColor === "BROWN" ? brown * 3.4 : white; } }
     const noise = ctx.createBufferSource(); noise.buffer = buffer; noise.loop = true; const noiseFilter = ctx.createBiquadFilter(); noiseFilter.type = noiseColor === "PINK" ? "lowpass" : "lowpass"; noiseFilter.frequency.value = noiseColor === "PINK" ? 4200 : 1200; noise.connect(noiseFilter).connect(layerGains.veil); noise.start(); sources.push(noise);
     const graph: AudioGraph = { ctx, master: masterNode, limiter, analyser, analyserL, analyserR, oscillators, sources, layerGains, layerPans, carriers, pulseDepth: pulseDepthNode, tubeStages, beatMode: mode };
-    graphRef.current = graph; setRunning(true); setGraphVersion((v) => v + 1);
+    graphRef.current = graph; sessionOriginRef.current = performance.now() - elapsed * 1000; setRunning(true); setGraphVersion((v) => v + 1);
     const now = ctx.currentTime; masterNode.gain.setValueAtTime(0, now); masterNode.gain.linearRampToValueAtTime(master * .58, now + .8);
-  }, [beat, bpm, carrier, master, mode, noiseColor, pulseDepth, stopAudio, tubeDrive, waveform]);
+  }, [beat, bpm, carrier, elapsed, master, mode, noiseColor, pulseDepth, stopAudio, tubeDrive, waveform]);
 
   useEffect(() => () => { graphRef.current?.ctx.close(); }, []);
 
@@ -478,10 +481,17 @@ export default function Home() {
   }, [automation, beat, bpm, carrier, drift, elapsed, pulseDepth]);
 
   useEffect(() => {
-    if (!running) return; const start = performance.now() - elapsed * 1000;
-    const timer = window.setInterval(() => { const next = (performance.now() - start) / 1000; setElapsed(next); if (next >= sessionLength * 60) stopAudio(); }, 100);
+    if (!running) return;
+    if (!sessionOriginRef.current) sessionOriginRef.current = performance.now() - elapsed * 1000;
+    const timer = window.setInterval(() => { const next = (performance.now() - sessionOriginRef.current) / 1000; setElapsed(next); if (next >= sessionLength * 60) stopAudio(); }, 100);
     return () => window.clearInterval(timer);
   }, [running, sessionLength, stopAudio]);
+
+  const seekSession = useCallback((nextProgress: number) => {
+    const nextElapsed = clamp(nextProgress, 0, 1) * sessionLength * 60;
+    setElapsed(nextElapsed);
+    if (running) sessionOriginRef.current = performance.now() - nextElapsed * 1000;
+  }, [running, sessionLength]);
 
   const loadPreset = (name: keyof typeof presets) => {
     const next = presets[name]; setPreset(name); setCarrier(next.carrier); setBeat(next.beat); setBpm(next.bpm); setNoiseColor(next.noise);
@@ -621,7 +631,7 @@ export default function Home() {
         <article className="panel automation-panel">
           <PanelHeading roman="VI" title="Temporal Automation" subtitle="Live parameter splines · no write pass required" />
           <div className="automation-toolbar"><Toggle active={automation} label="LIVE AUTOMATION" onClick={() => setAutomation(!automation)} /><div className="bpm"><button onClick={() => setBpm(clamp(bpm - 1, 30, 180))}>−</button><b>{bpm}</b><span>BPM</span><button onClick={() => setBpm(clamp(bpm + 1, 30, 180))}>+</button></div><div className="drift"><label>ORGANIC DRIFT <b>{drift.toFixed(2)}</b></label><input type="range" min="0" max="1" step="0.01" value={drift} onChange={(e) => setDrift(Number(e.target.value))} /></div><div className="drift"><label>PULSE DEPTH <b>{pulseDepth.toFixed(2)}</b></label><input type="range" min="0" max="1" step="0.01" value={pulseDepth} onChange={(e) => setPulseDepth(Number(e.target.value))} /></div><button className="add-track" disabled={automationTracks.length >= 6} onClick={addAutomationTrack}>＋ ADD CONTROL</button></div>
-          <div className="automation-help"><span>SELECT A CONTROL</span><p>Lines begin flat. Add a handle, then drag it vertically for value and horizontally for time. Double-click an interior handle to delete it.</p><b>{automation ? `LIVE · ${formatTime(elapsed)}` : "BYPASSED"}</b></div>
+          <div className="automation-help"><span>SELECT A CONTROL</span><p>Drag the red playhead to scrub live. Add a handle, drag it for value and time, or double-click an interior handle to delete it.</p><b>{automation ? `LIVE · ${formatTime(elapsed)}` : "BYPASSED"}</b></div>
           <div className="automation-ruler">{[0, .25, .5, .75, 1].map((value) => <span key={value}>{Math.round(value * sessionLength)}:00</span>)}</div>
           <div className="automation-tracks">
             {automationTracks.map((track) => <div className="automation-track" key={track.id}>
@@ -632,7 +642,7 @@ export default function Home() {
                 <button title="Delete selected handle" disabled={!track.selectedPointId || !!track.points.find((point) => point.id === track.selectedPointId && (point.time === 0 || point.time === 1))} onClick={() => deleteAutomationPoint(track.id)}>− HANDLE</button>
                 <button className="remove-track" title="Remove automation track" disabled={automationTracks.length === 1} onClick={() => setAutomationTracks((tracks) => tracks.filter((item) => item.id !== track.id))}>×</button>
               </div>
-              <AutomationGraph points={track.points} selectedId={track.selectedPointId} progress={progress} onSelect={(selectedPointId) => setAutomationTracks((tracks) => tracks.map((item) => item.id === track.id ? { ...item, selectedPointId } : item))} onChange={(points) => setAutomationTracks((tracks) => tracks.map((item) => item.id === track.id ? { ...item, points } : item))} />
+              <AutomationGraph points={track.points} selectedId={track.selectedPointId} progress={progress} onSeek={seekSession} onSelect={(selectedPointId) => setAutomationTracks((tracks) => tracks.map((item) => item.id === track.id ? { ...item, selectedPointId } : item))} onChange={(points) => setAutomationTracks((tracks) => tracks.map((item) => item.id === track.id ? { ...item, points } : item))} />
             </div>)}
           </div>
         </article>
