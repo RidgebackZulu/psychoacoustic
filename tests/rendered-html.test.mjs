@@ -70,6 +70,9 @@ test("ships the interactive audio engine and social card", async () => {
   assert.match(page, /<select value="" onChange=/);
   assert.match(page, /addEventListener\("wheel", handleWheel, \{ passive: false \}\)/);
   assert.doesNotMatch(page, /onWheel=/);
+  assert.match(page, /nocturne-presets-/);
+  assert.match(page, /Choose presets to import/);
+  assert.match(page, /String\(suffix\)\.padStart\(3, "0"\)/);
   assert.match(page, /sessionOriginRef/);
   assert.match(page, /onSeek=\{seekSession\}/);
   assert.match(page, /requestAnimationFrame/);

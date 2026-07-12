@@ -435,6 +435,27 @@ footer{font-size:7px;color:#75786f;}
 .user-presets button:hover:not(:disabled){color:#f0c879;border-color:#9b6b31;background:#211a11;}
 .user-presets .preset-del{font-size:10px;padding:4px 7px;}
 .user-presets button:disabled{opacity:.35;cursor:not-allowed;}
+.preset-file-input{display:none;}
+.preset-import-backdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;background:rgba(2,4,3,.82);backdrop-filter:blur(3px);}
+.preset-import-dialog{width:min(560px,calc(100vw - 40px));max-height:min(720px,calc(100vh - 40px));display:flex;flex-direction:column;border:1px solid #9b6b31;background:linear-gradient(145deg,#171b18,#080b0a 70%);box-shadow:inset 0 0 0 3px #080a09,inset 0 0 0 4px #34372f,0 22px 70px #000;padding:14px;}
+.preset-import-dialog>header{display:flex;align-items:center;justify-content:space-between;padding:5px 6px 13px;border-bottom:1px solid #3a3b34;}
+.preset-import-dialog>header small{color:var(--amber);font-size:8px;letter-spacing:.24em;}
+.preset-import-dialog>header h2{margin:4px 0 0;font-family:Georgia,serif;font-size:20px;font-weight:500;color:#e2d6bd;}
+.preset-import-dialog>header button{border:0;background:transparent;color:#a98a52;font-size:23px;cursor:pointer;}
+.preset-import-tools{display:flex;align-items:center;justify-content:space-between;padding:10px 4px;}
+.preset-import-tools button,.preset-import-dialog>footer button{border:1px solid #494a40;background:#121511;color:#9a9d92;padding:7px 12px;font-size:9px;letter-spacing:.1em;cursor:pointer;}
+.preset-import-tools span{font-family:"Courier New",monospace;color:#73dcd3;font-size:9px;}
+.preset-import-list{overflow:auto;display:flex;flex-direction:column;gap:5px;padding:2px 3px;min-height:110px;}
+.preset-import-list label{display:flex;align-items:center;gap:11px;border:1px solid #34372f;background:#0c0f0d;padding:9px 11px;cursor:pointer;}
+.preset-import-list label:hover,.preset-import-list label.selected{border-color:#7c633d;background:#17140e;}
+.preset-import-list input{accent-color:#c28a3d;width:15px;height:15px;}
+.preset-import-list span{display:flex;flex-direction:column;gap:3px;}
+.preset-import-list b{font-size:10px;letter-spacing:.08em;color:#d6cbb2;}
+.preset-import-list small{font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:#74776d;}
+.preset-import-dialog>p{margin:11px 4px;color:#83867d;font-size:9px;}
+.preset-import-dialog>footer{height:auto;margin:0;padding:11px 3px 2px;border-top:1px solid #34372f;display:flex;justify-content:flex-end;gap:7px;background:transparent;}
+.preset-import-dialog>footer .confirm{border-color:#547c75;background:#10201d;color:#78d6cc;}
+.preset-import-dialog>footer button:disabled{opacity:.35;cursor:not-allowed;}
 
 /* Feature 2 — FLAC export */
 .export-row{display:flex;flex-direction:column;gap:5px;margin:12px 14px 0;position:relative;z-index:3;}

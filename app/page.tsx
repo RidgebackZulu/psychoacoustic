@@ -14,6 +14,8 @@ type TubeKey = "ECC83" | "12AU7" | "6V6" | "EL34";
 type AutomationParam = string;
 type AutomationPoint = { id: string; time: number; value: number };
 type AutomationTrack = { id: string; parameter: AutomationParam; points: AutomationPoint[]; selectedPointId?: string; snap?: boolean };
+type UserPreset = { name: string; data: Record<string, unknown> };
+type ImportCandidate = UserPreset & { id: string; selected: boolean };
 
 type BeatLayer = {
   oscillators: OscillatorNode[];
@@ -959,8 +961,10 @@ export default function Home() {
     { id: "track-carrier", parameter: "carrier", points: flatPoints((400 - 80) / (1000 - 80)) },
   ]);
   // Feature 1 — user-saved settings (localStorage)
-  const [userPresets, setUserPresets] = useState<{ name: string; data: Record<string, unknown> }[]>([]);
+  const [userPresets, setUserPresets] = useState<UserPreset[]>([]);
   const [selectedPreset, setSelectedPreset] = useState("");
+  const presetFileRef = useRef<HTMLInputElement>(null);
+  const [importCandidates, setImportCandidates] = useState<ImportCandidate[] | null>(null);
   // Feature 2 — offline render/export status
   const [exportStatus, setExportStatus] = useState<{ busy: boolean; msg: string }>({ busy: false, msg: "" });
   const progress = clamp(elapsed / (sessionLength * 60), 0, 1);
@@ -1334,9 +1338,56 @@ export default function Home() {
     Object.keys(setters).forEach((k) => { if (d[k] !== undefined) setters[k](d[k]); });
   };
 
-  const persistPresets = (list: { name: string; data: Record<string, unknown> }[]) => {
+  const persistPresets = (list: UserPreset[]) => {
     setUserPresets(list);
     try { window.localStorage.setItem("nocturne.presets", JSON.stringify(list)); } catch { /* storage blocked */ }
+  };
+
+  const exportUserPresets = () => {
+    if (!userPresets.length) return;
+    const payload = JSON.stringify({ format: "nocturne-presets", version: 1, exportedAt: new Date().toISOString(), presets: userPresets }, null, 2);
+    const stamp = new Date().toISOString().slice(0, 10);
+    downloadBytes(new TextEncoder().encode(payload), `nocturne-presets-${stamp}.json`, "application/json");
+  };
+
+  const readPresetFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    try {
+      const parsed: unknown = JSON.parse(await file.text());
+      const rows = Array.isArray(parsed)
+        ? parsed
+        : parsed && typeof parsed === "object" && Array.isArray((parsed as { presets?: unknown }).presets)
+          ? (parsed as { presets: unknown[] }).presets
+          : [];
+      const valid = rows.filter((row): row is UserPreset => !!row && typeof row === "object" && typeof (row as UserPreset).name === "string" && !!(row as UserPreset).name.trim() && !!(row as UserPreset).data && typeof (row as UserPreset).data === "object" && !Array.isArray((row as UserPreset).data));
+      if (!valid.length) throw new Error("No valid presets were found in this file.");
+      setImportCandidates(valid.map((row, index) => ({ name: row.name.trim(), data: row.data, id: `${index}-${row.name}`, selected: false })));
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "This is not a valid Nocturne preset file.");
+    }
+  };
+
+  const importSelectedPresets = () => {
+    const selected = importCandidates?.filter((candidate) => candidate.selected) ?? [];
+    if (!selected.length) return;
+    const used = new Set(userPresets.map((preset) => preset.name.toLocaleLowerCase()));
+    const uniqueName = (requested: string) => {
+      if (!used.has(requested.toLocaleLowerCase())) { used.add(requested.toLocaleLowerCase()); return requested; }
+      for (let suffix = 1; suffix <= 999; suffix++) {
+        const candidate = `${requested} ${String(suffix).padStart(3, "0")}`;
+        if (!used.has(candidate.toLocaleLowerCase())) { used.add(candidate.toLocaleLowerCase()); return candidate; }
+      }
+      throw new Error(`Too many presets are named “${requested}”.`);
+    };
+    try {
+      const imported = selected.map(({ name, data }) => ({ name: uniqueName(name), data }));
+      persistPresets([...userPresets, ...imported].sort((a, b) => a.name.localeCompare(b.name)));
+      setImportCandidates(null);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "The selected presets could not be imported.");
+    }
   };
 
   const saveUserPreset = () => {
@@ -1489,10 +1540,31 @@ export default function Home() {
             {userPresets.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
           </select>
           <button onClick={saveUserPreset} title="Save current settings">＋ SAVE</button>
+          <button onClick={exportUserPresets} disabled={!userPresets.length} title="Export all saved presets as JSON">⇩ EXPORT</button>
+          <button onClick={() => presetFileRef.current?.click()} title="Import presets from JSON">⇧ IMPORT</button>
+          <input ref={presetFileRef} className="preset-file-input" type="file" accept="application/json,.json" onChange={readPresetFile} />
           <button className="preset-del" onClick={deleteUserPreset} disabled={!selectedPreset} title="Delete selected saved setting">🗑</button>
         </div>
         <div className="strip-spacer" /><span>RESEARCH MODE</span><strong>{band}</strong><span className="calibration">CAL · 48kHz</span>
       </nav>
+
+      {importCandidates && <div className="preset-import-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setImportCandidates(null); }}>
+        <section className="preset-import-dialog" role="dialog" aria-modal="true" aria-labelledby="preset-import-title">
+          <header><div><small>PRESET ARCHIVE</small><h2 id="preset-import-title">Choose presets to import</h2></div><button onClick={() => setImportCandidates(null)} aria-label="Close import dialog">×</button></header>
+          <div className="preset-import-tools">
+            <button onClick={() => { const select = !importCandidates.every((candidate) => candidate.selected); setImportCandidates(importCandidates.map((candidate) => ({ ...candidate, selected: select }))); }}>{importCandidates.every((candidate) => candidate.selected) ? "CLEAR ALL" : "SELECT ALL"}</button>
+            <span>{importCandidates.filter((candidate) => candidate.selected).length} / {importCandidates.length} selected</span>
+          </div>
+          <div className="preset-import-list">
+            {importCandidates.map((candidate) => <label key={candidate.id} className={candidate.selected ? "selected" : ""}>
+              <input type="checkbox" checked={candidate.selected} onChange={() => setImportCandidates(importCandidates.map((item) => item.id === candidate.id ? { ...item, selected: !item.selected } : item))} />
+              <span><b>{candidate.name}</b><small>{typeof candidate.data.mode === "string" ? candidate.data.mode : "saved instrument state"}</small></span>
+            </label>)}
+          </div>
+          <p>Existing presets will not be overwritten. Name clashes receive a three-digit suffix.</p>
+          <footer><button onClick={() => setImportCandidates(null)}>CANCEL</button><button className="confirm" disabled={!importCandidates.some((candidate) => candidate.selected)} onClick={importSelectedPresets}>IMPORT SELECTED</button></footer>
+        </section>
+      </div>}
 
       <section className="top-row">
         <article className="panel beat-panel">
