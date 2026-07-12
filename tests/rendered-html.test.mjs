@@ -78,7 +78,11 @@ test("ships the interactive audio engine and social card", async () => {
   assert.match(page, /requestAnimationFrame/);
   assert.doesNotMatch(page, />WRITE</);
   assert.match(layout, /summary_large_image/);
+  assert.match(layout, /viewportFit: "cover"/);
   assert.match(packageJson, /nocturne-psychoacoustic-console/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   assert.equal(card, undefined);
+  assert.match(page, /unlockAudioContext/);
+  assert.match(page, /AudioContextConstructor\(\{ latencyHint: "interactive" \}\)/);
+  assert.doesNotMatch(page, /new AudioContext\(\{ latencyHint: "interactive", sampleRate:/);
 });

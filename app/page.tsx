@@ -148,6 +148,16 @@ function formatTime(seconds: number) {
   return `${mins}:${secs}`;
 }
 
+async function unlockAudioContext(ctx: AudioContext) {
+  // Starting a silent source synchronously inside the tap is the most reliable
+  // way to unlock Web Audio on iOS Safari and routes it to connected AirPods.
+  const source = ctx.createBufferSource();
+  source.buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+  source.connect(ctx.destination);
+  source.start(0);
+  if (ctx.state !== "running") await ctx.resume();
+}
+
 function makeTubeCurve(kind: TubeKey, amount: number) {
   const size = 4096;
   const curve = new Float32Array(size);
@@ -893,6 +903,8 @@ export default function Home() {
   const graphRef = useRef<AudioGraph | null>(null);
   const sessionOriginRef = useRef(0);
   const [running, setRunning] = useState(false);
+  const [audioState, setAudioState] = useState("idle");
+  const [audioSampleRate, setAudioSampleRate] = useState(0);
   const [graphVersion, setGraphVersion] = useState(0);
   const [carrier, setCarrier] = useState(400);
   const [beat, setBeat] = useState(10);
@@ -1044,14 +1056,34 @@ export default function Home() {
     graph.master.gain.setValueAtTime(graph.master.gain.value, now);
     graph.master.gain.linearRampToValueAtTime(0, now + .12);
     window.setTimeout(() => graph.ctx.close(), 150);
-    graphRef.current = null; sessionOriginRef.current = 0; setRunning(false); setElapsed(0); setGraphVersion((v) => v + 1);
+    graphRef.current = null; sessionOriginRef.current = 0; setRunning(false); setAudioState("idle"); setAudioSampleRate(0); setElapsed(0); setGraphVersion((v) => v + 1);
   }, []);
 
   const startAudio = useCallback(async () => {
-    if (graphRef.current) { stopAudio(); return; }
+    const existing = graphRef.current;
+    if (existing) {
+      const state = existing.ctx.state as string;
+      if (state === "suspended" || state === "interrupted" || !running) {
+        try {
+          await unlockAudioContext(existing.ctx);
+          setAudioState(existing.ctx.state);
+          setRunning(existing.ctx.state === "running");
+        } catch {
+          setAudioState("tap to resume");
+        }
+        return;
+      }
+      stopAudio();
+      return;
+    }
     setHintDismissed(true);
-    const ctx = new AudioContext({ latencyHint: "interactive", sampleRate: 48000 });
-    await ctx.resume();
+    setAudioState("starting");
+    // Let iOS use the active hardware route's native rate. AirPods normally
+    // negotiate this through Safari; forcing a rate can create a silent route.
+    const AudioContextConstructor = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextConstructor) { setAudioState("unsupported"); return; }
+    const ctx = new AudioContextConstructor({ latencyHint: "interactive" });
+    await unlockAudioContext(ctx);
     const masterNode = ctx.createGain(); masterNode.gain.value = 0;
     const limiter = ctx.createDynamicsCompressor(); limiter.threshold.value = -3; limiter.knee.value = 1; limiter.ratio.value = 20; limiter.attack.value = .003; limiter.release.value = .16;
     const analyser = ctx.createAnalyser(); analyser.fftSize = 4096; analyser.smoothingTimeConstant = .82;
@@ -1118,9 +1150,36 @@ export default function Home() {
     gammaCarrier.start(); gammaLfo.start(); oscillators.push(gammaCarrier, gammaLfo);
 
     const graph: AudioGraph = { ctx, master: masterNode, limiter, analyser, analyserL, analyserR, oscillators, beatOscillators, sources, layerGains, layerPans, layerAnalysers, carriers, beatAM, beatAMLfo, beatAMDepth, nestLfo, nestDepth, veilTiltLow, veilTiltHigh, veilShape, veilComod, comodLfo, comodDepth: comodDepthNode, veilSweepLfo, veilSweepDepth: veilSweepDepthNode, noiseSources, droneParts: droneBuilt.parts, pulse: pulseEngine, gammaCarrier, gammaAM, gammaAMDepth, gammaLfo, gammaBus, tubeStages, beatMode: mode };
-    graphRef.current = graph; sessionOriginRef.current = performance.now() - elapsed * 1000; setRunning(true); setGraphVersion((v) => v + 1);
+    graphRef.current = graph;
+    ctx.onstatechange = () => {
+      if (graphRef.current?.ctx !== ctx) return;
+      const state = ctx.state as string;
+      setAudioState(state);
+      setRunning(state === "running");
+    };
+    sessionOriginRef.current = performance.now() - elapsed * 1000; setAudioState(ctx.state); setAudioSampleRate(ctx.sampleRate); setRunning(ctx.state === "running"); setGraphVersion((v) => v + 1);
     const now = ctx.currentTime; masterNode.gain.setValueAtTime(0, now); masterNode.gain.linearRampToValueAtTime(master * .58, now + .8);
-  }, [amDepth, amShape, beat, bpm, carrier, comodDepth, comodOn, comodRate, comodShape, elapsed, gammaCarrierHz, gammaDepth, gammaDuty, gammaEdge, gammaLevel, gammaOn, gammaRate, gammaWave, master, mfBrightness, mfPartials, missingFund, mode, nestOn, noiseActive, noiseLevels, pulseDepth, pulseDuty, pulseSmooth, pulseToneHz, pulseWave, stopAudio, thetaRate, tubeDrive, veilCenter, veilGainDb, veilQ, veilSweepDepth, veilSweepRate, veilTilt, veilType, waveform]);
+  }, [amDepth, amShape, beat, bpm, carrier, comodDepth, comodOn, comodRate, comodShape, elapsed, gammaCarrierHz, gammaDepth, gammaDuty, gammaEdge, gammaLevel, gammaOn, gammaRate, gammaWave, master, mfBrightness, mfPartials, missingFund, mode, nestOn, noiseActive, noiseLevels, pulseDepth, pulseDuty, pulseSmooth, pulseToneHz, pulseWave, running, stopAudio, thetaRate, tubeDrive, veilCenter, veilGainDb, veilQ, veilSweepDepth, veilSweepRate, veilTilt, veilType, waveform]);
+
+  // iOS interrupts Web Audio for calls, Siri, route changes, locking, and app
+  // switching. Try to restore on foreground; if Safari requires a new gesture,
+  // the transport changes to a clear tap-to-resume state.
+  useEffect(() => {
+    const resumeOnForeground = () => {
+      const ctx = graphRef.current?.ctx;
+      if (!ctx || document.visibilityState === "hidden" || ctx.state === "running") return;
+      ctx.resume().then(() => {
+        setAudioState(ctx.state);
+        setRunning(ctx.state === "running");
+      }).catch(() => setAudioState("tap to resume"));
+    };
+    document.addEventListener("visibilitychange", resumeOnForeground);
+    window.addEventListener("pageshow", resumeOnForeground);
+    return () => {
+      document.removeEventListener("visibilitychange", resumeOnForeground);
+      window.removeEventListener("pageshow", resumeOnForeground);
+    };
+  }, []);
 
   // Beat-mode requests are handled by the effect below. Keeping this callback
   // state-only also lets snapshots use the exact same live update path.
@@ -1508,14 +1567,14 @@ export default function Home() {
         <div className="brand-mark" aria-hidden="true"><span>✦</span></div>
         <div className="brand"><p>NOCTURNE LABORATORY</p><h1>Psychoacoustic Research Console</h1><div><span>THERMIONIC SERIES</span><i>•</i><span>INSTRUMENT № 01</span></div></div>
         <div className="session-status">
-          <div><span className={`status-lamp ${running ? "lit" : ""}`} /><small>SYSTEM</small><b>{running ? "ACTIVE" : "STANDBY"}</b></div>
-          <div><small>OUTPUT</small><b>AIRPODS · STEREO</b></div>
+          <div><span className={`status-lamp ${running ? "lit" : ""}`} /><small>SYSTEM</small><b>{running ? "ACTIVE" : graphRef.current ? "TAP TO RESUME" : audioState === "unsupported" ? "UNSUPPORTED" : "STANDBY"}</b></div>
+          <div><small>OUTPUT</small><b>{audioSampleRate ? `SYSTEM · ${(audioSampleRate / 1000).toFixed(1)}kHz` : "AIRPODS READY"}</b></div>
         </div>
       </header>
 
       {/* Move I — persistent transport rail: play/stop, clock, master, meter, band, always in reach. */}
       <section className="transport-rail" aria-label="Master transport">
-        <button className={`transport-play ${running ? "stop" : ""} ${!running && !hintDismissed ? "pulsing" : ""}`} onClick={startAudio} aria-label={running ? "Stop session" : "Play session"}><span>{running ? "■" : "▶"}</span></button>
+        <button className={`transport-play ${running ? "stop" : ""} ${!running && !hintDismissed ? "pulsing" : ""}`} onClick={startAudio} aria-label={running ? "Stop session" : graphRef.current ? "Resume session audio" : "Play session"}><span>{running ? "■" : "▶"}</span></button>
         <div className="transport-clock"><small>SESSION</small><b className="digital">{formatTime(elapsed)}</b><em>{formatTime(sessionLength * 60)}</em></div>
         <div className="transport-sep" />
         <div className="transport-master">
@@ -1526,7 +1585,8 @@ export default function Home() {
         <div className="transport-sep" />
         <OutputMeter analyserL={graph?.analyserL || null} analyserR={graph?.analyserR || null} running={running} />
         <div className="transport-band"><small>BAND</small><b>{band}</b></div>
-        {!running && !hintDismissed && <div className="transport-hint" role="status"><b>Put on headphones</b>, then press Engage ▸<button onClick={() => setHintDismissed(true)} aria-label="Dismiss hint">×</button></div>}
+        {!running && !hintDismissed && <div className="transport-hint" role="status"><b>Connect AirPods</b>, then tap Play ▸<button onClick={() => setHintDismissed(true)} aria-label="Dismiss hint">×</button></div>}
+        {!running && graphRef.current && <div className="transport-hint audio-resume-hint" role="status"><b>Audio {audioState}</b> — tap Play to resume</div>}
       </section>
 
       <nav className="preset-strip" aria-label="Session presets">
