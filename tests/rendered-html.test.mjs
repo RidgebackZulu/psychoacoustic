@@ -68,6 +68,8 @@ test("ships the interactive audio engine and social card", async () => {
   assert.match(page, /AutomationGraph/);
   assert.match(page, /graph\.beatMode === mode/);
   assert.match(page, /<select value="" onChange=/);
+  assert.match(page, /addEventListener\("wheel", handleWheel, \{ passive: false \}\)/);
+  assert.doesNotMatch(page, /onWheel=/);
   assert.match(page, /sessionOriginRef/);
   assert.match(page, /onSeek=\{seekSession\}/);
   assert.match(page, /requestAnimationFrame/);

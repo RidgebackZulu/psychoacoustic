@@ -369,16 +369,32 @@ function Knob({
   onChange: (value: number) => void;
 }) {
   const drag = useRef<{ y: number; value: number; moved: boolean } | null>(null);
+  const knobRef = useRef<HTMLDivElement>(null);
   const controls = useControls();
   const ratio = (value - min) / (max - min);
   const degrees = -135 + ratio * 270;
-  const set = (next: number) => onChange(Math.round(clamp(next, min, max) / step) * step);
+  const set = useCallback((next: number) => onChange(Math.round(clamp(next, min, max) / step) * step), [max, min, onChange, step]);
   const display = `${Number.isInteger(step) ? value.toFixed(0) : value.toFixed(step < 0.1 ? 2 : 1)}${unit}`;
   const automatable = !!(paramKey && controls);
+
+  // React delegates wheel events through a passive listener, where
+  // preventDefault() is ignored by the browser. Register directly so turning a
+  // knob with the wheel changes its value without also scrolling the page.
+  useEffect(() => {
+    const knob = knobRef.current;
+    if (!knob) return;
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      set(value + (event.deltaY < 0 ? step : -step));
+    };
+    knob.addEventListener("wheel", handleWheel, { passive: false });
+    return () => knob.removeEventListener("wheel", handleWheel);
+  }, [set, step, value]);
 
   return (
     <div className={`knob-control knob-${size}`}>
       <div
+        ref={knobRef}
         className="knob"
         role="slider"
         aria-label={label}
@@ -398,10 +414,6 @@ function Knob({
           set(drag.current.value + ((drag.current.y - event.clientY) / 160) * (max - min));
         }}
         onPointerUp={() => (drag.current = null)}
-        onWheel={(event) => {
-          event.preventDefault();
-          set(value + (event.deltaY < 0 ? step : -step));
-        }}
         onDoubleClick={() => { if (paramKey && controls) controls.reset(paramKey, value); else onChange(defaultValue ?? min); }}
         onContextMenu={(event) => { if (automatable) { event.preventDefault(); controls!.automate(paramKey!); } }}
         onKeyDown={(event) => {
