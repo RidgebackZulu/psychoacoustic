@@ -1106,12 +1106,18 @@ export default function Home() {
     const now = ctx.currentTime; masterNode.gain.setValueAtTime(0, now); masterNode.gain.linearRampToValueAtTime(master * .58, now + .8);
   }, [amDepth, amShape, beat, bpm, carrier, comodDepth, comodOn, comodRate, comodShape, elapsed, gammaCarrierHz, gammaDepth, gammaDuty, gammaEdge, gammaLevel, gammaOn, gammaRate, gammaWave, master, mfBrightness, mfPartials, missingFund, mode, nestOn, noiseActive, noiseLevels, pulseDepth, pulseDuty, pulseSmooth, pulseToneHz, pulseWave, stopAudio, thetaRate, tubeDrive, veilCenter, veilGainDb, veilQ, veilSweepDepth, veilSweepRate, veilTilt, veilType, waveform]);
 
-  // Live-safe beat topology change: equal-power crossfade instead of a hard lock.
+  // Beat-mode requests are handled by the effect below. Keeping this callback
+  // state-only also lets snapshots use the exact same live update path.
   const changeMode = useCallback((next: BeatMode) => {
     setMode(next);
     if (next === "isochronic" && amDepth < 0.2) setAmDepth(0.85);
+  }, [amDepth]);
+
+  // Live-safe beat topology change: equal-power crossfade whenever mode changes,
+  // including changes applied by a saved snapshot.
+  useEffect(() => {
     const graph = graphRef.current;
-    if (!graph) return;
+    if (!graph || graph.beatMode === mode) return;
     const now = graph.ctx.currentTime;
     graph.layerGains.beat.gain.cancelScheduledValues(now);
     graph.layerGains.beat.gain.setTargetAtTime(0, now, .045);
@@ -1119,16 +1125,16 @@ export default function Home() {
       const g = graphRef.current;
       if (!g) return;
       g.beatOscillators.forEach((osc) => { try { osc.stop(); } catch { /* already stopped */ } });
-      const rebuilt = buildBeatLayer(g.ctx, g.beatAM, next, waveform, carrier, beat);
+      const rebuilt = buildBeatLayer(g.ctx, g.beatAM, mode, waveform, carrier, beat);
       rebuilt.oscillators.forEach((osc) => osc.start());
       g.beatOscillators = rebuilt.oscillators;
       g.carriers.left = rebuilt.carriers.left; g.carriers.right = rebuilt.carriers.right;
-      g.beatMode = next;
+      g.beatMode = mode;
       const soloed = Object.values(layers).some((l) => l.solo);
       const target = layers.beat.muted || (soloed && !layers.beat.solo) ? 0 : layers.beat.gain;
       g.layerGains.beat.gain.setTargetAtTime(target, g.ctx.currentTime, .06);
     }, 180);
-  }, [amDepth, beat, carrier, layers, waveform]);
+  }, [beat, carrier, layers, mode, waveform]);
 
   useEffect(() => () => { graphRef.current?.ctx.close(); }, []);
 
@@ -1466,8 +1472,8 @@ export default function Home() {
         <div className="preset-sep" />
         <span>SAVED</span>
         <div className="user-presets">
-          <select value={selectedPreset} onChange={(e) => e.target.value && loadUserPreset(e.target.value)} aria-label="Load saved setting" title="Load a saved setting">
-            <option value="">— select —</option>
+          <select value="" onChange={(e) => e.target.value && loadUserPreset(e.target.value)} aria-label="Load saved setting" title="Load a saved setting">
+            <option value="">{selectedPreset ? `Loaded: ${selectedPreset}` : "— select —"}</option>
             {userPresets.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
           </select>
           <button onClick={saveUserPreset} title="Save current settings">＋ SAVE</button>
