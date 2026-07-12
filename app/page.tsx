@@ -963,7 +963,7 @@ export default function Home() {
   const [layers, setLayers] = useState<LayerState>(initialLayers);
   const [elapsed, setElapsed] = useState(0);
   const [sessionLength, setSessionLength] = useState(30);
-  const [automation, setAutomation] = useState(true);
+  const [automation, setAutomation] = useState(false);
   const [drift, setDrift] = useState(0.18);
   const [preset, setPreset] = useState<keyof typeof presets>("Focus");
   const [hintDismissed, setHintDismissed] = useState(false);

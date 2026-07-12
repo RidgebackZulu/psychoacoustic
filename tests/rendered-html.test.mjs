@@ -65,6 +65,7 @@ test("ships the interactive audio engine and social card", async () => {
   assert.match(page, /beatMode === "isochronic"/);
   assert.match(page, /carriers\.left\.type = waveform/);
   assert.match(page, /sampleAutomation/);
+  assert.match(page, /useState\(false\);\n  const \[drift/);
   assert.match(page, /AutomationGraph/);
   assert.match(page, /graph\.beatMode === mode/);
   assert.match(page, /<select value="" onChange=/);
