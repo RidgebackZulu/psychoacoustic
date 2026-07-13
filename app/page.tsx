@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { encodeFlacFromBuffer, downloadBytes } from "./flac";
+import { analyzeTextureBuffer, generateHugginsPcm, makeErbCenters, pcmToAudioBuffer, synthesizeTexturePcm, type PcmData, type TextureAnalysis } from "./psychoacoustic";
 
 type BeatMode = "binaural" | "monaural" | "isochronic";
 type Waveform = OscillatorType;
@@ -25,6 +26,10 @@ type BeatLayer = {
 type DronePart = { osc: OscillatorNode; mult: number };
 type PulseEngine = { tone: OscillatorNode; sum: GainNode; amps: GainNode[]; gates: OscillatorNode[]; depths: GainNode[] };
 type NoiseSource = { source: AudioBufferSourceNode; gain: GainNode };
+type HugginsEngine = { bus: GainNode; source?: AudioBufferSourceNode; voiceGain?: GainNode };
+type CoherenceBand = { filter: BiquadFilterNode; amp: GainNode; modDepth: GainNode; lfo: OscillatorNode; pan: StereoPannerNode };
+type CoherenceEngine = { source: AudioBufferSourceNode; bus: GainNode; bands: CoherenceBand[] };
+type TextureEngine = { bus: GainNode; source?: AudioBufferSourceNode; voiceGain?: GainNode };
 
 type AudioGraph = {
   ctx: AudioContext;
@@ -50,6 +55,9 @@ type AudioGraph = {
   pulse: PulseEngine;
   // #1 audible gamma engine (own bus)
   gammaCarrier: OscillatorNode; gammaAM: GainNode; gammaAMDepth: GainNode; gammaLfo: OscillatorNode; gammaBus: GainNode;
+  huggins: HugginsEngine;
+  coherence: CoherenceEngine;
+  texture: TextureEngine;
   tubeStages: WaveShaperNode[];
   beatMode: BeatMode;
 };
@@ -114,6 +122,19 @@ const PARAM_DEFS: ParamDef[] = [
   { key: "gammaEdge", label: "Gamma edge", min: 0, max: 1, step: .01, unit: "", def: .3, panel: "VII", group: "Gamma Engine", hue: A },
   { key: "gammaLevel", label: "Gamma level", min: 0, max: .8, step: .01, unit: "", def: .3, panel: "VII", group: "Gamma Engine", hue: A },
   { key: "gammaOn", label: "Gamma on/off", min: 0, max: 1, step: 1, unit: "", def: 0, panel: "VII", group: "Gamma Engine", hue: A },
+  { key: "hugginsCenter", label: "Dichotic pitch", min: 180, max: 2400, step: 5, unit: " Hz", def: 600, panel: "VII", group: "Dichotic Pitch", hue: V },
+  { key: "hugginsWidth", label: "Dichotic bandwidth", min: 20, max: 400, step: 5, unit: " Hz", def: 90, panel: "VII", group: "Dichotic Pitch", hue: V },
+  { key: "hugginsPhase", label: "Interaural phase span", min: 90, max: 720, step: 15, unit: "°", def: 360, panel: "VII", group: "Dichotic Pitch", hue: V },
+  { key: "hugginsLevel", label: "Dichotic pitch level", min: 0, max: .6, step: .01, unit: "", def: .2, panel: "VII", group: "Dichotic Pitch", hue: V },
+  { key: "hugginsOn", label: "Dichotic pitch on/off", min: 0, max: 1, step: 1, unit: "", def: 0, panel: "VII", group: "Dichotic Pitch", hue: V },
+  { key: "coherence", label: "Temporal coherence", min: 0, max: 1, step: .01, unit: "", def: .7, panel: "VII", group: "Coherence Matrix", hue: C },
+  { key: "coherenceRate", label: "Coherence rate", min: .25, max: 18, step: .05, unit: " Hz", def: 4, panel: "VII", group: "Coherence Matrix", hue: C },
+  { key: "coherenceDepth", label: "Coherence depth", min: 0, max: 1, step: .01, unit: "", def: .75, panel: "VII", group: "Coherence Matrix", hue: C },
+  { key: "coherenceSpread", label: "Cluster spread", min: 0, max: 1, step: .01, unit: "", def: .7, panel: "VII", group: "Coherence Matrix", hue: C },
+  { key: "coherenceLevel", label: "Coherence matrix level", min: 0, max: .8, step: .01, unit: "", def: .26, panel: "VII", group: "Coherence Matrix", hue: C },
+  { key: "coherenceOn", label: "Coherence matrix on/off", min: 0, max: 1, step: 1, unit: "", def: 0, panel: "VII", group: "Coherence Matrix", hue: C },
+  { key: "textureLevel", label: "Cochlear texture level", min: 0, max: .8, step: .01, unit: "", def: .28, panel: "VIII", group: "Cochlear Texture", hue: R },
+  { key: "textureOn", label: "Cochlear texture on/off", min: 0, max: 1, step: 1, unit: "", def: 0, panel: "VIII", group: "Cochlear Texture", hue: R },
   { key: "drift", label: "Organic drift", min: 0, max: 1, step: .01, unit: "", def: .18, panel: "VI", group: "Automation", hue: B },
 ];
 const PARAM_MAP: Record<string, ParamDef> = Object.fromEntries(PARAM_DEFS.map((p) => [p.key, p]));
@@ -282,6 +303,95 @@ function makeGammaWave(ctx: BaseAudioContext, duty: number, edge: number) {
   const d = clamp(duty, 0.03, 0.97);
   for (let n = 1; n <= N; n++) real[n] = (2 / (n * Math.PI)) * Math.sin(n * Math.PI * d) * Math.exp(-n * edge * 0.9);
   return ctx.createPeriodicWave(real, imag, { disableNormalization: false });
+}
+
+function makePhaseWave(ctx: BaseAudioContext, phase: number) {
+  const real = new Float32Array(2);
+  const imag = new Float32Array(2);
+  real[1] = Math.sin(phase);
+  imag[1] = Math.cos(phase);
+  return ctx.createPeriodicWave(real, imag, { disableNormalization: true });
+}
+
+function replacePcmVoice(context: BaseAudioContext, pcm: PcmData, engine: HugginsEngine | TextureEngine, fadeSeconds = .12) {
+  const now = context.currentTime;
+  const previousSource = engine.source;
+  const previousGain = engine.voiceGain;
+  const source = context.createBufferSource();
+  source.buffer = pcmToAudioBuffer(context, pcm);
+  source.loop = true;
+  const voiceGain = context.createGain();
+  voiceGain.gain.setValueAtTime(0, now);
+  voiceGain.gain.linearRampToValueAtTime(1, now + fadeSeconds);
+  source.connect(voiceGain).connect(engine.bus);
+  source.start(now);
+  engine.source = source;
+  engine.voiceGain = voiceGain;
+  if (previousGain) {
+    previousGain.gain.cancelScheduledValues(now);
+    previousGain.gain.setValueAtTime(previousGain.gain.value, now);
+    previousGain.gain.linearRampToValueAtTime(0, now + fadeSeconds);
+  }
+  if (previousSource) {
+    try { previousSource.stop(now + fadeSeconds + .02); } catch { /* already stopped */ }
+  }
+}
+
+function buildCoherenceEngine(
+  ctx: BaseAudioContext,
+  destination: AudioNode,
+  active: boolean,
+  level: number,
+  coherence: number,
+  clusters: number,
+  rate: number,
+  depth: number,
+  spread: number,
+) {
+  const source = ctx.createBufferSource();
+  source.buffer = makeNoiseBuffer(ctx, "WHITE");
+  source.loop = true;
+  const bus = ctx.createGain();
+  bus.gain.value = active ? level * .32 : 0;
+  bus.connect(destination);
+  const centers = makeErbCenters(12, 110, Math.min(9000, ctx.sampleRate * .42));
+  const bands = centers.map((center, index) => {
+    const filter = ctx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.value = center;
+    filter.Q.value = 7;
+    const amp = ctx.createGain();
+    amp.gain.value = 1 - depth / 2;
+    const modDepth = ctx.createGain();
+    modDepth.gain.value = depth / 2;
+    const lfo = ctx.createOscillator();
+    lfo.frequency.value = rate;
+    const pan = ctx.createStereoPanner();
+    const cluster = index % Math.max(1, clusters);
+    const phase = (1 - coherence) * cluster / Math.max(1, clusters) * Math.PI * 2;
+    lfo.setPeriodicWave(makePhaseWave(ctx, phase));
+    pan.pan.value = (1 - coherence) * spread * (clusters <= 1 ? 0 : cluster / (clusters - 1) * 2 - 1);
+    source.connect(filter).connect(amp).connect(pan).connect(bus);
+    lfo.connect(modDepth).connect(amp.gain);
+    lfo.start();
+    return { filter, amp, modDepth, lfo, pan };
+  });
+  source.start();
+  return { source, bus, bands };
+}
+
+function configureCoherence(engine: CoherenceEngine, ctx: BaseAudioContext, coherence: number, clusters: number, rate: number, depth: number, spread: number) {
+  const now = ctx.currentTime;
+  engine.bands.forEach((band, index) => {
+    const cluster = index % Math.max(1, clusters);
+    const phase = (1 - coherence) * cluster / Math.max(1, clusters) * Math.PI * 2;
+    const pan = (1 - coherence) * spread * (clusters <= 1 ? 0 : cluster / (clusters - 1) * 2 - 1);
+    band.lfo.setPeriodicWave(makePhaseWave(ctx, phase));
+    band.lfo.frequency.setTargetAtTime(rate, now, .04);
+    band.amp.gain.setTargetAtTime(1 - depth / 2, now, .04);
+    band.modDepth.gain.setTargetAtTime(depth / 2, now, .04);
+    band.pan.pan.setTargetAtTime(pan, now, .06);
+  });
 }
 
 // RMS level of an analyser, mapped to 0..1 over a roughly -48..0 dBFS window.
@@ -799,6 +909,163 @@ function SignalFlow({ running, graph, gammaOn, gammaLevel, rissetOn, missingFund
   );
 }
 
+function drawWaveform(canvas: HTMLCanvasElement, buffer: AudioBuffer, fromSeconds: number, durationSeconds: number, selection?: { start: number; duration: number }, playheadSeconds?: number) {
+  const dpr = window.devicePixelRatio || 1;
+  const width = Math.max(320, Math.floor(canvas.clientWidth * dpr));
+  const height = Math.max(80, Math.floor(canvas.clientHeight * dpr));
+  if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+  const context = canvas.getContext("2d");
+  if (!context) return;
+  context.clearRect(0, 0, width, height);
+  context.fillStyle = "#06100e";
+  context.fillRect(0, 0, width, height);
+  context.strokeStyle = "rgba(99,216,207,.1)";
+  context.lineWidth = 1;
+  for (let i = 1; i < 8; i++) { const x = i / 8 * width; context.beginPath(); context.moveTo(x, 0); context.lineTo(x, height); context.stroke(); }
+  context.beginPath(); context.moveTo(0, height / 2); context.lineTo(width, height / 2); context.stroke();
+  const data = buffer.getChannelData(0);
+  const first = Math.floor(fromSeconds * buffer.sampleRate);
+  const available = Math.max(1, Math.min(data.length - first, Math.floor(durationSeconds * buffer.sampleRate)));
+  context.fillStyle = "rgba(99,216,207,.62)";
+  for (let x = 0; x < width; x++) {
+    const a = first + Math.floor(x / width * available);
+    const b = first + Math.floor((x + 1) / width * available);
+    let lo = 1; let hi = -1;
+    for (let i = a; i < Math.max(a + 1, b); i++) { const value = data[Math.min(data.length - 1, i)]; lo = Math.min(lo, value); hi = Math.max(hi, value); }
+    const top = (1 - hi) * height / 2;
+    const bottom = (1 - lo) * height / 2;
+    context.fillRect(x, top, 1, Math.max(1, bottom - top));
+  }
+  if (selection) {
+    const x = (selection.start - fromSeconds) / durationSeconds * width;
+    const w = selection.duration / durationSeconds * width;
+    context.fillStyle = "rgba(224,163,74,.18)";
+    context.fillRect(x, 0, w, height);
+    context.strokeStyle = "#e0a34a";
+    context.lineWidth = 2 * dpr;
+    context.strokeRect(x + dpr, dpr, Math.max(0, w - 2 * dpr), height - 2 * dpr);
+  }
+  if (playheadSeconds !== undefined) {
+    const x = (playheadSeconds - fromSeconds) / durationSeconds * width;
+    context.strokeStyle = "#e85e4e";
+    context.lineWidth = 2 * dpr;
+    context.beginPath(); context.moveTo(x, 0); context.lineTo(x, height); context.stroke();
+    context.fillStyle = "#e85e4e";
+    context.beginPath(); context.moveTo(x - 5 * dpr, 0); context.lineTo(x + 5 * dpr, 0); context.lineTo(x, 7 * dpr); context.fill();
+  }
+}
+
+function TextureWaveformDialog({ fileName, buffer, onClose, onAnalyze }: { fileName: string; buffer: AudioBuffer; onClose: () => void; onAnalyze: (start: number, duration: number) => void }) {
+  const overviewRef = useRef<HTMLCanvasElement>(null);
+  const detailRef = useRef<HTMLCanvasElement>(null);
+  const previewContext = useRef<AudioContext | null>(null);
+  const previewSource = useRef<AudioBufferSourceNode | null>(null);
+  const previewFrame = useRef(0);
+  const previewOrigin = useRef(0);
+  const segmentDuration = Math.min(5, buffer.duration);
+  const [selectionStart, setSelectionStart] = useState(0);
+  const [playhead, setPlayhead] = useState(0);
+  const [playing, setPlaying] = useState(false);
+
+  const stopPreview = useCallback(() => {
+    cancelAnimationFrame(previewFrame.current);
+    if (previewSource.current) { try { previewSource.current.stop(); } catch { /* already stopped */ } }
+    previewSource.current = null;
+    setPlaying(false);
+  }, []);
+
+  useEffect(() => () => {
+    cancelAnimationFrame(previewFrame.current);
+    if (previewSource.current) { try { previewSource.current.stop(); } catch { /* already stopped */ } }
+    previewContext.current?.close();
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  useEffect(() => {
+    const render = () => {
+      if (overviewRef.current) drawWaveform(overviewRef.current, buffer, 0, buffer.duration, { start: selectionStart, duration: segmentDuration }, selectionStart + playhead);
+      if (detailRef.current) drawWaveform(detailRef.current, buffer, selectionStart, segmentDuration, undefined, selectionStart + playhead);
+    };
+    render();
+    const observer = new ResizeObserver(render);
+    if (overviewRef.current) observer.observe(overviewRef.current);
+    if (detailRef.current) observer.observe(detailRef.current);
+    return () => observer.disconnect();
+  }, [buffer, playhead, segmentDuration, selectionStart]);
+
+  const beginPreview = async () => {
+    stopPreview();
+    const AudioContextConstructor = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextConstructor) return;
+    const context = previewContext.current && previewContext.current.state !== "closed" ? previewContext.current : new AudioContextConstructor({ latencyHint: "interactive" });
+    previewContext.current = context;
+    await unlockAudioContext(context);
+    const source = context.createBufferSource();
+    const gain = context.createGain(); gain.gain.value = .72;
+    source.buffer = buffer; source.connect(gain).connect(context.destination);
+    const remaining = Math.max(.02, segmentDuration - playhead);
+    source.start(0, selectionStart + playhead, remaining);
+    previewSource.current = source;
+    previewOrigin.current = performance.now() - playhead * 1000;
+    setPlaying(true);
+    const tick = () => {
+      const next = (performance.now() - previewOrigin.current) / 1000;
+      if (next >= segmentDuration) { setPlayhead(0); setPlaying(false); return; }
+      setPlayhead(next);
+      previewFrame.current = requestAnimationFrame(tick);
+    };
+    previewFrame.current = requestAnimationFrame(tick);
+    source.onended = () => { if (previewSource.current === source) { previewSource.current = null; setPlaying(false); } };
+  };
+
+  const overviewPosition = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const time = clamp((event.clientX - rect.left) / rect.width * buffer.duration - segmentDuration / 2, 0, Math.max(0, buffer.duration - segmentDuration));
+    setSelectionStart(time); setPlayhead(0); stopPreview();
+  };
+  const detailPosition = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setPlayhead(clamp((event.clientX - rect.left) / rect.width * segmentDuration, 0, Math.max(0, segmentDuration - .01)));
+    if (playing) stopPreview();
+  };
+
+  return <div className="texture-dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+    <section className="texture-dialog" role="dialog" aria-modal="true" aria-labelledby="texture-dialog-title">
+      <header><div><small>COCHLEAR TEXTURE IMPORT</small><h2 id="texture-dialog-title">Select the five-second specimen</h2></div><button onClick={onClose} aria-label="Close audio import dialog">×</button></header>
+      <div className="texture-file-meta"><b>{fileName}</b><span>{formatTime(buffer.duration)} · {(buffer.sampleRate / 1000).toFixed(1)} kHz · {buffer.numberOfChannels === 1 ? "MONO" : `${buffer.numberOfChannels} CH`}</span></div>
+      <div className="waveform-stage">
+        <div className="waveform-label"><span>ENTIRE SOURCE</span><b>CLICK OR DRAG TO POSITION THE {segmentDuration.toFixed(1)}s WINDOW</b></div>
+        <canvas ref={overviewRef} className="waveform-overview" role="img" aria-label="Full source waveform with movable five-second selection" onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); overviewPosition(event); }} onPointerMove={(event) => event.currentTarget.hasPointerCapture(event.pointerId) && overviewPosition(event)} />
+        <div className="waveform-time"><span>00:00</span><b>SELECTION {formatTime(selectionStart)} — {formatTime(selectionStart + segmentDuration)}</b><span>{formatTime(buffer.duration)}</span></div>
+      </div>
+      <div className="waveform-stage detail">
+        <div className="waveform-label"><span>SELECTION DETAIL</span><b>CLICK OR DRAG THE RED PLAYHEAD TO SCRUB</b></div>
+        <canvas ref={detailRef} className="waveform-detail" role="img" aria-label="Five-second selection waveform with scrubbing playhead" onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); detailPosition(event); }} onPointerMove={(event) => event.currentTarget.hasPointerCapture(event.pointerId) && detailPosition(event)} />
+        <div className="waveform-time"><span>0.00s</span><b>PLAYHEAD {playhead.toFixed(2)}s</b><span>{segmentDuration.toFixed(2)}s</span></div>
+      </div>
+      <p className="texture-dialog-note">Analysis measures the ERB-band spectral profile, dominant envelope modulation and dynamics. Resynthesis uses overlap-add microstructure from only this selected specimen.</p>
+      <div className="texture-dialog-actions"><button onClick={playing ? stopPreview : beginPreview}>{playing ? "■ STOP PREVIEW" : "▶ PREVIEW FROM PLAYHEAD"}</button><button className="confirm" onClick={() => { stopPreview(); onAnalyze(selectionStart, segmentDuration); }}>ANALYZE SELECTED {segmentDuration.toFixed(1)}s</button></div>
+    </section>
+  </div>;
+}
+
+function CoherenceDisplay({ coherence, clusters, rate, active }: { coherence: number; clusters: number; rate: number; active: boolean }) {
+  return <div className={`coherence-display ${active ? "active" : ""}`} aria-label={`${clusters} temporal clusters at ${Math.round(coherence * 100)} percent coherence`}>
+    {Array.from({ length: 12 }, (_, index) => { const cluster = index % clusters; return <i key={index} style={{ "--cluster": cluster, "--phase": `${-(1 - coherence) * cluster / clusters / Math.max(.1, rate)}s`, "--speed": `${1 / Math.max(.1, rate)}s` } as React.CSSProperties}><b /></i>; })}
+  </div>;
+}
+
+function TextureFingerprint({ analysis }: { analysis: TextureAnalysis }) {
+  return <div className="texture-fingerprint" aria-label="Analyzed cochlear band profile">
+    {analysis.bandEnergies.map((energy, index) => <i key={analysis.bandCenters[index]} title={`${analysis.bandCenters[index].toFixed(0)} Hz · ${(energy * 100).toFixed(0)}%`}><b style={{ height: `${Math.max(4, energy * 100)}%` }} /></i>)}
+  </div>;
+}
+
 // Feature 2 — offline (faster-than-realtime) synthesis of the whole session from a
 // settings snapshot + automation tracks. Rebuilds the exact graph in an
 // OfflineAudioContext, schedules automation across the timeline, and renders.
@@ -848,6 +1115,20 @@ async function renderSession(snap: Record<string, any>, duration: number): Promi
   const gammaAM = ctx.createGain(); gammaAM.gain.value = 1 - snap.gammaDepth / 2; const gammaAMDepth = ctx.createGain(); gammaAMDepth.gain.value = snap.gammaDepth / 2;
   const gammaLfo = ctx.createOscillator(); gammaLfo.setPeriodicWave(makeGammaWave(ctx, snap.gammaDuty, snap.gammaEdge)); gammaLfo.frequency.value = snap.gammaRate;
   gammaLfo.connect(gammaAMDepth).connect(gammaAM.gain); gammaCarrier.connect(gammaAM).connect(gammaBus); gammaCarrier.start(); gammaLfo.start();
+
+  if (snap.hugginsOn) {
+    const source = ctx.createBufferSource();
+    source.buffer = pcmToAudioBuffer(ctx, generateHugginsPcm(sampleRate, snap.hugginsCenter, snap.hugginsWidth, snap.hugginsPhase, snap.hugginsSeed));
+    source.loop = true;
+    const gain = ctx.createGain(); gain.gain.value = snap.hugginsLevel;
+    source.connect(gain).connect(master); source.start();
+  }
+  buildCoherenceEngine(ctx, master, snap.coherenceOn, snap.coherenceLevel, snap.coherence, snap.coherenceClusters, snap.coherenceRate, snap.coherenceDepth, snap.coherenceSpread);
+  if (snap.textureOn && snap._texturePcm) {
+    const source = ctx.createBufferSource(); source.buffer = pcmToAudioBuffer(ctx, snap._texturePcm as PcmData); source.loop = true;
+    const gain = ctx.createGain(); gain.gain.value = snap.textureLevel;
+    source.connect(gain).connect(master); source.start();
+  }
 
   // -------- automation scheduling over the timeline --------
   const tracks = (snap.automation && Array.isArray(snap.automationTracks)) ? snap.automationTracks : [];
@@ -944,6 +1225,32 @@ export default function Home() {
   const [gammaEdge, setGammaEdge] = useState(0.3);
   const [gammaLevel, setGammaLevel] = useState(0.3);
   const [gammaWave, setGammaWave] = useState<Waveform>("sine");
+  // Dichotic pitch forge — phase-only pitch embedded in noise.
+  const [hugginsOn, setHugginsOn] = useState(false);
+  const [hugginsCenter, setHugginsCenter] = useState(600);
+  const [hugginsWidth, setHugginsWidth] = useState(90);
+  const [hugginsPhase, setHugginsPhase] = useState(360);
+  const [hugginsLevel, setHugginsLevel] = useState(.2);
+  const [hugginsSeed, setHugginsSeed] = useState(1);
+  // ERB-band temporal coherence field.
+  const [coherenceOn, setCoherenceOn] = useState(false);
+  const [coherence, setCoherence] = useState(.7);
+  const [coherenceClusters, setCoherenceClusters] = useState(3);
+  const [coherenceRate, setCoherenceRate] = useState(4);
+  const [coherenceDepth, setCoherenceDepth] = useState(.75);
+  const [coherenceSpread, setCoherenceSpread] = useState(.7);
+  const [coherenceLevel, setCoherenceLevel] = useState(.26);
+  // Imported five-second specimen + cochlear fingerprint/resynthesis.
+  const textureFileRef = useRef<HTMLInputElement>(null);
+  const [textureImport, setTextureImport] = useState<{ name: string; buffer: AudioBuffer } | null>(null);
+  const [textureAnalysis, setTextureAnalysis] = useState<TextureAnalysis | null>(null);
+  const [texturePcm, setTexturePcm] = useState<PcmData | null>(null);
+  const [textureOn, setTextureOn] = useState(false);
+  const [textureLevel, setTextureLevel] = useState(.28);
+  const [textureGrainMs, setTextureGrainMs] = useState(180);
+  const [textureScatter, setTextureScatter] = useState(.65);
+  const [textureSeed, setTextureSeed] = useState(1);
+  const [textureStatus, setTextureStatus] = useState("IMPORT MP3 OR WAV");
   // #7 noise laboratory — multi-colour source bank
   const [noiseActive, setNoiseActive] = useState<Record<NoiseColor, boolean>>({ WHITE: false, PINK: true, BROWN: false, BLUE: false, VIOLET: false, GREY: false });
   const [noiseLevels, setNoiseLevels] = useState<Record<NoiseColor, number>>({ WHITE: 0.7, PINK: 0.8, BROWN: 0.7, BLUE: 0.6, VIOLET: 0.6, GREY: 0.7 });
@@ -1004,6 +1311,9 @@ export default function Home() {
       case "nestOn": return nestOn ? 1 : 0;
       case "gammaRate": return gammaRate; case "gammaCarrierHz": return gammaCarrierHz; case "gammaDepth": return gammaDepth;
       case "gammaDuty": return gammaDuty; case "gammaEdge": return gammaEdge; case "gammaLevel": return gammaLevel; case "gammaOn": return gammaOn ? 1 : 0;
+      case "hugginsCenter": return hugginsCenter; case "hugginsWidth": return hugginsWidth; case "hugginsPhase": return hugginsPhase; case "hugginsLevel": return hugginsLevel; case "hugginsOn": return hugginsOn ? 1 : 0;
+      case "coherence": return coherence; case "coherenceRate": return coherenceRate; case "coherenceDepth": return coherenceDepth; case "coherenceSpread": return coherenceSpread; case "coherenceLevel": return coherenceLevel; case "coherenceOn": return coherenceOn ? 1 : 0;
+      case "textureLevel": return textureLevel; case "textureOn": return textureOn ? 1 : 0;
       case "rissetRate": return rissetRate; case "rissetRatio": return rissetRatio; case "rissetFocus": return rissetFocus; case "rissetLayers": return rissetLayers; case "rissetOn": return rissetOn ? 1 : 0;
       case "mfPartials": return mfPartials; case "mfBrightness": return mfBrightness; case "missingFund": return missingFund ? 1 : 0;
       case "veilCenter": return veilCenter; case "veilQ": return veilQ; case "veilGainDb": return veilGainDb;
@@ -1025,6 +1335,9 @@ export default function Home() {
       case "nestOn": setNestOn(b); break;
       case "gammaRate": setGammaRate(v); break; case "gammaCarrierHz": setGammaCarrierHz(v); break; case "gammaDepth": setGammaDepth(v); break;
       case "gammaDuty": setGammaDuty(v); break; case "gammaEdge": setGammaEdge(v); break; case "gammaLevel": setGammaLevel(v); break; case "gammaOn": setGammaOn(b); break;
+      case "hugginsCenter": setHugginsCenter(v); break; case "hugginsWidth": setHugginsWidth(v); break; case "hugginsPhase": setHugginsPhase(v); break; case "hugginsLevel": setHugginsLevel(v); break; case "hugginsOn": setHugginsOn(b); break;
+      case "coherence": setCoherence(v); break; case "coherenceRate": setCoherenceRate(v); break; case "coherenceDepth": setCoherenceDepth(v); break; case "coherenceSpread": setCoherenceSpread(v); break; case "coherenceLevel": setCoherenceLevel(v); break; case "coherenceOn": setCoherenceOn(b); break;
+      case "textureLevel": setTextureLevel(v); break; case "textureOn": setTextureOn(b); break;
       case "rissetRate": setRissetRate(v); break; case "rissetRatio": setRissetRatio(v); break; case "rissetFocus": setRissetFocus(v); break; case "rissetLayers": setRissetLayers(v); break; case "rissetOn": setRissetOn(b); break;
       case "mfPartials": setMfPartials(v); break; case "mfBrightness": setMfBrightness(v); break; case "missingFund": setMissingFund(b); break;
       case "veilCenter": setVeilCenter(v); break; case "veilQ": setVeilQ(v); break; case "veilGainDb": setVeilGainDb(v); break;
@@ -1149,7 +1462,21 @@ export default function Home() {
     gammaLfo.connect(gammaAMDepth).connect(gammaAM.gain); gammaCarrier.connect(gammaAM).connect(gammaBus);
     gammaCarrier.start(); gammaLfo.start(); oscillators.push(gammaCarrier, gammaLfo);
 
-    const graph: AudioGraph = { ctx, master: masterNode, limiter, analyser, analyserL, analyserR, oscillators, beatOscillators, sources, layerGains, layerPans, layerAnalysers, carriers, beatAM, beatAMLfo, beatAMDepth, nestLfo, nestDepth, veilTiltLow, veilTiltHigh, veilShape, veilComod, comodLfo, comodDepth: comodDepthNode, veilSweepLfo, veilSweepDepth: veilSweepDepthNode, noiseSources, droneParts: droneBuilt.parts, pulse: pulseEngine, gammaCarrier, gammaAM, gammaAMDepth, gammaLfo, gammaBus, tubeStages, beatMode: mode };
+    // Dichotic pitch remains on its own protected stereo bus. Nothing downstream
+    // may fold or crossfeed its left/right phase relationship before the master.
+    const hugginsBus = ctx.createGain(); hugginsBus.gain.value = hugginsOn ? hugginsLevel : 0; hugginsBus.connect(masterNode);
+    const huggins: HugginsEngine = { bus: hugginsBus };
+    if (hugginsOn) replacePcmVoice(ctx, generateHugginsPcm(ctx.sampleRate, hugginsCenter, hugginsWidth, hugginsPhase, hugginsSeed), huggins, .02);
+
+    // Twelve ERB-spaced bands share one noise field; envelope phase and spatial
+    // grouping determine whether they bind as one object or split into streams.
+    const coherenceEngine = buildCoherenceEngine(ctx, masterNode, coherenceOn, coherenceLevel, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread);
+
+    const textureBus = ctx.createGain(); textureBus.gain.value = textureOn && texturePcm ? textureLevel : 0; textureBus.connect(masterNode);
+    const texture: TextureEngine = { bus: textureBus };
+    if (texturePcm) replacePcmVoice(ctx, texturePcm, texture, .02);
+
+    const graph: AudioGraph = { ctx, master: masterNode, limiter, analyser, analyserL, analyserR, oscillators, beatOscillators, sources, layerGains, layerPans, layerAnalysers, carriers, beatAM, beatAMLfo, beatAMDepth, nestLfo, nestDepth, veilTiltLow, veilTiltHigh, veilShape, veilComod, comodLfo, comodDepth: comodDepthNode, veilSweepLfo, veilSweepDepth: veilSweepDepthNode, noiseSources, droneParts: droneBuilt.parts, pulse: pulseEngine, gammaCarrier, gammaAM, gammaAMDepth, gammaLfo, gammaBus, huggins, coherence: coherenceEngine, texture, tubeStages, beatMode: mode };
     graphRef.current = graph;
     ctx.onstatechange = () => {
       if (graphRef.current?.ctx !== ctx) return;
@@ -1159,7 +1486,7 @@ export default function Home() {
     };
     sessionOriginRef.current = performance.now() - elapsed * 1000; setAudioState(ctx.state); setAudioSampleRate(ctx.sampleRate); setRunning(ctx.state === "running"); setGraphVersion((v) => v + 1);
     const now = ctx.currentTime; masterNode.gain.setValueAtTime(0, now); masterNode.gain.linearRampToValueAtTime(master * .58, now + .8);
-  }, [amDepth, amShape, beat, bpm, carrier, comodDepth, comodOn, comodRate, comodShape, elapsed, gammaCarrierHz, gammaDepth, gammaDuty, gammaEdge, gammaLevel, gammaOn, gammaRate, gammaWave, master, mfBrightness, mfPartials, missingFund, mode, nestOn, noiseActive, noiseLevels, pulseDepth, pulseDuty, pulseSmooth, pulseToneHz, pulseWave, running, stopAudio, thetaRate, tubeDrive, veilCenter, veilGainDb, veilQ, veilSweepDepth, veilSweepRate, veilTilt, veilType, waveform]);
+  }, [amDepth, amShape, beat, bpm, carrier, coherence, coherenceClusters, coherenceDepth, coherenceLevel, coherenceOn, coherenceRate, coherenceSpread, comodDepth, comodOn, comodRate, comodShape, elapsed, gammaCarrierHz, gammaDepth, gammaDuty, gammaEdge, gammaLevel, gammaOn, gammaRate, gammaWave, hugginsCenter, hugginsLevel, hugginsOn, hugginsPhase, hugginsSeed, hugginsWidth, master, mfBrightness, mfPartials, missingFund, mode, nestOn, noiseActive, noiseLevels, pulseDepth, pulseDuty, pulseSmooth, pulseToneHz, pulseWave, running, stopAudio, textureLevel, textureOn, texturePcm, thetaRate, tubeDrive, veilCenter, veilGainDb, veilQ, veilSweepDepth, veilSweepRate, veilTilt, veilType, waveform]);
 
   // iOS interrupts Web Audio for calls, Siri, route changes, locking, and app
   // switching. Try to restore on foreground; if Safari requires a new gesture,
@@ -1322,6 +1649,51 @@ export default function Home() {
     graph.gammaAMDepth.gain.setTargetAtTime(gammaDepth / 2, t, .05);
   }, [gammaOn, gammaLevel, gammaWave, gammaCarrierHz, gammaRate, gammaDuty, gammaEdge, gammaDepth, graphVersion]);
 
+  useEffect(() => {
+    const graph = graphRef.current; if (!graph) return;
+    graph.huggins.bus.gain.setTargetAtTime(hugginsOn ? hugginsLevel : 0, graph.ctx.currentTime, .06);
+  }, [hugginsOn, hugginsLevel, graphVersion]);
+
+  useEffect(() => {
+    const graph = graphRef.current;
+    if (!graph || !hugginsOn) return;
+    const timer = window.setTimeout(() => {
+      if (graphRef.current !== graph || graph.ctx.state === "closed") return;
+      const pcm = generateHugginsPcm(graph.ctx.sampleRate, hugginsCenter, hugginsWidth, hugginsPhase, hugginsSeed);
+      replacePcmVoice(graph.ctx, pcm, graph.huggins);
+    }, 280);
+    return () => window.clearTimeout(timer);
+  }, [hugginsCenter, hugginsWidth, hugginsPhase, hugginsSeed, hugginsOn, graphVersion]);
+
+  useEffect(() => {
+    const graph = graphRef.current; if (!graph) return;
+    graph.coherence.bus.gain.setTargetAtTime(coherenceOn ? coherenceLevel * .32 : 0, graph.ctx.currentTime, .06);
+    configureCoherence(graph.coherence, graph.ctx, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread);
+  }, [coherenceOn, coherenceLevel, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread, graphVersion]);
+
+  useEffect(() => {
+    const graph = graphRef.current; if (!graph) return;
+    graph.texture.bus.gain.setTargetAtTime(textureOn && texturePcm ? textureLevel : 0, graph.ctx.currentTime, .08);
+  }, [textureOn, textureLevel, texturePcm, graphVersion]);
+
+  useEffect(() => {
+    const graph = graphRef.current;
+    if (!graph || !texturePcm) return;
+    replacePcmVoice(graph.ctx, texturePcm, graph.texture);
+  }, [texturePcm, graphVersion]);
+
+  useEffect(() => {
+    if (!textureAnalysis) return;
+    const timer = window.setTimeout(() => {
+      setTextureStatus("RESYNTHESIZING 24s FIELD…");
+      const next = synthesizeTexturePcm(textureAnalysis, textureGrainMs, textureScatter, textureSeed);
+      setTexturePcm(next);
+      setTextureStatus("TEXTURE FIELD READY");
+      setTextureOn(true);
+    }, 40);
+    return () => window.clearTimeout(timer);
+  }, [textureAnalysis, textureGrainMs, textureScatter, textureSeed]);
+
   // #3 — animation loop driving the Risset rhythm (variable layers/ratio/focus)
   useEffect(() => {
     if (!running || !rissetOn) return;
@@ -1363,6 +1735,44 @@ export default function Home() {
   const toggleNoise = (color: NoiseColor) => setNoiseActive((current) => ({ ...current, [color]: !current[color] }));
   const setAllNoise = (on: boolean) => setNoiseActive({ WHITE: on, PINK: on, BROWN: on, BLUE: on, VIOLET: on, GREY: on });
 
+  const readTextureFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!/\.(mp3|wav)$/i.test(file.name) && !/^audio\//i.test(file.type)) { setTextureStatus("USE AN MP3 OR WAV FILE"); return; }
+    setTextureStatus("DECODING SOURCE…");
+    const AudioContextConstructor = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextConstructor) { setTextureStatus("AUDIO IMPORT UNSUPPORTED"); return; }
+    const context = new AudioContextConstructor();
+    try {
+      const buffer = await context.decodeAudioData(await file.arrayBuffer());
+      if (buffer.duration < 5) throw new Error("The audio file must be at least five seconds long.");
+      setTextureImport({ name: file.name, buffer });
+      setTextureStatus("CHOOSE A FIVE-SECOND SPECIMEN");
+    } catch (error) {
+      console.error("Texture decode failed", error);
+      setTextureStatus(error instanceof Error ? error.message.toUpperCase() : "COULD NOT DECODE SOURCE");
+    } finally {
+      await context.close();
+    }
+  };
+
+  const analyzeTextureSelection = (start: number, duration: number) => {
+    if (!textureImport) return;
+    setTextureStatus("MEASURING COCHLEAR PROFILE…");
+    const analysis = analyzeTextureBuffer(textureImport.buffer, textureImport.name, start, duration);
+    setTextureAnalysis(analysis);
+    setTextureImport(null);
+    setTextureSeed((seed) => seed + 1);
+  };
+
+  const clearTextureSource = () => {
+    setTextureOn(false);
+    setTextureAnalysis(null);
+    setTexturePcm(null);
+    setTextureStatus("IMPORT MP3 OR WAV");
+  };
+
   const loadPreset = (name: keyof typeof presets) => {
     const next = presets[name]; setPreset(name); setCarrier(next.carrier); setBeat(next.beat); setBpm(next.bpm);
     setNoiseActive({ WHITE: false, PINK: next.noise === "PINK", BROWN: next.noise === "BROWN", BLUE: false, VIOLET: false, GREY: false });
@@ -1374,6 +1784,9 @@ export default function Home() {
     carrier, beat, master, bpm, pulseDepth, pulseToneHz, pulseWave, pulseDuty, pulseSmooth, mode, waveform,
     amDepth, amShape, nestOn, thetaRate, rissetOn, rissetDir, rissetRate, rissetLayers, rissetRatio, rissetFocus,
     missingFund, mfPartials, mfBrightness, gammaOn, gammaRate, gammaCarrierHz, gammaDepth, gammaDuty, gammaEdge, gammaLevel, gammaWave,
+    hugginsOn, hugginsCenter, hugginsWidth, hugginsPhase, hugginsLevel, hugginsSeed,
+    coherenceOn, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread, coherenceLevel,
+    textureOn, textureLevel, textureGrainMs, textureScatter,
     noiseActive, noiseLevels, veilType, veilCenter, veilQ, veilGainDb, veilSweepRate, veilSweepDepth, veilTilt,
     comodOn, comodRate, comodDepth, comodShape, layers, sessionLength, automation, drift, tubeDrive, automationTracks,
   });
@@ -1388,6 +1801,9 @@ export default function Home() {
       missingFund: (v) => setMissingFund(v as boolean), mfPartials: (v) => setMfPartials(v as number), mfBrightness: (v) => setMfBrightness(v as number),
       gammaOn: (v) => setGammaOn(v as boolean), gammaRate: (v) => setGammaRate(v as number), gammaCarrierHz: (v) => setGammaCarrierHz(v as number), gammaDepth: (v) => setGammaDepth(v as number),
       gammaDuty: (v) => setGammaDuty(v as number), gammaEdge: (v) => setGammaEdge(v as number), gammaLevel: (v) => setGammaLevel(v as number), gammaWave: (v) => setGammaWave(v as Waveform),
+      hugginsOn: (v) => setHugginsOn(v as boolean), hugginsCenter: (v) => setHugginsCenter(v as number), hugginsWidth: (v) => setHugginsWidth(v as number), hugginsPhase: (v) => setHugginsPhase(v as number), hugginsLevel: (v) => setHugginsLevel(v as number), hugginsSeed: (v) => setHugginsSeed(v as number),
+      coherenceOn: (v) => setCoherenceOn(v as boolean), coherence: (v) => setCoherence(v as number), coherenceClusters: (v) => setCoherenceClusters(v as number), coherenceRate: (v) => setCoherenceRate(v as number), coherenceDepth: (v) => setCoherenceDepth(v as number), coherenceSpread: (v) => setCoherenceSpread(v as number), coherenceLevel: (v) => setCoherenceLevel(v as number),
+      textureOn: (v) => setTextureOn(v as boolean), textureLevel: (v) => setTextureLevel(v as number), textureGrainMs: (v) => setTextureGrainMs(v as number), textureScatter: (v) => setTextureScatter(v as number),
       noiseActive: (v) => setNoiseActive(v as Record<NoiseColor, boolean>), noiseLevels: (v) => setNoiseLevels(v as Record<NoiseColor, number>), veilType: (v) => setVeilType(v as VeilType),
       veilCenter: (v) => setVeilCenter(v as number), veilQ: (v) => setVeilQ(v as number), veilGainDb: (v) => setVeilGainDb(v as number), veilSweepRate: (v) => setVeilSweepRate(v as number),
       veilSweepDepth: (v) => setVeilSweepDepth(v as number), veilTilt: (v) => setVeilTilt(v as number), comodOn: (v) => setComodOn(v as boolean), comodRate: (v) => setComodRate(v as number),
@@ -1475,7 +1891,9 @@ export default function Home() {
     setExportStatus({ busy: true, msg: `Synthesizing ${sessionLength} min…` });
     try {
       await new Promise((r) => setTimeout(r, 30)); // let the UI paint the busy state
-      const buffer = await renderSession(collectSnapshot(), duration);
+      const snapshot = collectSnapshot() as Record<string, any>;
+      if (texturePcm) snapshot._texturePcm = texturePcm;
+      const buffer = await renderSession(snapshot, duration);
       setExportStatus({ busy: true, msg: "Encoding FLAC…" });
       await new Promise((r) => setTimeout(r, 15));
       const bytes = encodeFlacFromBuffer(buffer);
@@ -1625,6 +2043,7 @@ export default function Home() {
           <footer><button onClick={() => setImportCandidates(null)}>CANCEL</button><button className="confirm" disabled={!importCandidates.some((candidate) => candidate.selected)} onClick={importSelectedPresets}>IMPORT SELECTED</button></footer>
         </section>
       </div>}
+      {textureImport && <TextureWaveformDialog fileName={textureImport.name} buffer={textureImport.buffer} onClose={() => { setTextureImport(null); setTextureStatus(textureAnalysis ? "TEXTURE FIELD READY" : "IMPORT CANCELLED"); }} onAnalyze={analyzeTextureSelection} />}
 
       <section className="top-row">
         <article className="panel beat-panel">
@@ -1744,7 +2163,7 @@ export default function Home() {
         </article>
 
         <article className="panel phenomena-panel">
-          <PanelHeading roman="VII" title="Phenomena Laboratory" subtitle="Audible gamma engine · noise synthesis · psychoacoustic edge" />
+          <PanelHeading roman="VII" title="Phenomena Laboratory" subtitle="Dichotic pitch · temporal binding · cochlear texture · gamma · noise" />
           <div className="phenomena-grid">
             <div className="phen-col">
               <div className="phen-col-head"><span className={`gamma-lamp ${gammaOn ? "on" : ""}`} />40 Hz GAMMA ENGINE — AUDITORY</div>
@@ -1794,6 +2213,55 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+          <div className="frontier-grid">
+            <section className={`frontier-module huggins-module ${hugginsOn ? "on" : ""}`}>
+              <header className="frontier-head"><div><span>VII-A · DICHOTIC PITCH FORGE</span><b>HUGGINS PHASE-ONLY PITCH</b></div><em>HEADPHONES REQUIRED</em><Toggle active={hugginsOn} label="ENGAGE" paramKey="hugginsOn" onClick={() => setHugginsOn(!hugginsOn)} /></header>
+              <div className="huggins-topology" aria-hidden="true"><span>L</span><div><i /><b>{hugginsCenter.toFixed(0)} Hz</b><i /></div><span>R</span><small>identical magnitude · {hugginsPhase.toFixed(0)}° phase transition</small></div>
+              <div className="frontier-knobs">
+                <Knob label="PHANTOM PITCH" paramKey="hugginsCenter" value={hugginsCenter} min={180} max={2400} step={5} unit=" Hz" size="lg" onChange={setHugginsCenter} />
+                <Knob label="BANDWIDTH" paramKey="hugginsWidth" value={hugginsWidth} min={20} max={400} step={5} unit=" Hz" size="sm" onChange={setHugginsWidth} />
+                <Knob label="PHASE SPAN" paramKey="hugginsPhase" value={hugginsPhase} min={90} max={720} step={15} unit="°" size="sm" onChange={setHugginsPhase} />
+                <Knob label="LEVEL" paramKey="hugginsLevel" value={hugginsLevel} min={0} max={.6} step={.01} size="sm" onChange={setHugginsLevel} />
+              </div>
+              <div className="frontier-foot"><p>No tone is added to either ear. A narrow interaural phase transition makes a pitch appear only after binaural comparison.</p><button onClick={() => setHugginsSeed((seed) => seed + 1)}>↻ NEW NOISE FIELD</button></div>
+            </section>
+
+            <section className={`frontier-module coherence-module ${coherenceOn ? "on" : ""}`}>
+              <header className="frontier-head"><div><span>VII-B · TEMPORAL-COHERENCE MATRIX</span><b>{coherence > .72 ? "ONE BOUND OBJECT" : coherence < .28 ? `${coherenceClusters} SEPARATE STREAMS` : "AMBIGUOUS BINDING"}</b></div><em>12 ERB BANDS</em><Toggle active={coherenceOn} label="ENGAGE" paramKey="coherenceOn" onClick={() => setCoherenceOn(!coherenceOn)} /></header>
+              <CoherenceDisplay coherence={coherence} clusters={coherenceClusters} rate={coherenceRate} active={coherenceOn} />
+              <div className="frontier-knobs coherence-knobs">
+                <Knob label="COHERENCE" paramKey="coherence" value={coherence} min={0} max={1} step={.01} size="lg" onChange={setCoherence} />
+                <Knob label="CLUSTERS" value={coherenceClusters} min={1} max={6} step={1} size="sm" onChange={setCoherenceClusters} />
+                <Knob label="AM RATE" paramKey="coherenceRate" value={coherenceRate} min={.25} max={18} step={.05} unit=" Hz" size="sm" onChange={setCoherenceRate} />
+                <Knob label="DEPTH" paramKey="coherenceDepth" value={coherenceDepth} min={0} max={1} step={.01} size="sm" onChange={setCoherenceDepth} />
+                <Knob label="SPREAD" paramKey="coherenceSpread" value={coherenceSpread} min={0} max={1} step={.01} size="sm" onChange={setCoherenceSpread} />
+                <Knob label="LEVEL" paramKey="coherenceLevel" value={coherenceLevel} min={0} max={.8} step={.01} size="sm" onChange={setCoherenceLevel} />
+              </div>
+              <div className="frontier-foot"><p>Move COHERENCE left to separate frequency bands into independently pulsing spatial streams; move right to fuse them.</p></div>
+            </section>
+
+            <section className={`frontier-module texture-module ${textureOn && textureAnalysis ? "on" : ""}`}>
+              <header className="frontier-head"><div><span>VIII · COCHLEAR TEXTURE ENGINE</span><b>{textureAnalysis ? textureAnalysis.sourceName : "FIVE-SECOND SPECIMEN ANALYSIS"}</b></div><em>{textureStatus}</em>{textureAnalysis && <Toggle active={textureOn} label="ENGAGE" paramKey="textureOn" onClick={() => setTextureOn(!textureOn)} />}</header>
+              <input ref={textureFileRef} className="texture-file-input" type="file" accept="audio/mpeg,audio/mp3,audio/wav,.mp3,.wav" onChange={readTextureFile} />
+              {!textureAnalysis ? <div className="texture-empty">
+                <div className="texture-empty-icon"><span>≈</span><i /></div>
+                <div><b>IMPORT A RECORDED SOUND</b><p>Choose an MP3 or WAV, inspect its full waveform, scrub the playhead, then isolate exactly five seconds for cochlear analysis. Designed for sustained, textural sources such as didgeridoo.</p></div>
+                <button onClick={() => textureFileRef.current?.click()}>＋ IMPORT MP3 / WAV</button>
+              </div> : <div className="texture-ready">
+                <div className="texture-profile">
+                  <div className="texture-profile-head"><span>ERB-BAND FINGERPRINT</span><b>{textureAnalysis.bandCenters[0].toFixed(0)} Hz — {textureAnalysis.bandCenters.at(-1)?.toFixed(0)} Hz</b></div>
+                  <TextureFingerprint analysis={textureAnalysis} />
+                  <div className="texture-metrics"><span><small>CENTROID</small><b>{textureAnalysis.centroidHz.toFixed(0)} Hz</b></span><span><small>ENVELOPE</small><b>{textureAnalysis.modulationHz.toFixed(2)} Hz</b></span><span><small>CREST</small><b>{textureAnalysis.crestDb.toFixed(1)} dB</b></span><span><small>SPECIMEN</small><b>{textureAnalysis.startSeconds.toFixed(1)}–{(textureAnalysis.startSeconds + textureAnalysis.durationSeconds).toFixed(1)}s</b></span></div>
+                </div>
+                <div className="texture-controls">
+                  <Knob label="MICROSTRUCTURE" value={textureGrainMs} min={60} max={650} step={10} unit=" ms" size="lg" onChange={setTextureGrainMs} />
+                  <Knob label="SCATTER" value={textureScatter} min={0} max={1} step={.01} size="lg" onChange={setTextureScatter} />
+                  <Knob label="LEVEL" paramKey="textureLevel" value={textureLevel} min={0} max={.8} step={.01} size="lg" onChange={setTextureLevel} />
+                  <div className="texture-actions"><button onClick={() => setTextureSeed((seed) => seed + 1)}>↻ NEW FIELD</button><button onClick={() => textureFileRef.current?.click()}>REPLACE SOURCE</button><button className="danger" onClick={clearTextureSource}>REMOVE</button></div>
+                </div>
+              </div>}
+            </section>
           </div>
         </article>
 

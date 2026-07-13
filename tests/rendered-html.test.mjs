@@ -41,6 +41,10 @@ test("server-renders the Nocturne research console", async () => {
   assert.match(html, /Auditory Beat Engine/);
   assert.match(html, /Fourfold Layer Matrix/);
   assert.match(html, /Temporal Automation/);
+  assert.match(html, /DICHOTIC PITCH FORGE/);
+  assert.match(html, /TEMPORAL-COHERENCE MATRIX/);
+  assert.match(html, /COCHLEAR TEXTURE ENGINE/);
+  assert.match(html, /IMPORT MP3 \/ WAV/);
   assert.match(html, /ADD CONTROL/);
   assert.match(html, /DRAG TO SHAPE/);
   assert.match(html, /SNAP/);
@@ -85,5 +89,14 @@ test("ships the interactive audio engine and social card", async () => {
   assert.equal(card, undefined);
   assert.match(page, /unlockAudioContext/);
   assert.match(page, /AudioContextConstructor\(\{ latencyHint: "interactive" \}\)/);
+  assert.match(page, /generateHugginsPcm/);
+  assert.match(page, /buildCoherenceEngine/);
+  assert.match(page, /TextureWaveformDialog/);
+  assert.match(page, /analyzeTextureBuffer/);
+  assert.match(page, /synthesizeTexturePcm/);
+  const psychoacoustic = await readFile(new URL("../app/psychoacoustic.ts", import.meta.url), "utf8");
+  assert.match(psychoacoustic, /progressive interaural phase transition/);
+  assert.match(psychoacoustic, /makeErbCenters/);
+  assert.match(psychoacoustic, /Granular overlap-add resynthesis/);
   assert.doesNotMatch(page, /new AudioContext\(\{ latencyHint: "interactive", sampleRate:/);
 });
