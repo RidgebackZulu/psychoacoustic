@@ -27,7 +27,16 @@ type DronePart = { osc: OscillatorNode; mult: number };
 type PulseEngine = { tone: OscillatorNode; sum: GainNode; amps: GainNode[]; gates: OscillatorNode[]; depths: GainNode[] };
 type NoiseSource = { source: AudioBufferSourceNode; gain: GainNode };
 type HugginsEngine = { bus: GainNode; source?: AudioBufferSourceNode; voiceGain?: GainNode };
-type CoherenceBand = { filter: BiquadFilterNode; amp: GainNode; modDepth: GainNode; lfo: OscillatorNode; pan: StereoPannerNode };
+type CoherenceBand = {
+  filter: BiquadFilterNode;
+  amp: GainNode;
+  modDepth: GainNode;
+  lfo: OscillatorNode;
+  quadratureLfo: OscillatorNode;
+  phaseCos: GainNode;
+  phaseSin: GainNode;
+  pan: StereoPannerNode;
+};
 type CoherenceEngine = { source: AudioBufferSourceNode; bus: GainNode; bands: CoherenceBand[] };
 type TextureEngine = { bus: GainNode; source?: AudioBufferSourceNode; voiceGain?: GainNode };
 
@@ -365,16 +374,22 @@ function buildCoherenceEngine(
     const modDepth = ctx.createGain();
     modDepth.gain.value = depth / 2;
     const lfo = ctx.createOscillator();
+    const quadratureLfo = ctx.createOscillator();
     lfo.frequency.value = rate;
+    quadratureLfo.frequency.value = rate;
     const pan = ctx.createStereoPanner();
     const cluster = index % Math.max(1, clusters);
     const phase = (1 - coherence) * cluster / Math.max(1, clusters) * Math.PI * 2;
-    lfo.setPeriodicWave(makePhaseWave(ctx, phase));
+    quadratureLfo.setPeriodicWave(makePhaseWave(ctx, Math.PI / 2));
+    const phaseCos = ctx.createGain(); phaseCos.gain.value = Math.cos(phase);
+    const phaseSin = ctx.createGain(); phaseSin.gain.value = Math.sin(phase);
     pan.pan.value = (1 - coherence) * spread * (clusters <= 1 ? 0 : cluster / (clusters - 1) * 2 - 1);
     source.connect(filter).connect(amp).connect(pan).connect(bus);
-    lfo.connect(modDepth).connect(amp.gain);
-    lfo.start();
-    return { filter, amp, modDepth, lfo, pan };
+    lfo.connect(phaseCos).connect(modDepth);
+    quadratureLfo.connect(phaseSin).connect(modDepth).connect(amp.gain);
+    const startTime = ctx.currentTime;
+    lfo.start(startTime); quadratureLfo.start(startTime);
+    return { filter, amp, modDepth, lfo, quadratureLfo, phaseCos, phaseSin, pan };
   });
   source.start();
   return { source, bus, bands };
@@ -386,8 +401,10 @@ function configureCoherence(engine: CoherenceEngine, ctx: BaseAudioContext, cohe
     const cluster = index % Math.max(1, clusters);
     const phase = (1 - coherence) * cluster / Math.max(1, clusters) * Math.PI * 2;
     const pan = (1 - coherence) * spread * (clusters <= 1 ? 0 : cluster / (clusters - 1) * 2 - 1);
-    band.lfo.setPeriodicWave(makePhaseWave(ctx, phase));
     band.lfo.frequency.setTargetAtTime(rate, now, .04);
+    band.quadratureLfo.frequency.setTargetAtTime(rate, now, .04);
+    band.phaseCos.gain.setTargetAtTime(Math.cos(phase), now, .04);
+    band.phaseSin.gain.setTargetAtTime(Math.sin(phase), now, .04);
     band.amp.gain.setTargetAtTime(1 - depth / 2, now, .04);
     band.modDepth.gain.setTargetAtTime(depth / 2, now, .04);
     band.pan.pan.setTargetAtTime(pan, now, .06);
@@ -1073,6 +1090,17 @@ async function renderSession(snap: Record<string, any>, duration: number): Promi
   const sampleRate = 48000;
   const length = Math.max(1, Math.ceil(duration * sampleRate));
   const ctx = new OfflineAudioContext(2, length, sampleRate);
+  const tracks = (snap.automation && Array.isArray(snap.automationTracks)) ? snap.automationTracks : [];
+  const autoKeys = new Set<string>(tracks.map((track: AutomationTrack) => track.parameter));
+  const valueAt = (key: string, base: number, progress: number) => {
+    if (!autoKeys.has(key)) return base;
+    const spec = PARAM_MAP[key];
+    const track = tracks.find((candidate: AutomationTrack) => candidate.parameter === key);
+    if (!spec || !track?.points?.length) return base;
+    const normalized = sampleAutomation(track.points, progress);
+    return Math.round((spec.min + normalized * (spec.max - spec.min)) / spec.step) * spec.step;
+  };
+  const boolAt = (key: string, base: boolean, progress: number) => valueAt(key, base ? 1 : 0, progress) >= .5;
 
   const master = ctx.createGain(); master.gain.value = snap.master * 0.58;
   const limiter = ctx.createDynamicsCompressor(); limiter.threshold.value = -3; limiter.knee.value = 1; limiter.ratio.value = 20; limiter.attack.value = .003; limiter.release.value = .16;
@@ -1116,31 +1144,51 @@ async function renderSession(snap: Record<string, any>, duration: number): Promi
   const gammaLfo = ctx.createOscillator(); gammaLfo.setPeriodicWave(makeGammaWave(ctx, snap.gammaDuty, snap.gammaEdge)); gammaLfo.frequency.value = snap.gammaRate;
   gammaLfo.connect(gammaAMDepth).connect(gammaAM.gain); gammaCarrier.connect(gammaAM).connect(gammaBus); gammaCarrier.start(); gammaLfo.start();
 
-  if (snap.hugginsOn) {
-    const source = ctx.createBufferSource();
-    source.buffer = pcmToAudioBuffer(ctx, generateHugginsPcm(sampleRate, snap.hugginsCenter, snap.hugginsWidth, snap.hugginsPhase, snap.hugginsSeed));
-    source.loop = true;
-    const gain = ctx.createGain(); gain.gain.value = snap.hugginsLevel;
-    source.connect(gain).connect(master); source.start();
+  // Frontier engines use dedicated buses so their on/off and level automation is
+  // scheduled independently of whether they happened to be enabled at export time.
+  const hugginsBus = ctx.createGain(); hugginsBus.gain.value = 0; hugginsBus.connect(master);
+  const hugginsSpectralAutomation = ["hugginsCenter", "hugginsWidth", "hugginsPhase"].some((key) => autoKeys.has(key));
+  const hugginsRequired = snap.hugginsOn || autoKeys.has("hugginsOn") || autoKeys.has("hugginsLevel");
+  if (hugginsRequired) {
+    if (hugginsSpectralAutomation) {
+      // Spectral phase is encoded in the PCM itself. Crossfade a bounded bank of
+      // loopable fields so long exports retain the automation curve without
+      // allocating a new FFT buffer for every 50 ms control tick.
+      const slices = Math.min(64, Math.max(2, Math.ceil(duration / 4)));
+      const sliceDuration = duration / slices;
+      const fade = Math.min(.08, sliceDuration * .2);
+      for (let index = 0; index < slices; index++) {
+        const from = index * sliceDuration;
+        const to = index === slices - 1 ? duration : (index + 1) * sliceDuration;
+        const progress = duration > 0 ? (from + to) / (2 * duration) : 0;
+        const pcm = generateHugginsPcm(sampleRate, valueAt("hugginsCenter", snap.hugginsCenter, progress), valueAt("hugginsWidth", snap.hugginsWidth, progress), valueAt("hugginsPhase", snap.hugginsPhase, progress), snap.hugginsSeed + index, 1 << 14);
+        const source = ctx.createBufferSource(); source.buffer = pcmToAudioBuffer(ctx, pcm); source.loop = true;
+        const voice = ctx.createGain(); voice.gain.setValueAtTime(0, Math.max(0, from - fade)); voice.gain.linearRampToValueAtTime(1, from + fade); voice.gain.setValueAtTime(1, Math.max(from + fade, to - fade)); voice.gain.linearRampToValueAtTime(0, Math.min(duration, to + fade));
+        source.connect(voice).connect(hugginsBus); source.start(Math.max(0, from - fade)); source.stop(Math.min(duration, to + fade));
+      }
+    } else {
+      const source = ctx.createBufferSource();
+      source.buffer = pcmToAudioBuffer(ctx, generateHugginsPcm(sampleRate, snap.hugginsCenter, snap.hugginsWidth, snap.hugginsPhase, snap.hugginsSeed));
+      source.loop = true; source.connect(hugginsBus); source.start();
+    }
   }
-  buildCoherenceEngine(ctx, master, snap.coherenceOn, snap.coherenceLevel, snap.coherence, snap.coherenceClusters, snap.coherenceRate, snap.coherenceDepth, snap.coherenceSpread);
-  if (snap.textureOn && snap._texturePcm) {
+
+  const coherenceEngine = buildCoherenceEngine(ctx, master, false, snap.coherenceLevel, snap.coherence, snap.coherenceClusters, snap.coherenceRate, snap.coherenceDepth, snap.coherenceSpread);
+
+  const textureBus = ctx.createGain(); textureBus.gain.value = 0; textureBus.connect(master);
+  if (snap._texturePcm) {
     const source = ctx.createBufferSource(); source.buffer = pcmToAudioBuffer(ctx, snap._texturePcm as PcmData); source.loop = true;
-    const gain = ctx.createGain(); gain.gain.value = snap.textureLevel;
-    source.connect(gain).connect(master); source.start();
+    source.connect(textureBus); source.start();
   }
 
   // -------- automation scheduling over the timeline --------
-  const tracks = (snap.automation && Array.isArray(snap.automationTracks)) ? snap.automationTracks : [];
-  const autoKeys = new Set<string>(tracks.map((t: any) => t.parameter));
   const beatDriven = autoKeys.has("carrier") || autoKeys.has("beat") || autoKeys.has("drift") || snap.drift > 0;
-  const rissetLive = autoKeys.has("rissetOn") || snap.rissetOn;
-  if (autoKeys.size || beatDriven || snap.rissetOn) {
+  if (autoKeys.size || beatDriven || snap.rissetOn || hugginsRequired || snap.coherenceOn || snap.textureOn) {
     const dt = 1 / 20;
     let rissetPhase = 0;
     for (let t = 0; t <= duration + 1e-6; t += dt) {
       const prog = duration > 0 ? clamp(t / duration, 0, 1) : 0;
-      const gv = (key: string, base: number) => { if (!autoKeys.has(key)) return base; const spec = PARAM_MAP[key]; const trk = tracks.find((x: any) => x.parameter === key); const n = sampleAutomation(trk.points, prog); return Math.round((spec.min + n * (spec.max - spec.min)) / spec.step) * spec.step; };
+      const gv = (key: string, base: number) => valueAt(key, base, prog);
       if (beatDriven) {
         const cr = gv("carrier", snap.carrier), bt = gv("beat", snap.beat), dr = gv("drift", snap.drift);
         const c = cr + Math.sin(t * .021) * dr * 8;
@@ -1162,6 +1210,24 @@ async function renderSession(snap: Record<string, any>, duration: number): Promi
       if (autoKeys.has("gammaRate")) gammaLfo.frequency.setValueAtTime(gv("gammaRate", snap.gammaRate), t);
       if (autoKeys.has("gammaCarrierHz")) gammaCarrier.frequency.setValueAtTime(gv("gammaCarrierHz", snap.gammaCarrierHz), t);
       if (autoKeys.has("gammaDepth")) { const gd = gv("gammaDepth", snap.gammaDepth); gammaAM.gain.setValueAtTime(1 - gd / 2, t); gammaAMDepth.gain.setValueAtTime(gd / 2, t); }
+      const hugginsOn = boolAt("hugginsOn", snap.hugginsOn, prog);
+      hugginsBus.gain.setValueAtTime(hugginsOn ? gv("hugginsLevel", snap.hugginsLevel) : 0, t);
+      const coherenceOn = boolAt("coherenceOn", snap.coherenceOn, prog);
+      coherenceEngine.bus.gain.setValueAtTime(coherenceOn ? gv("coherenceLevel", snap.coherenceLevel) * .32 : 0, t);
+      const coherence = gv("coherence", snap.coherence);
+      const coherenceRate = gv("coherenceRate", snap.coherenceRate);
+      const coherenceDepth = gv("coherenceDepth", snap.coherenceDepth);
+      const coherenceSpread = gv("coherenceSpread", snap.coherenceSpread);
+      coherenceEngine.bands.forEach((band, index) => {
+        const cluster = index % Math.max(1, snap.coherenceClusters);
+        const phase = (1 - coherence) * cluster / Math.max(1, snap.coherenceClusters) * Math.PI * 2;
+        const pan = (1 - coherence) * coherenceSpread * (snap.coherenceClusters <= 1 ? 0 : cluster / (snap.coherenceClusters - 1) * 2 - 1);
+        band.lfo.frequency.setValueAtTime(coherenceRate, t); band.quadratureLfo.frequency.setValueAtTime(coherenceRate, t);
+        band.phaseCos.gain.setValueAtTime(Math.cos(phase), t); band.phaseSin.gain.setValueAtTime(Math.sin(phase), t);
+        band.amp.gain.setValueAtTime(1 - coherenceDepth / 2, t); band.modDepth.gain.setValueAtTime(coherenceDepth / 2, t); band.pan.pan.setValueAtTime(pan, t);
+      });
+      const textureOn = boolAt("textureOn", snap.textureOn, prog) && !!snap._texturePcm;
+      textureBus.gain.setValueAtTime(textureOn ? gv("textureLevel", snap.textureLevel) : 0, t);
       if (autoKeys.has("veilCenter")) veilShape.frequency.setValueAtTime(gv("veilCenter", snap.veilCenter), t);
       if (autoKeys.has("veilQ")) veilShape.Q.setValueAtTime(gv("veilQ", snap.veilQ), t);
       if (autoKeys.has("veilGainDb")) veilShape.gain.setValueAtTime(gv("veilGainDb", snap.veilGainDb), t);
@@ -1885,7 +1951,7 @@ export default function Home() {
   }, []);
 
   // Feature 2 — offline-render the session to a FLAC file (no realtime playback).
-  const exportFlac = useCallback(async () => {
+  const exportFlac = async () => {
     if (exportStatus.busy) return;
     const duration = sessionLength * 60;
     setExportStatus({ busy: true, msg: `Synthesizing ${sessionLength} min…` });
@@ -1905,8 +1971,7 @@ export default function Home() {
       console.error("FLAC export failed", err);
       setExportStatus({ busy: false, msg: "Render failed — try a shorter session" });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exportStatus.busy, sessionLength]);
+  };
 
   const changeTrackParameter = (trackId: string, parameter: AutomationParam) => {
     const spec = PARAM_MAP[parameter]; if (!spec) return;

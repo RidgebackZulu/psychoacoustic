@@ -78,8 +78,9 @@ export function generateHugginsPcm(
   widthHz: number,
   phaseDegrees: number,
   seed = 0x4e4f4354,
+  fftSize = 1 << 18,
 ): PcmData {
-  const n = 1 << 18;
+  const n = Math.max(1 << 12, Math.min(1 << 18, nextPowerOfTwo(fftSize)));
   const leftR = new Float64Array(n);
   const leftI = new Float64Array(n);
   const rightR = new Float64Array(n);

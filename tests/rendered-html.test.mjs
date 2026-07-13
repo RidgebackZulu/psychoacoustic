@@ -100,3 +100,20 @@ test("ships the interactive audio engine and social card", async () => {
   assert.match(psychoacoustic, /Granular overlap-add resynthesis/);
   assert.doesNotMatch(page, /new AudioContext\(\{ latencyHint: "interactive", sampleRate:/);
 });
+
+test("routes every frontier engine and its automation into offline FLAC rendering", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /const exportFlac = async \(\) =>/);
+  assert.doesNotMatch(page, /const exportFlac = useCallback/);
+  assert.match(page, /if \(texturePcm\) snapshot\._texturePcm = texturePcm/);
+  assert.match(page, /const hugginsBus = ctx\.createGain/);
+  assert.match(page, /hugginsBus\.gain\.setValueAtTime/);
+  assert.match(page, /const coherenceEngine = buildCoherenceEngine/);
+  assert.match(page, /coherenceEngine\.bus\.gain\.setValueAtTime/);
+  assert.match(page, /band\.phaseCos\.gain\.setValueAtTime/);
+  assert.match(page, /const textureBus = ctx\.createGain/);
+  assert.match(page, /textureBus\.gain\.setValueAtTime/);
+  for (const parameter of ["hugginsOn", "hugginsLevel", "coherenceOn", "coherenceLevel", "coherenceRate", "coherenceDepth", "coherenceSpread", "textureOn", "textureLevel"]) {
+    assert.match(page, new RegExp(`(?:boolAt|gv)\\(\"${parameter}\"`), `${parameter} must be sampled by the offline renderer`);
+  }
+});
