@@ -43,6 +43,10 @@ test("server-renders the Nocturne research console", async () => {
   assert.match(html, /Temporal Automation/);
   assert.match(html, /DICHOTIC PITCH FORGE/);
   assert.match(html, /TEMPORAL-COHERENCE MATRIX/);
+  assert.match(html, /CARRIER · AUDIO TO RESHAPE/);
+  assert.match(html, /DRIVER · ENVELOPE \/ CLOCK/);
+  assert.match(html, /CLUSTER TOPOLOGY/);
+  assert.match(html, /OUTPUT FIELD/);
   assert.match(html, /COCHLEAR TEXTURE ENGINE/);
   assert.match(html, /IMPORT MP3 \/ WAV/);
   assert.match(html, /ADD CONTROL/);
@@ -113,7 +117,10 @@ test("routes every frontier engine and its automation into offline FLAC renderin
   assert.match(page, /band\.phaseCos\.gain\.setValueAtTime/);
   assert.match(page, /const textureBus = ctx\.createGain/);
   assert.match(page, /textureBus\.gain\.setValueAtTime/);
-  for (const parameter of ["hugginsOn", "hugginsLevel", "coherenceOn", "coherenceLevel", "coherenceRate", "coherenceDepth", "coherenceSpread", "textureOn", "textureLevel"]) {
+  assert.match(page, /createEnvelopeFollower/);
+  assert.match(page, /coherenceInputs/);
+  assert.match(page, /coherenceCluster/);
+  for (const parameter of ["hugginsOn", "hugginsLevel", "coherenceOn", "coherenceLevel", "coherenceRate", "coherenceDepth", "coherenceSpread", "coherenceInput", "coherenceMix", "coherenceDrive", "coherenceFollower", "textureOn", "textureLevel"]) {
     assert.match(page, new RegExp(`(?:boolAt|gv)\\(\"${parameter}\"`), `${parameter} must be sampled by the offline renderer`);
   }
 });

@@ -9,6 +9,10 @@ type Waveform = OscillatorType;
 type AmShape = "sine" | "triangle" | "square";
 type NoiseColor = "WHITE" | "PINK" | "BROWN" | "BLUE" | "VIOLET" | "GREY";
 type VeilType = "off" | "lowpass" | "highpass" | "bandpass" | "notch" | "peaking";
+type CoherenceAudioSource = NoiseColor | "BEAT" | "VEIL" | "PULSE" | "DRONE" | "GAMMA" | "HUGGINS" | "TEXTURE";
+type CoherenceDriver = "LFO" | CoherenceAudioSource;
+type CoherenceTopology = "INTERLEAVED" | "CONTIGUOUS" | "HARMONIC" | "RANDOM";
+type CoherenceOutput = "ALL" | "ANCHOR" | "REMAINDER" | "DIFFERENCE";
 type LayerKey = "beat" | "veil" | "pulse" | "drone";
 type LayerState = Record<LayerKey, { gain: number; pan: number; muted: boolean; solo: boolean }>;
 type TubeKey = "ECC83" | "12AU7" | "6V6" | "EL34";
@@ -26,7 +30,7 @@ type BeatLayer = {
 type DronePart = { osc: OscillatorNode; mult: number };
 type PulseEngine = { tone: OscillatorNode; sum: GainNode; amps: GainNode[]; gates: OscillatorNode[]; depths: GainNode[] };
 type NoiseSource = { source: AudioBufferSourceNode; gain: GainNode };
-type HugginsEngine = { bus: GainNode; source?: AudioBufferSourceNode; voiceGain?: GainNode };
+type HugginsEngine = { bus: GainNode; outputBus: GainNode; source?: AudioBufferSourceNode; voiceGain?: GainNode };
 type CoherenceBand = {
   filter: BiquadFilterNode;
   amp: GainNode;
@@ -35,10 +39,24 @@ type CoherenceBand = {
   quadratureLfo: OscillatorNode;
   phaseCos: GainNode;
   phaseSin: GainNode;
+  nativeDepth: GainNode;
+  anchorDepths: GainNode[];
+  followerFilter: BiquadFilterNode;
+  followerSmooth: BiquadFilterNode;
+  output: GainNode;
   pan: StereoPannerNode;
 };
-type CoherenceEngine = { source: AudioBufferSourceNode; bus: GainNode; bands: CoherenceBand[] };
-type TextureEngine = { bus: GainNode; source?: AudioBufferSourceNode; voiceGain?: GainNode };
+type CoherenceEngine = {
+  bus: GainNode;
+  bands: CoherenceBand[];
+  internalSources: AudioBufferSourceNode[];
+  carrierGains: Record<CoherenceAudioSource, GainNode>;
+  driverGains: Record<CoherenceAudioSource, GainNode>;
+  clusterSmooth: BiquadFilterNode[];
+  dryGain: GainNode;
+  wetGain: GainNode;
+};
+type TextureEngine = { bus: GainNode; outputBus: GainNode; source?: AudioBufferSourceNode; voiceGain?: GainNode };
 
 type AudioGraph = {
   ctx: AudioContext;
@@ -81,6 +99,8 @@ const TUBE_DESCRIPTIONS: Record<TubeKey, string> = {
 
 const LAYER_HUE: Record<LayerKey, string> = { beat: "var(--amber)", veil: "var(--cyan)", pulse: "var(--ruby)", drone: "var(--violet)" };
 const NOISE_COLORS: NoiseColor[] = ["WHITE", "PINK", "BROWN", "BLUE", "VIOLET", "GREY"];
+const COHERENCE_ENGINE_SOURCES = ["BEAT", "VEIL", "PULSE", "DRONE", "GAMMA", "HUGGINS", "TEXTURE"] as const;
+const COHERENCE_AUDIO_SOURCES: CoherenceAudioSource[] = [...NOISE_COLORS, ...COHERENCE_ENGINE_SOURCES];
 const MAX_PULSE_LAYERS = 5;
 
 // Single registry of every automatable control: metadata + source panel/hue.
@@ -141,6 +161,10 @@ const PARAM_DEFS: ParamDef[] = [
   { key: "coherenceDepth", label: "Coherence depth", min: 0, max: 1, step: .01, unit: "", def: .75, panel: "VII", group: "Coherence Matrix", hue: C },
   { key: "coherenceSpread", label: "Cluster spread", min: 0, max: 1, step: .01, unit: "", def: .7, panel: "VII", group: "Coherence Matrix", hue: C },
   { key: "coherenceLevel", label: "Coherence matrix level", min: 0, max: .8, step: .01, unit: "", def: .26, panel: "VII", group: "Coherence Matrix", hue: C },
+  { key: "coherenceInput", label: "Coherence input trim", min: 0, max: 2, step: .01, unit: "", def: 1, panel: "VII", group: "Coherence Matrix", hue: C },
+  { key: "coherenceMix", label: "Coherence wet mix", min: 0, max: 1, step: .01, unit: "", def: 1, panel: "VII", group: "Coherence Matrix", hue: C },
+  { key: "coherenceDrive", label: "Envelope drive", min: .2, max: 4, step: .05, unit: "", def: 1.6, panel: "VII", group: "Coherence Matrix", hue: C },
+  { key: "coherenceFollower", label: "Envelope follower", min: 30, max: 800, step: 10, unit: " ms", def: 180, panel: "VII", group: "Coherence Matrix", hue: C },
   { key: "coherenceOn", label: "Coherence matrix on/off", min: 0, max: 1, step: 1, unit: "", def: 0, panel: "VII", group: "Coherence Matrix", hue: C },
   { key: "textureLevel", label: "Cochlear texture level", min: 0, max: .8, step: .01, unit: "", def: .28, panel: "VIII", group: "Cochlear Texture", hue: R },
   { key: "textureOn", label: "Cochlear texture on/off", min: 0, max: 1, step: 1, unit: "", def: 0, panel: "VIII", group: "Cochlear Texture", hue: R },
@@ -346,9 +370,32 @@ function replacePcmVoice(context: BaseAudioContext, pcm: PcmData, engine: Huggin
   }
 }
 
+function makeEnvelopeCurve() {
+  const curve = new Float32Array(1024);
+  for (let index = 0; index < curve.length; index++) curve[index] = Math.abs(index / (curve.length - 1) * 2 - 1);
+  return curve;
+}
+
+function coherenceCluster(index: number, center: number, total: number, clusters: number, topology: CoherenceTopology) {
+  const count = Math.max(1, Math.round(clusters));
+  if (topology === "CONTIGUOUS") return Math.min(count - 1, Math.floor(index * count / Math.max(1, total)));
+  if (topology === "HARMONIC") return Math.abs(Math.round(Math.log2(Math.max(1, center) / 55) * 12)) % count;
+  if (topology === "RANDOM") return ((index * 1103515245 + 12345) >>> 16) % count;
+  return index % count;
+}
+
+function createEnvelopeFollower(ctx: BaseAudioContext, input: AudioNode, center: number, followerMs: number) {
+  const filter = ctx.createBiquadFilter(); filter.type = "bandpass"; filter.frequency.value = center; filter.Q.value = 4.5;
+  const rectify = ctx.createWaveShaper(); rectify.curve = makeEnvelopeCurve(); rectify.oversample = "none";
+  const smooth = ctx.createBiquadFilter(); smooth.type = "lowpass"; smooth.Q.value = .5; smooth.frequency.value = clamp(1000 / (Math.PI * 2 * followerMs), .25, 30);
+  input.connect(filter).connect(rectify).connect(smooth);
+  return { filter, smooth };
+}
+
 function buildCoherenceEngine(
   ctx: BaseAudioContext,
   destination: AudioNode,
+  routedInputs: Partial<Record<CoherenceAudioSource, AudioNode>>,
   active: boolean,
   level: number,
   coherence: number,
@@ -356,14 +403,37 @@ function buildCoherenceEngine(
   rate: number,
   depth: number,
   spread: number,
+  carrierSource: CoherenceAudioSource,
+  driverSource: CoherenceDriver,
+  inputGain: number,
+  mix: number,
+  drive: number,
+  followerMs: number,
+  topology: CoherenceTopology,
+  outputMode: CoherenceOutput,
 ) {
-  const source = ctx.createBufferSource();
-  source.buffer = makeNoiseBuffer(ctx, "WHITE");
-  source.loop = true;
   const bus = ctx.createGain();
   bus.gain.value = active ? level * .32 : 0;
   bus.connect(destination);
+  const carrierSum = ctx.createGain();
+  const driverSum = ctx.createGain();
+  const carrierGains = {} as Record<CoherenceAudioSource, GainNode>;
+  const driverGains = {} as Record<CoherenceAudioSource, GainNode>;
+  const internalSources: AudioBufferSourceNode[] = [];
+  COHERENCE_AUDIO_SOURCES.forEach((key) => {
+    const carrier = ctx.createGain(); carrier.gain.value = key === carrierSource ? inputGain : 0; carrier.connect(carrierSum); carrierGains[key] = carrier;
+    const driver = ctx.createGain(); driver.gain.value = driverSource !== "LFO" && key === driverSource ? 1 : 0; driver.connect(driverSum); driverGains[key] = driver;
+    if (NOISE_COLORS.includes(key as NoiseColor)) {
+      const source = ctx.createBufferSource(); source.buffer = makeNoiseBuffer(ctx, key as NoiseColor); source.loop = true;
+      source.connect(carrier); source.connect(driver); source.start(); internalSources.push(source);
+    } else {
+      const input = routedInputs[key]; if (input) { input.connect(carrier); input.connect(driver); }
+    }
+  });
+  const dryGain = ctx.createGain(); dryGain.gain.value = 1 - mix; carrierSum.connect(dryGain).connect(bus);
+  const wetGain = ctx.createGain(); wetGain.gain.value = mix; wetGain.connect(bus);
   const centers = makeErbCenters(12, 110, Math.min(9000, ctx.sampleRate * .42));
+  const clusterSmooth = Array.from({ length: 6 }, (_, cluster) => createEnvelopeFollower(ctx, driverSum, centers[Math.round(cluster * (centers.length - 1) / 5)], followerMs).smooth);
   const bands = centers.map((center, index) => {
     const filter = ctx.createBiquadFilter();
     filter.type = "bandpass";
@@ -383,30 +453,54 @@ function buildCoherenceEngine(
     quadratureLfo.setPeriodicWave(makePhaseWave(ctx, Math.PI / 2));
     const phaseCos = ctx.createGain(); phaseCos.gain.value = Math.cos(phase);
     const phaseSin = ctx.createGain(); phaseSin.gain.value = Math.sin(phase);
+    const follower = createEnvelopeFollower(ctx, driverSum, center, followerMs);
+    const nativeDepth = ctx.createGain(); nativeDepth.gain.value = driverSource === "LFO" ? 0 : (1 - coherence) * depth * drive;
+    follower.smooth.connect(nativeDepth).connect(amp.gain);
+    const anchorDepths = clusterSmooth.map((smooth, clusterIndex) => {
+      const gain = ctx.createGain();
+      const selected = coherenceCluster(index, center, centers.length, clusters, topology);
+      gain.gain.value = driverSource !== "LFO" && clusterIndex === selected ? coherence * depth * drive : 0;
+      smooth.connect(gain).connect(amp.gain);
+      return gain;
+    });
+    const output = ctx.createGain(); output.gain.value = 1;
     pan.pan.value = (1 - coherence) * spread * (clusters <= 1 ? 0 : cluster / (clusters - 1) * 2 - 1);
-    source.connect(filter).connect(amp).connect(pan).connect(bus);
+    carrierSum.connect(filter).connect(amp).connect(pan).connect(output).connect(wetGain);
     lfo.connect(phaseCos).connect(modDepth);
     quadratureLfo.connect(phaseSin).connect(modDepth).connect(amp.gain);
     const startTime = ctx.currentTime;
     lfo.start(startTime); quadratureLfo.start(startTime);
-    return { filter, amp, modDepth, lfo, quadratureLfo, phaseCos, phaseSin, pan };
+    return { filter, amp, modDepth, lfo, quadratureLfo, phaseCos, phaseSin, nativeDepth, anchorDepths, followerFilter: follower.filter, followerSmooth: follower.smooth, output, pan };
   });
-  source.start();
-  return { source, bus, bands };
+  const engine = { bus, bands, internalSources, carrierGains, driverGains, clusterSmooth, dryGain, wetGain };
+  configureCoherence(engine, ctx, coherence, clusters, rate, depth, spread, carrierSource, driverSource, inputGain, mix, drive, followerMs, topology, outputMode);
+  return engine;
 }
 
-function configureCoherence(engine: CoherenceEngine, ctx: BaseAudioContext, coherence: number, clusters: number, rate: number, depth: number, spread: number) {
+function configureCoherence(engine: CoherenceEngine, ctx: BaseAudioContext, coherence: number, clusters: number, rate: number, depth: number, spread: number, carrierSource: CoherenceAudioSource, driverSource: CoherenceDriver, inputGain: number, mix: number, drive: number, followerMs: number, topology: CoherenceTopology, outputMode: CoherenceOutput) {
   const now = ctx.currentTime;
+  COHERENCE_AUDIO_SOURCES.forEach((source) => {
+    engine.carrierGains[source].gain.setTargetAtTime(source === carrierSource ? inputGain : 0, now, .04);
+    engine.driverGains[source].gain.setTargetAtTime(driverSource !== "LFO" && source === driverSource ? 1 : 0, now, .04);
+  });
+  engine.dryGain.gain.setTargetAtTime(1 - mix, now, .04); engine.wetGain.gain.setTargetAtTime(mix, now, .04);
+  const followerHz = clamp(1000 / (Math.PI * 2 * followerMs), .25, 30);
+  engine.clusterSmooth.forEach((smooth) => smooth.frequency.setTargetAtTime(followerHz, now, .04));
   engine.bands.forEach((band, index) => {
-    const cluster = index % Math.max(1, clusters);
+    const cluster = coherenceCluster(index, band.filter.frequency.value, engine.bands.length, clusters, topology);
     const phase = (1 - coherence) * cluster / Math.max(1, clusters) * Math.PI * 2;
     const pan = (1 - coherence) * spread * (clusters <= 1 ? 0 : cluster / (clusters - 1) * 2 - 1);
     band.lfo.frequency.setTargetAtTime(rate, now, .04);
     band.quadratureLfo.frequency.setTargetAtTime(rate, now, .04);
     band.phaseCos.gain.setTargetAtTime(Math.cos(phase), now, .04);
     band.phaseSin.gain.setTargetAtTime(Math.sin(phase), now, .04);
-    band.amp.gain.setTargetAtTime(1 - depth / 2, now, .04);
-    band.modDepth.gain.setTargetAtTime(depth / 2, now, .04);
+    band.amp.gain.setTargetAtTime(driverSource === "LFO" ? 1 - depth / 2 : Math.max(.04, 1 - depth * .72), now, .04);
+    band.modDepth.gain.setTargetAtTime(driverSource === "LFO" ? depth / 2 : 0, now, .04);
+    band.nativeDepth.gain.setTargetAtTime(driverSource === "LFO" ? 0 : (1 - coherence) * depth * drive, now, .04);
+    band.anchorDepths.forEach((anchor, anchorIndex) => anchor.gain.setTargetAtTime(driverSource !== "LFO" && anchorIndex === cluster ? coherence * depth * drive : 0, now, .04));
+    band.followerSmooth.frequency.setTargetAtTime(followerHz, now, .04);
+    const output = outputMode === "ANCHOR" ? (cluster === 0 ? 1 : 0) : outputMode === "REMAINDER" ? (cluster === 0 ? 0 : 1) : outputMode === "DIFFERENCE" ? (cluster === 0 ? 1 : -1 / Math.max(1, clusters - 1)) : 1;
+    band.output.gain.setTargetAtTime(output, now, .04);
     band.pan.pan.setTargetAtTime(pan, now, .06);
   });
 }
@@ -1071,9 +1165,10 @@ function TextureWaveformDialog({ fileName, buffer, onClose, onAnalyze }: { fileN
   </div>;
 }
 
-function CoherenceDisplay({ coherence, clusters, rate, active }: { coherence: number; clusters: number; rate: number; active: boolean }) {
+function CoherenceDisplay({ coherence, clusters, rate, active, topology }: { coherence: number; clusters: number; rate: number; active: boolean; topology: CoherenceTopology }) {
+  const centers = makeErbCenters(12, 110, 9000);
   return <div className={`coherence-display ${active ? "active" : ""}`} aria-label={`${clusters} temporal clusters at ${Math.round(coherence * 100)} percent coherence`}>
-    {Array.from({ length: 12 }, (_, index) => { const cluster = index % clusters; return <i key={index} style={{ "--cluster": cluster, "--phase": `${-(1 - coherence) * cluster / clusters / Math.max(.1, rate)}s`, "--speed": `${1 / Math.max(.1, rate)}s` } as React.CSSProperties}><b /></i>; })}
+    {Array.from({ length: 12 }, (_, index) => { const cluster = coherenceCluster(index, centers[index], 12, clusters, topology); return <i key={index} style={{ "--cluster": cluster, "--phase": `${-(1 - coherence) * cluster / clusters / Math.max(.1, rate)}s`, "--speed": `${1 / Math.max(.1, rate)}s` } as React.CSSProperties}><b /></i>; })}
   </div>;
 }
 
@@ -1147,8 +1242,9 @@ async function renderSession(snap: Record<string, any>, duration: number): Promi
   // Frontier engines use dedicated buses so their on/off and level automation is
   // scheduled independently of whether they happened to be enabled at export time.
   const hugginsBus = ctx.createGain(); hugginsBus.gain.value = 0; hugginsBus.connect(master);
+  const hugginsVoiceBus = ctx.createGain(); hugginsVoiceBus.connect(hugginsBus);
   const hugginsSpectralAutomation = ["hugginsCenter", "hugginsWidth", "hugginsPhase"].some((key) => autoKeys.has(key));
-  const hugginsRequired = snap.hugginsOn || autoKeys.has("hugginsOn") || autoKeys.has("hugginsLevel");
+  const hugginsRequired = snap.hugginsOn || autoKeys.has("hugginsOn") || autoKeys.has("hugginsLevel") || snap.coherenceCarrier === "HUGGINS" || snap.coherenceDriver === "HUGGINS";
   if (hugginsRequired) {
     if (hugginsSpectralAutomation) {
       // Spectral phase is encoded in the PCM itself. Crossfade a bounded bank of
@@ -1164,22 +1260,31 @@ async function renderSession(snap: Record<string, any>, duration: number): Promi
         const pcm = generateHugginsPcm(sampleRate, valueAt("hugginsCenter", snap.hugginsCenter, progress), valueAt("hugginsWidth", snap.hugginsWidth, progress), valueAt("hugginsPhase", snap.hugginsPhase, progress), snap.hugginsSeed + index, 1 << 14);
         const source = ctx.createBufferSource(); source.buffer = pcmToAudioBuffer(ctx, pcm); source.loop = true;
         const voice = ctx.createGain(); voice.gain.setValueAtTime(0, Math.max(0, from - fade)); voice.gain.linearRampToValueAtTime(1, from + fade); voice.gain.setValueAtTime(1, Math.max(from + fade, to - fade)); voice.gain.linearRampToValueAtTime(0, Math.min(duration, to + fade));
-        source.connect(voice).connect(hugginsBus); source.start(Math.max(0, from - fade)); source.stop(Math.min(duration, to + fade));
+        source.connect(voice).connect(hugginsVoiceBus); source.start(Math.max(0, from - fade)); source.stop(Math.min(duration, to + fade));
       }
     } else {
       const source = ctx.createBufferSource();
       source.buffer = pcmToAudioBuffer(ctx, generateHugginsPcm(sampleRate, snap.hugginsCenter, snap.hugginsWidth, snap.hugginsPhase, snap.hugginsSeed));
-      source.loop = true; source.connect(hugginsBus); source.start();
+      source.loop = true; source.connect(hugginsVoiceBus); source.start();
     }
   }
 
-  const coherenceEngine = buildCoherenceEngine(ctx, master, false, snap.coherenceLevel, snap.coherence, snap.coherenceClusters, snap.coherenceRate, snap.coherenceDepth, snap.coherenceSpread);
-
   const textureBus = ctx.createGain(); textureBus.gain.value = 0; textureBus.connect(master);
+  const textureVoiceBus = ctx.createGain(); textureVoiceBus.connect(textureBus);
   if (snap._texturePcm) {
     const source = ctx.createBufferSource(); source.buffer = pcmToAudioBuffer(ctx, snap._texturePcm as PcmData); source.loop = true;
-    source.connect(textureBus); source.start();
+    source.connect(textureVoiceBus); source.start();
   }
+
+  const coherenceInputs: Partial<Record<CoherenceAudioSource, AudioNode>> = {
+    BEAT: beatAM, VEIL: veilComod, PULSE: pulse.sum, DRONE: layerGains.drone,
+    GAMMA: gammaAM, HUGGINS: hugginsVoiceBus, TEXTURE: textureVoiceBus,
+  };
+  const coherenceCarrier = (snap.coherenceCarrier ?? "WHITE") as CoherenceAudioSource;
+  const coherenceDriver = (snap.coherenceDriver ?? "LFO") as CoherenceDriver;
+  const coherenceTopology = (snap.coherenceTopology ?? "INTERLEAVED") as CoherenceTopology;
+  const coherenceOutput = (snap.coherenceOutput ?? "ALL") as CoherenceOutput;
+  const coherenceEngine = buildCoherenceEngine(ctx, master, coherenceInputs, false, snap.coherenceLevel, snap.coherence, snap.coherenceClusters, snap.coherenceRate, snap.coherenceDepth, snap.coherenceSpread, coherenceCarrier, coherenceDriver, snap.coherenceInput ?? 1, snap.coherenceMix ?? 1, snap.coherenceDrive ?? 1.6, snap.coherenceFollower ?? 180, coherenceTopology, coherenceOutput);
 
   // -------- automation scheduling over the timeline --------
   const beatDriven = autoKeys.has("carrier") || autoKeys.has("beat") || autoKeys.has("drift") || snap.drift > 0;
@@ -1218,13 +1323,30 @@ async function renderSession(snap: Record<string, any>, duration: number): Promi
       const coherenceRate = gv("coherenceRate", snap.coherenceRate);
       const coherenceDepth = gv("coherenceDepth", snap.coherenceDepth);
       const coherenceSpread = gv("coherenceSpread", snap.coherenceSpread);
+      const coherenceInput = gv("coherenceInput", snap.coherenceInput ?? 1);
+      const coherenceMix = gv("coherenceMix", snap.coherenceMix ?? 1);
+      const coherenceDrive = gv("coherenceDrive", snap.coherenceDrive ?? 1.6);
+      const coherenceFollower = gv("coherenceFollower", snap.coherenceFollower ?? 180);
+      COHERENCE_AUDIO_SOURCES.forEach((source) => {
+        coherenceEngine.carrierGains[source].gain.setValueAtTime(source === coherenceCarrier ? coherenceInput : 0, t);
+        coherenceEngine.driverGains[source].gain.setValueAtTime(coherenceDriver !== "LFO" && source === coherenceDriver ? 1 : 0, t);
+      });
+      coherenceEngine.dryGain.gain.setValueAtTime(1 - coherenceMix, t); coherenceEngine.wetGain.gain.setValueAtTime(coherenceMix, t);
+      const followerHz = clamp(1000 / (Math.PI * 2 * coherenceFollower), .25, 30);
+      coherenceEngine.clusterSmooth.forEach((smooth) => smooth.frequency.setValueAtTime(followerHz, t));
       coherenceEngine.bands.forEach((band, index) => {
-        const cluster = index % Math.max(1, snap.coherenceClusters);
+        const cluster = coherenceCluster(index, band.filter.frequency.value, coherenceEngine.bands.length, snap.coherenceClusters, coherenceTopology);
         const phase = (1 - coherence) * cluster / Math.max(1, snap.coherenceClusters) * Math.PI * 2;
         const pan = (1 - coherence) * coherenceSpread * (snap.coherenceClusters <= 1 ? 0 : cluster / (snap.coherenceClusters - 1) * 2 - 1);
         band.lfo.frequency.setValueAtTime(coherenceRate, t); band.quadratureLfo.frequency.setValueAtTime(coherenceRate, t);
         band.phaseCos.gain.setValueAtTime(Math.cos(phase), t); band.phaseSin.gain.setValueAtTime(Math.sin(phase), t);
-        band.amp.gain.setValueAtTime(1 - coherenceDepth / 2, t); band.modDepth.gain.setValueAtTime(coherenceDepth / 2, t); band.pan.pan.setValueAtTime(pan, t);
+        band.amp.gain.setValueAtTime(coherenceDriver === "LFO" ? 1 - coherenceDepth / 2 : Math.max(.04, 1 - coherenceDepth * .72), t);
+        band.modDepth.gain.setValueAtTime(coherenceDriver === "LFO" ? coherenceDepth / 2 : 0, t);
+        band.nativeDepth.gain.setValueAtTime(coherenceDriver === "LFO" ? 0 : (1 - coherence) * coherenceDepth * coherenceDrive, t);
+        band.anchorDepths.forEach((anchor, anchorIndex) => anchor.gain.setValueAtTime(coherenceDriver !== "LFO" && anchorIndex === cluster ? coherence * coherenceDepth * coherenceDrive : 0, t));
+        band.followerSmooth.frequency.setValueAtTime(followerHz, t);
+        const output = coherenceOutput === "ANCHOR" ? (cluster === 0 ? 1 : 0) : coherenceOutput === "REMAINDER" ? (cluster === 0 ? 0 : 1) : coherenceOutput === "DIFFERENCE" ? (cluster === 0 ? 1 : -1 / Math.max(1, snap.coherenceClusters - 1)) : 1;
+        band.output.gain.setValueAtTime(output, t); band.pan.pan.setValueAtTime(pan, t);
       });
       const textureOn = boolAt("textureOn", snap.textureOn, prog) && !!snap._texturePcm;
       textureBus.gain.setValueAtTime(textureOn ? gv("textureLevel", snap.textureLevel) : 0, t);
@@ -1306,6 +1428,14 @@ export default function Home() {
   const [coherenceDepth, setCoherenceDepth] = useState(.75);
   const [coherenceSpread, setCoherenceSpread] = useState(.7);
   const [coherenceLevel, setCoherenceLevel] = useState(.26);
+  const [coherenceCarrier, setCoherenceCarrier] = useState<CoherenceAudioSource>("WHITE");
+  const [coherenceDriver, setCoherenceDriver] = useState<CoherenceDriver>("LFO");
+  const [coherenceInput, setCoherenceInput] = useState(1);
+  const [coherenceMix, setCoherenceMix] = useState(1);
+  const [coherenceDrive, setCoherenceDrive] = useState(1.6);
+  const [coherenceFollower, setCoherenceFollower] = useState(180);
+  const [coherenceTopology, setCoherenceTopology] = useState<CoherenceTopology>("INTERLEAVED");
+  const [coherenceOutput, setCoherenceOutput] = useState<CoherenceOutput>("ALL");
   // Imported five-second specimen + cochlear fingerprint/resynthesis.
   const textureFileRef = useRef<HTMLInputElement>(null);
   const [textureImport, setTextureImport] = useState<{ name: string; buffer: AudioBuffer } | null>(null);
@@ -1378,7 +1508,7 @@ export default function Home() {
       case "gammaRate": return gammaRate; case "gammaCarrierHz": return gammaCarrierHz; case "gammaDepth": return gammaDepth;
       case "gammaDuty": return gammaDuty; case "gammaEdge": return gammaEdge; case "gammaLevel": return gammaLevel; case "gammaOn": return gammaOn ? 1 : 0;
       case "hugginsCenter": return hugginsCenter; case "hugginsWidth": return hugginsWidth; case "hugginsPhase": return hugginsPhase; case "hugginsLevel": return hugginsLevel; case "hugginsOn": return hugginsOn ? 1 : 0;
-      case "coherence": return coherence; case "coherenceRate": return coherenceRate; case "coherenceDepth": return coherenceDepth; case "coherenceSpread": return coherenceSpread; case "coherenceLevel": return coherenceLevel; case "coherenceOn": return coherenceOn ? 1 : 0;
+      case "coherence": return coherence; case "coherenceRate": return coherenceRate; case "coherenceDepth": return coherenceDepth; case "coherenceSpread": return coherenceSpread; case "coherenceLevel": return coherenceLevel; case "coherenceInput": return coherenceInput; case "coherenceMix": return coherenceMix; case "coherenceDrive": return coherenceDrive; case "coherenceFollower": return coherenceFollower; case "coherenceOn": return coherenceOn ? 1 : 0;
       case "textureLevel": return textureLevel; case "textureOn": return textureOn ? 1 : 0;
       case "rissetRate": return rissetRate; case "rissetRatio": return rissetRatio; case "rissetFocus": return rissetFocus; case "rissetLayers": return rissetLayers; case "rissetOn": return rissetOn ? 1 : 0;
       case "mfPartials": return mfPartials; case "mfBrightness": return mfBrightness; case "missingFund": return missingFund ? 1 : 0;
@@ -1402,7 +1532,7 @@ export default function Home() {
       case "gammaRate": setGammaRate(v); break; case "gammaCarrierHz": setGammaCarrierHz(v); break; case "gammaDepth": setGammaDepth(v); break;
       case "gammaDuty": setGammaDuty(v); break; case "gammaEdge": setGammaEdge(v); break; case "gammaLevel": setGammaLevel(v); break; case "gammaOn": setGammaOn(b); break;
       case "hugginsCenter": setHugginsCenter(v); break; case "hugginsWidth": setHugginsWidth(v); break; case "hugginsPhase": setHugginsPhase(v); break; case "hugginsLevel": setHugginsLevel(v); break; case "hugginsOn": setHugginsOn(b); break;
-      case "coherence": setCoherence(v); break; case "coherenceRate": setCoherenceRate(v); break; case "coherenceDepth": setCoherenceDepth(v); break; case "coherenceSpread": setCoherenceSpread(v); break; case "coherenceLevel": setCoherenceLevel(v); break; case "coherenceOn": setCoherenceOn(b); break;
+      case "coherence": setCoherence(v); break; case "coherenceRate": setCoherenceRate(v); break; case "coherenceDepth": setCoherenceDepth(v); break; case "coherenceSpread": setCoherenceSpread(v); break; case "coherenceLevel": setCoherenceLevel(v); break; case "coherenceInput": setCoherenceInput(v); break; case "coherenceMix": setCoherenceMix(v); break; case "coherenceDrive": setCoherenceDrive(v); break; case "coherenceFollower": setCoherenceFollower(v); break; case "coherenceOn": setCoherenceOn(b); break;
       case "textureLevel": setTextureLevel(v); break; case "textureOn": setTextureOn(b); break;
       case "rissetRate": setRissetRate(v); break; case "rissetRatio": setRissetRatio(v); break; case "rissetFocus": setRissetFocus(v); break; case "rissetLayers": setRissetLayers(v); break; case "rissetOn": setRissetOn(b); break;
       case "mfPartials": setMfPartials(v); break; case "mfBrightness": setMfBrightness(v); break; case "missingFund": setMissingFund(b); break;
@@ -1531,16 +1661,23 @@ export default function Home() {
     // Dichotic pitch remains on its own protected stereo bus. Nothing downstream
     // may fold or crossfeed its left/right phase relationship before the master.
     const hugginsBus = ctx.createGain(); hugginsBus.gain.value = hugginsOn ? hugginsLevel : 0; hugginsBus.connect(masterNode);
-    const huggins: HugginsEngine = { bus: hugginsBus };
-    if (hugginsOn) replacePcmVoice(ctx, generateHugginsPcm(ctx.sampleRate, hugginsCenter, hugginsWidth, hugginsPhase, hugginsSeed), huggins, .02);
-
-    // Twelve ERB-spaced bands share one noise field; envelope phase and spatial
-    // grouping determine whether they bind as one object or split into streams.
-    const coherenceEngine = buildCoherenceEngine(ctx, masterNode, coherenceOn, coherenceLevel, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread);
+    const hugginsVoiceBus = ctx.createGain(); hugginsVoiceBus.connect(hugginsBus);
+    const huggins: HugginsEngine = { bus: hugginsVoiceBus, outputBus: hugginsBus };
+    if (hugginsOn || coherenceCarrier === "HUGGINS" || coherenceDriver === "HUGGINS") replacePcmVoice(ctx, generateHugginsPcm(ctx.sampleRate, hugginsCenter, hugginsWidth, hugginsPhase, hugginsSeed), huggins, .02);
 
     const textureBus = ctx.createGain(); textureBus.gain.value = textureOn && texturePcm ? textureLevel : 0; textureBus.connect(masterNode);
-    const texture: TextureEngine = { bus: textureBus };
+    const textureVoiceBus = ctx.createGain(); textureVoiceBus.connect(textureBus);
+    const texture: TextureEngine = { bus: textureVoiceBus, outputBus: textureBus };
     if (texturePcm) replacePcmVoice(ctx, texturePcm, texture, .02);
+
+    // The coherence processor can use any existing engine as its carrier and/or
+    // envelope driver. Taps are taken before the master so the routed copy stays
+    // independent of the source layer's final pan and master processing.
+    const coherenceInputs: Partial<Record<CoherenceAudioSource, AudioNode>> = {
+      BEAT: beatAM, VEIL: veilComod, PULSE: pulseEngine.sum, DRONE: layerGains.drone,
+      GAMMA: gammaAM, HUGGINS: hugginsVoiceBus, TEXTURE: textureVoiceBus,
+    };
+    const coherenceEngine = buildCoherenceEngine(ctx, masterNode, coherenceInputs, coherenceOn, coherenceLevel, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread, coherenceCarrier, coherenceDriver, coherenceInput, coherenceMix, coherenceDrive, coherenceFollower, coherenceTopology, coherenceOutput);
 
     const graph: AudioGraph = { ctx, master: masterNode, limiter, analyser, analyserL, analyserR, oscillators, beatOscillators, sources, layerGains, layerPans, layerAnalysers, carriers, beatAM, beatAMLfo, beatAMDepth, nestLfo, nestDepth, veilTiltLow, veilTiltHigh, veilShape, veilComod, comodLfo, comodDepth: comodDepthNode, veilSweepLfo, veilSweepDepth: veilSweepDepthNode, noiseSources, droneParts: droneBuilt.parts, pulse: pulseEngine, gammaCarrier, gammaAM, gammaAMDepth, gammaLfo, gammaBus, huggins, coherence: coherenceEngine, texture, tubeStages, beatMode: mode };
     graphRef.current = graph;
@@ -1552,7 +1689,7 @@ export default function Home() {
     };
     sessionOriginRef.current = performance.now() - elapsed * 1000; setAudioState(ctx.state); setAudioSampleRate(ctx.sampleRate); setRunning(ctx.state === "running"); setGraphVersion((v) => v + 1);
     const now = ctx.currentTime; masterNode.gain.setValueAtTime(0, now); masterNode.gain.linearRampToValueAtTime(master * .58, now + .8);
-  }, [amDepth, amShape, beat, bpm, carrier, coherence, coherenceClusters, coherenceDepth, coherenceLevel, coherenceOn, coherenceRate, coherenceSpread, comodDepth, comodOn, comodRate, comodShape, elapsed, gammaCarrierHz, gammaDepth, gammaDuty, gammaEdge, gammaLevel, gammaOn, gammaRate, gammaWave, hugginsCenter, hugginsLevel, hugginsOn, hugginsPhase, hugginsSeed, hugginsWidth, master, mfBrightness, mfPartials, missingFund, mode, nestOn, noiseActive, noiseLevels, pulseDepth, pulseDuty, pulseSmooth, pulseToneHz, pulseWave, running, stopAudio, textureLevel, textureOn, texturePcm, thetaRate, tubeDrive, veilCenter, veilGainDb, veilQ, veilSweepDepth, veilSweepRate, veilTilt, veilType, waveform]);
+  }, [amDepth, amShape, beat, bpm, carrier, coherence, coherenceCarrier, coherenceClusters, coherenceDepth, coherenceDrive, coherenceDriver, coherenceFollower, coherenceInput, coherenceLevel, coherenceMix, coherenceOn, coherenceOutput, coherenceRate, coherenceSpread, coherenceTopology, comodDepth, comodOn, comodRate, comodShape, elapsed, gammaCarrierHz, gammaDepth, gammaDuty, gammaEdge, gammaLevel, gammaOn, gammaRate, gammaWave, hugginsCenter, hugginsLevel, hugginsOn, hugginsPhase, hugginsSeed, hugginsWidth, master, mfBrightness, mfPartials, missingFund, mode, nestOn, noiseActive, noiseLevels, pulseDepth, pulseDuty, pulseSmooth, pulseToneHz, pulseWave, running, stopAudio, textureLevel, textureOn, texturePcm, thetaRate, tubeDrive, veilCenter, veilGainDb, veilQ, veilSweepDepth, veilSweepRate, veilTilt, veilType, waveform]);
 
   // iOS interrupts Web Audio for calls, Siri, route changes, locking, and app
   // switching. Try to restore on foreground; if Safari requires a new gesture,
@@ -1717,29 +1854,29 @@ export default function Home() {
 
   useEffect(() => {
     const graph = graphRef.current; if (!graph) return;
-    graph.huggins.bus.gain.setTargetAtTime(hugginsOn ? hugginsLevel : 0, graph.ctx.currentTime, .06);
+    graph.huggins.outputBus.gain.setTargetAtTime(hugginsOn ? hugginsLevel : 0, graph.ctx.currentTime, .06);
   }, [hugginsOn, hugginsLevel, graphVersion]);
 
   useEffect(() => {
     const graph = graphRef.current;
-    if (!graph || !hugginsOn) return;
+    if (!graph || (!hugginsOn && coherenceCarrier !== "HUGGINS" && coherenceDriver !== "HUGGINS")) return;
     const timer = window.setTimeout(() => {
       if (graphRef.current !== graph || graph.ctx.state === "closed") return;
       const pcm = generateHugginsPcm(graph.ctx.sampleRate, hugginsCenter, hugginsWidth, hugginsPhase, hugginsSeed);
       replacePcmVoice(graph.ctx, pcm, graph.huggins);
     }, 280);
     return () => window.clearTimeout(timer);
-  }, [hugginsCenter, hugginsWidth, hugginsPhase, hugginsSeed, hugginsOn, graphVersion]);
+  }, [hugginsCenter, hugginsWidth, hugginsPhase, hugginsSeed, hugginsOn, coherenceCarrier, coherenceDriver, graphVersion]);
 
   useEffect(() => {
     const graph = graphRef.current; if (!graph) return;
     graph.coherence.bus.gain.setTargetAtTime(coherenceOn ? coherenceLevel * .32 : 0, graph.ctx.currentTime, .06);
-    configureCoherence(graph.coherence, graph.ctx, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread);
-  }, [coherenceOn, coherenceLevel, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread, graphVersion]);
+    configureCoherence(graph.coherence, graph.ctx, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread, coherenceCarrier, coherenceDriver, coherenceInput, coherenceMix, coherenceDrive, coherenceFollower, coherenceTopology, coherenceOutput);
+  }, [coherenceOn, coherenceLevel, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread, coherenceCarrier, coherenceDriver, coherenceInput, coherenceMix, coherenceDrive, coherenceFollower, coherenceTopology, coherenceOutput, graphVersion]);
 
   useEffect(() => {
     const graph = graphRef.current; if (!graph) return;
-    graph.texture.bus.gain.setTargetAtTime(textureOn && texturePcm ? textureLevel : 0, graph.ctx.currentTime, .08);
+    graph.texture.outputBus.gain.setTargetAtTime(textureOn && texturePcm ? textureLevel : 0, graph.ctx.currentTime, .08);
   }, [textureOn, textureLevel, texturePcm, graphVersion]);
 
   useEffect(() => {
@@ -1852,6 +1989,7 @@ export default function Home() {
     missingFund, mfPartials, mfBrightness, gammaOn, gammaRate, gammaCarrierHz, gammaDepth, gammaDuty, gammaEdge, gammaLevel, gammaWave,
     hugginsOn, hugginsCenter, hugginsWidth, hugginsPhase, hugginsLevel, hugginsSeed,
     coherenceOn, coherence, coherenceClusters, coherenceRate, coherenceDepth, coherenceSpread, coherenceLevel,
+    coherenceCarrier, coherenceDriver, coherenceInput, coherenceMix, coherenceDrive, coherenceFollower, coherenceTopology, coherenceOutput,
     textureOn, textureLevel, textureGrainMs, textureScatter,
     noiseActive, noiseLevels, veilType, veilCenter, veilQ, veilGainDb, veilSweepRate, veilSweepDepth, veilTilt,
     comodOn, comodRate, comodDepth, comodShape, layers, sessionLength, automation, drift, tubeDrive, automationTracks,
@@ -1869,6 +2007,7 @@ export default function Home() {
       gammaDuty: (v) => setGammaDuty(v as number), gammaEdge: (v) => setGammaEdge(v as number), gammaLevel: (v) => setGammaLevel(v as number), gammaWave: (v) => setGammaWave(v as Waveform),
       hugginsOn: (v) => setHugginsOn(v as boolean), hugginsCenter: (v) => setHugginsCenter(v as number), hugginsWidth: (v) => setHugginsWidth(v as number), hugginsPhase: (v) => setHugginsPhase(v as number), hugginsLevel: (v) => setHugginsLevel(v as number), hugginsSeed: (v) => setHugginsSeed(v as number),
       coherenceOn: (v) => setCoherenceOn(v as boolean), coherence: (v) => setCoherence(v as number), coherenceClusters: (v) => setCoherenceClusters(v as number), coherenceRate: (v) => setCoherenceRate(v as number), coherenceDepth: (v) => setCoherenceDepth(v as number), coherenceSpread: (v) => setCoherenceSpread(v as number), coherenceLevel: (v) => setCoherenceLevel(v as number),
+      coherenceCarrier: (v) => setCoherenceCarrier(v as CoherenceAudioSource), coherenceDriver: (v) => setCoherenceDriver(v as CoherenceDriver), coherenceInput: (v) => setCoherenceInput(v as number), coherenceMix: (v) => setCoherenceMix(v as number), coherenceDrive: (v) => setCoherenceDrive(v as number), coherenceFollower: (v) => setCoherenceFollower(v as number), coherenceTopology: (v) => setCoherenceTopology(v as CoherenceTopology), coherenceOutput: (v) => setCoherenceOutput(v as CoherenceOutput),
       textureOn: (v) => setTextureOn(v as boolean), textureLevel: (v) => setTextureLevel(v as number), textureGrainMs: (v) => setTextureGrainMs(v as number), textureScatter: (v) => setTextureScatter(v as number),
       noiseActive: (v) => setNoiseActive(v as Record<NoiseColor, boolean>), noiseLevels: (v) => setNoiseLevels(v as Record<NoiseColor, number>), veilType: (v) => setVeilType(v as VeilType),
       veilCenter: (v) => setVeilCenter(v as number), veilQ: (v) => setVeilQ(v as number), veilGainDb: (v) => setVeilGainDb(v as number), veilSweepRate: (v) => setVeilSweepRate(v as number),
@@ -2293,17 +2432,27 @@ export default function Home() {
             </section>
 
             <section className={`frontier-module coherence-module ${coherenceOn ? "on" : ""}`}>
-              <header className="frontier-head"><div><span>VII-B · TEMPORAL-COHERENCE MATRIX</span><b>{coherence > .72 ? "ONE BOUND OBJECT" : coherence < .28 ? `${coherenceClusters} SEPARATE STREAMS` : "AMBIGUOUS BINDING"}</b></div><em>12 ERB BANDS</em><Toggle active={coherenceOn} label="ENGAGE" paramKey="coherenceOn" onClick={() => setCoherenceOn(!coherenceOn)} /></header>
-              <CoherenceDisplay coherence={coherence} clusters={coherenceClusters} rate={coherenceRate} active={coherenceOn} />
+              <header className="frontier-head"><div><span>VII-B · TEMPORAL-COHERENCE MATRIX 2.0</span><b>{coherence > .72 ? "ONE BOUND OBJECT" : coherence < .28 ? `${coherenceClusters} SEPARATE STREAMS` : "AMBIGUOUS BINDING"}</b></div><em>{coherenceCarrier} ← {coherenceDriver}</em><Toggle active={coherenceOn} label="ENGAGE" paramKey="coherenceOn" onClick={() => setCoherenceOn(!coherenceOn)} /></header>
+              <div className="coherence-router">
+                <label className="coherence-field"><span>CARRIER · AUDIO TO RESHAPE</span><div className="coherence-select"><select aria-label="Coherence carrier source" value={coherenceCarrier} onChange={(event) => setCoherenceCarrier(event.target.value as CoherenceAudioSource)}><optgroup label="Internal noise">{NOISE_COLORS.map((source) => <option key={source} value={source}>{source}</option>)}</optgroup><optgroup label="Console engines">{COHERENCE_ENGINE_SOURCES.map((source) => <option key={source} value={source} disabled={source === "TEXTURE" && !texturePcm}>{source}</option>)}</optgroup></select></div></label>
+                <label className="coherence-field"><span>DRIVER · ENVELOPE / CLOCK</span><div className="coherence-select"><select aria-label="Coherence driver source" value={coherenceDriver} onChange={(event) => setCoherenceDriver(event.target.value as CoherenceDriver)}><option value="LFO">INTERNAL LFO</option><optgroup label="Internal noise">{NOISE_COLORS.map((source) => <option key={source} value={source}>{source} ENVELOPE</option>)}</optgroup><optgroup label="Console engines">{COHERENCE_ENGINE_SOURCES.map((source) => <option key={source} value={source} disabled={source === "TEXTURE" && !texturePcm}>{source} ENVELOPE</option>)}</optgroup></select></div></label>
+                <div className="coherence-field"><span>CLUSTER TOPOLOGY</span><div className="coherence-seg">{(["INTERLEAVED", "CONTIGUOUS", "HARMONIC", "RANDOM"] as CoherenceTopology[]).map((item) => <button key={item} className={coherenceTopology === item ? "active" : ""} onClick={() => setCoherenceTopology(item)}>{({ INTERLEAVED: "INTL", CONTIGUOUS: "CONT", HARMONIC: "HARM", RANDOM: "RAND" } as Record<CoherenceTopology, string>)[item]}</button>)}</div></div>
+                <div className="coherence-field"><span>OUTPUT FIELD</span><div className="coherence-seg">{(["ALL", "ANCHOR", "REMAINDER", "DIFFERENCE"] as CoherenceOutput[]).map((item) => <button key={item} className={coherenceOutput === item ? "active" : ""} onClick={() => setCoherenceOutput(item)}>{item === "REMAINDER" ? "REST" : item === "DIFFERENCE" ? "Δ" : item}</button>)}</div></div>
+              </div>
+              <CoherenceDisplay coherence={coherence} clusters={coherenceClusters} rate={coherenceRate} active={coherenceOn} topology={coherenceTopology} />
               <div className="frontier-knobs coherence-knobs">
                 <Knob label="COHERENCE" paramKey="coherence" value={coherence} min={0} max={1} step={.01} size="lg" onChange={setCoherence} />
                 <Knob label="CLUSTERS" value={coherenceClusters} min={1} max={6} step={1} size="sm" onChange={setCoherenceClusters} />
-                <Knob label="AM RATE" paramKey="coherenceRate" value={coherenceRate} min={.25} max={18} step={.05} unit=" Hz" size="sm" onChange={setCoherenceRate} />
+                <Knob label="LFO RATE" paramKey="coherenceRate" value={coherenceRate} min={.25} max={18} step={.05} unit=" Hz" size="sm" onChange={setCoherenceRate} />
                 <Knob label="DEPTH" paramKey="coherenceDepth" value={coherenceDepth} min={0} max={1} step={.01} size="sm" onChange={setCoherenceDepth} />
                 <Knob label="SPREAD" paramKey="coherenceSpread" value={coherenceSpread} min={0} max={1} step={.01} size="sm" onChange={setCoherenceSpread} />
                 <Knob label="LEVEL" paramKey="coherenceLevel" value={coherenceLevel} min={0} max={.8} step={.01} size="sm" onChange={setCoherenceLevel} />
+                <Knob label="INPUT TRIM" paramKey="coherenceInput" value={coherenceInput} min={0} max={2} step={.01} size="sm" onChange={setCoherenceInput} />
+                <Knob label="WET MIX" paramKey="coherenceMix" value={coherenceMix} min={0} max={1} step={.01} size="sm" onChange={setCoherenceMix} />
+                <Knob label="ENV DRIVE" paramKey="coherenceDrive" value={coherenceDrive} min={.2} max={4} step={.05} size="sm" onChange={setCoherenceDrive} />
+                <Knob label="FOLLOWER" paramKey="coherenceFollower" value={coherenceFollower} min={30} max={800} step={10} unit=" ms" size="sm" onChange={setCoherenceFollower} />
               </div>
-              <div className="frontier-foot"><p>Move COHERENCE left to separate frequency bands into independently pulsing spatial streams; move right to fuse them.</p></div>
+              <div className="frontier-foot"><p>{coherenceDriver === "LFO" ? "Synthetic mode preserves the original phase-cluster instrument." : `${coherenceDriver} envelopes now drive ${coherenceCarrier}; COHERENCE morphs native ERB motion into shared cluster anchors.`}</p><b className="coherence-route-status">{coherenceOutput} · {coherenceTopology}</b></div>
             </section>
 
             <section className={`frontier-module texture-module ${textureOn && textureAnalysis ? "on" : ""}`}>
