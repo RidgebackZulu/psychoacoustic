@@ -202,6 +202,52 @@ function formatTime(seconds: number) {
   return `${mins}:${secs}`;
 }
 
+// Live heart-rate link. A local bridge relays the Amazfit Active Max, which
+// streams over the standard BLE Heart Rate Profile (GATT characteristic
+// 0x2A37). Bridges forward either the raw measurement bytes or a JSON/text
+// re-encoding, so all three shapes are accepted.
+const HEART_RATE_WS_URL = "ws://127.0.0.1:8765/ws";
+type HeartRateStatus = "off" | "connecting" | "connected" | "error";
+
+function decodeHeartRateMeasurement(view: DataView): number | null {
+  if (view.byteLength < 2) return null;
+  // Flag bit 0 selects a uint8 vs uint16 (little-endian) heart-rate value.
+  if (view.getUint8(0) & 0x01) return view.byteLength >= 3 ? view.getUint16(1, true) : null;
+  return view.getUint8(1);
+}
+
+function pluckHeartRate(payload: unknown): number | null {
+  if (typeof payload === "number") return payload;
+  if (typeof payload === "string") { const n = Number(payload); return Number.isFinite(n) ? n : null; }
+  if (!payload || typeof payload !== "object") return null;
+  const record = payload as Record<string, unknown>;
+  for (const key of ["heartRate", "heart_rate", "hr", "bpm", "value", "data", "payload"]) {
+    if (key in record) { const found = pluckHeartRate(record[key]); if (found != null) return found; }
+  }
+  return null;
+}
+
+function parseHeartRateMessage(data: unknown): number | null {
+  let bpm: number | null = null;
+  if (data instanceof ArrayBuffer) bpm = decodeHeartRateMeasurement(new DataView(data));
+  else if (typeof data === "string") {
+    const text = data.trim();
+    const direct = Number(text);
+    if (text && Number.isFinite(direct)) bpm = direct;
+    else { try { bpm = pluckHeartRate(JSON.parse(text)); } catch { bpm = null; } }
+  }
+  return bpm != null && bpm >= 25 && bpm <= 250 ? Math.round(bpm) : null;
+}
+
+// IX — cardiac coupling. A route binds one registered control to the live pulse:
+// on engage it captures a rest HR and the control's position, then every sample
+// moves the control by (HR drift %) × (ratio %) of its full range.
+type HrRoute = { id: string; parameter: AutomationParam; ratio: number; enabled: boolean; baseHr: number | null; baseValue: number | null };
+// Controls that respond most musically to cardiac drift, surfaced first in the
+// route selector. Every registered parameter stays reachable below them.
+const HR_FAVOURITE_PARAMS: AutomationParam[] = ["bpm", "beat", "carrier", "thetaRate", "amDepth", "pulseDepth", "gammaRate", "veilCenter", "comodRate"];
+const MAX_HR_ROUTES = 5;
+
 async function unlockAudioContext(ctx: AudioContext) {
   // Starting a silent source synchronously inside the tap is the most reliable
   // way to unlock Web Audio on iOS Safari and routes it to connected AirPods.
@@ -1482,7 +1528,52 @@ export default function Home() {
   const [importCandidates, setImportCandidates] = useState<ImportCandidate[] | null>(null);
   // Feature 2 — offline render/export status
   const [exportStatus, setExportStatus] = useState<{ busy: boolean; msg: string }>({ busy: false, msg: "" });
+  // Live heart-rate telemetry (Amazfit Active Max via local websocket bridge)
+  const [hrStatus, setHrStatus] = useState<HeartRateStatus>("off");
+  const [heartRate, setHeartRate] = useState<number | null>(null);
+  const hrSocketRef = useRef<WebSocket | null>(null);
+  // IX — cardiac coupling routes (heart rate → registered controls)
+  const [hrRoutes, setHrRoutes] = useState<HrRoute[]>([
+    { id: "hr-route-initial", parameter: "bpm", ratio: 100, enabled: false, baseHr: null, baseValue: null },
+  ]);
   const progress = clamp(elapsed / (sessionLength * 60), 0, 1);
+
+  const disconnectHeartRate = useCallback(() => {
+    const socket = hrSocketRef.current;
+    hrSocketRef.current = null;
+    if (socket) {
+      socket.onopen = socket.onmessage = socket.onerror = socket.onclose = null;
+      socket.close();
+    }
+    setHrStatus("off");
+    setHeartRate(null);
+    // Rest baselines expire with the link — routes re-capture on the next connect.
+    setHrRoutes((current) => current.map((route) => ({ ...route, baseHr: null, baseValue: null })));
+  }, []);
+
+  const toggleHeartRate = useCallback(() => {
+    if (hrSocketRef.current) { disconnectHeartRate(); return; }
+    let socket: WebSocket;
+    try { socket = new WebSocket(HEART_RATE_WS_URL); } catch { setHrStatus("error"); return; }
+    socket.binaryType = "arraybuffer";
+    setHrStatus("connecting");
+    setHeartRate(null);
+    socket.onopen = () => { if (hrSocketRef.current === socket) setHrStatus("connected"); };
+    socket.onmessage = (event) => {
+      if (hrSocketRef.current !== socket) return;
+      const bpm = parseHeartRateMessage(event.data);
+      if (bpm != null) setHeartRate(bpm);
+    };
+    socket.onclose = () => {
+      if (hrSocketRef.current !== socket) return;
+      hrSocketRef.current = null;
+      setHrStatus((current) => (current === "connecting" ? "error" : "off"));
+      setHeartRate(null);
+    };
+    hrSocketRef.current = socket;
+  }, [disconnectHeartRate]);
+
+  useEffect(() => disconnectHeartRate, [disconnectHeartRate]);
 
   // Latest-value refs so the Shepard/Risset animation loop and live rebuilds read
   // current params without re-subscribing every frame.
@@ -1556,6 +1647,53 @@ export default function Home() {
   const resetParam = useCallback((key: string, fallback?: number) => {
     const def = PARAM_MAP[key]?.def; writeParam(key, def !== undefined ? def : (fallback ?? 0));
   }, [writeParam]);
+
+  // IX — cardiac coupling engine. Latest-value refs so the per-sample effect
+  // reads fresh routes/params without re-subscribing on every render.
+  const hrRoutesRef = useRef(hrRoutes); hrRoutesRef.current = hrRoutes;
+  const readParamRef = useRef(readParam); readParamRef.current = readParam;
+
+  // Push every engaged route toward its mapped value when a heart-rate sample
+  // arrives. A route missing its rest baseline captures it from this sample and
+  // starts tracking on the next one.
+  useEffect(() => {
+    if (heartRate == null) return;
+    if (hrRoutesRef.current.some((route) => route.enabled && route.baseHr == null)) {
+      setHrRoutes((current) => current.map((route) => route.enabled && route.baseHr == null
+        ? { ...route, baseHr: heartRate, baseValue: readParamRef.current(route.parameter) }
+        : route));
+    }
+    hrRoutesRef.current.forEach((route) => {
+      const spec = PARAM_MAP[route.parameter];
+      if (!route.enabled || route.baseHr == null || route.baseValue == null || !spec) return;
+      const hrDrift = (heartRate - route.baseHr) / route.baseHr;
+      const next = route.baseValue + hrDrift * (route.ratio / 100) * (spec.max - spec.min);
+      writeParam(route.parameter, clamp(Math.round(next / spec.step) * spec.step, spec.min, spec.max));
+    });
+  }, [heartRate, writeParam]);
+
+  const patchHrRoute = (id: string, patch: Partial<HrRoute>) => setHrRoutes((current) => current.map((route) => route.id === id ? { ...route, ...patch } : route));
+
+  // Engaging (or re-targeting) a route captures rest HR + control position now if
+  // telemetry is live, otherwise leaves them null for the next sample to fill.
+  const toggleHrRoute = (id: string) => setHrRoutes((current) => current.map((route) => route.id === id
+    ? { ...route, enabled: !route.enabled, baseHr: !route.enabled && heartRate != null ? heartRate : null, baseValue: !route.enabled && heartRate != null ? readParamRef.current(route.parameter) : null }
+    : route));
+
+  const changeHrRouteParameter = (id: string, parameter: AutomationParam) => setHrRoutes((current) => current.map((route) => route.id === id
+    ? { ...route, parameter, baseHr: route.enabled && heartRate != null ? heartRate : null, baseValue: route.enabled && heartRate != null ? readParamRef.current(parameter) : null }
+    : route));
+
+  const rebaseHrRoute = (id: string) => setHrRoutes((current) => current.map((route) => route.id === id
+    ? { ...route, baseHr: heartRate, baseValue: heartRate != null ? readParamRef.current(route.parameter) : null }
+    : route));
+
+  const addHrRoute = () => {
+    if (hrRoutes.length >= MAX_HR_ROUTES) return;
+    const used = new Set(hrRoutes.map((route) => route.parameter));
+    const parameter = HR_FAVOURITE_PARAMS.find((key) => !used.has(key)) || PARAM_DEFS.find((control) => !used.has(control.key))?.key || "bpm";
+    setHrRoutes((current) => [...current, { id: `hr-route-${Date.now()}`, parameter, ratio: 100, enabled: false, baseHr: null, baseValue: null }]);
+  };
 
   const stopAudio = useCallback(() => {
     const graph = graphRef.current;
@@ -2207,6 +2345,19 @@ export default function Home() {
         <div className="transport-sep" />
         <OutputMeter analyserL={graph?.analyserL || null} analyserR={graph?.analyserR || null} running={running} />
         <div className="transport-band"><small>BAND</small><b>{band}</b></div>
+        <div className="transport-sep" />
+        <div className={`transport-hr ${hrStatus}`}>
+          <button
+            className="hr-connect"
+            onClick={toggleHeartRate}
+            title={hrStatus === "connected" || hrStatus === "connecting" ? "Disconnect the heart-rate stream" : `Stream live heart rate from the Amazfit Active Max bridge (${HEART_RATE_WS_URL})`}
+            aria-label={hrStatus === "connected" || hrStatus === "connecting" ? "Disconnect heart rate monitor" : "Connect heart rate monitor"}
+          >
+            <i className="hr-lamp" style={heartRate ? { animationDuration: `${(60 / heartRate).toFixed(2)}s` } : undefined} aria-hidden="true" />
+            {hrStatus === "connected" ? "HR LINKED" : hrStatus === "connecting" ? "LINKING…" : hrStatus === "error" ? "BRIDGE OFFLINE · RETRY" : "HEART RATE CONNECT"}
+          </button>
+          {hrStatus === "connected" && <div className="hr-readout" role="status" aria-label={heartRate ? `Heart rate ${heartRate} beats per minute` : "Awaiting heart rate data"}><small>AMAZFIT</small><b>{heartRate ?? "––"}</b><span>BPM</span></div>}
+        </div>
         {!running && !hintDismissed && <div className="transport-hint" role="status"><b>Connect AirPods</b>, then tap Play ▸<button onClick={() => setHintDismissed(true)} aria-label="Dismiss hint">×</button></div>}
         {!running && graphRef.current && <div className="transport-hint audio-resume-hint" role="status"><b>Audio {audioState}</b> — tap Play to resume</div>}
       </section>
@@ -2501,6 +2652,46 @@ export default function Home() {
                   </div>
                 </div>
                 <AutomationGraph points={track.points} selectedId={track.selectedPointId} progress={progress} snap={track.snap} hue={meta.hue} onSeek={seekSession} onSelect={(selectedPointId) => setAutomationTracks((tracks) => tracks.map((item) => item.id === track.id ? { ...item, selectedPointId } : item))} onChange={(points) => setAutomationTracks((tracks) => tracks.map((item) => item.id === track.id ? { ...item, points } : item))} />
+              </div>;
+            })}
+          </div>
+        </article>
+
+        <article className="panel cardiac-panel">
+          <PanelHeading roman="IX" title="Cardiac Coupling" subtitle="Heart-rate → control routing · live biometric drive" />
+          <div className="cardiac-toolbar">
+            <div className={`cardiac-link ${hrStatus}`}>
+              <i className="hr-lamp" style={heartRate ? { animationDuration: `${(60 / heartRate).toFixed(2)}s` } : undefined} aria-hidden="true" />
+              <div><small>TELEMETRY</small><b>{hrStatus === "connected" ? `${heartRate ?? "––"} BPM` : hrStatus === "connecting" ? "LINKING…" : "NO LINK"}</b></div>
+            </div>
+            {hrStatus !== "connected" && <em className="cardiac-note">Tap HEART RATE CONNECT on the transport rail to begin telemetry.</em>}
+            <div className="strip-spacer" />
+            <button className="add-track" disabled={hrRoutes.length >= MAX_HR_ROUTES} onClick={addHrRoute}>＋ ADD ROUTE</button>
+          </div>
+          <div className="automation-help"><span>RATIO OF CHANGE</span><p>COUPLE captures a rest pulse and the control&apos;s position. RATIO sets the exchange rate between the two: at +100%, each 1% of heart-rate drift from rest moves the control 1% of its range; ±25% is subtle, negative ratios pull opposite. REBASE re-captures rest where you are now.</p><b>{hrRoutes.some((route) => route.enabled) ? `${hrRoutes.filter((route) => route.enabled).length} COUPLED` : "IDLE"}</b></div>
+          <div className="cardiac-routes">
+            {hrRoutes.map((route) => {
+              const meta = PARAM_MAP[route.parameter] ?? PARAM_DEFS[0];
+              const hrDriftPct = route.baseHr && heartRate != null ? (heartRate - route.baseHr) / route.baseHr * 100 : null;
+              return <div className={`hr-route ${route.enabled ? "engaged" : ""}`} key={route.id}>
+                <Toggle active={route.enabled} label="COUPLE" onClick={() => toggleHrRoute(route.id)} />
+                <div className="hr-route-target">
+                  <div className="track-source"><i className="track-chip" style={{ background: meta.hue }} /><span>PANEL {meta.panel}</span></div>
+                  <div className="track-select"><select aria-label="Heart-rate coupled control" value={route.parameter} onChange={(event) => changeHrRouteParameter(route.id, event.target.value as AutomationParam)}>
+                    <optgroup label="♥ Recommended for heart rate">{HR_FAVOURITE_PARAMS.map((key) => <option key={key} value={key}>{PARAM_MAP[key].label}</option>)}</optgroup>
+                    {AUTOMATION_GROUPS.map((grp) => <optgroup key={grp} label={grp}>{PARAM_DEFS.filter((control) => control.group === grp).map((control) => <option key={control.key} value={control.key}>{control.label}</option>)}</optgroup>)}
+                  </select></div>
+                </div>
+                <Knob label="RATIO" value={route.ratio} min={-200} max={200} step={5} unit="%" size="sm" onChange={(value) => patchHrRoute(route.id, { ratio: value })} />
+                <div className="hr-route-readouts">
+                  <div><small>REST</small><b>{route.baseHr ?? "––"}</b></div>
+                  <div><small>HR DRIFT</small><b>{hrDriftPct == null ? "––" : `${hrDriftPct >= 0 ? "+" : ""}${hrDriftPct.toFixed(1)}%`}</b></div>
+                  <div><small>VALUE</small><b>{formatAutomationValue(route.parameter)}</b></div>
+                </div>
+                <div className="hr-route-actions">
+                  <button title="Re-capture rest pulse and control position" disabled={!route.enabled || hrStatus !== "connected"} onClick={() => rebaseHrRoute(route.id)}>REBASE</button>
+                  <button className="remove-track" title="Remove route" disabled={hrRoutes.length === 1} onClick={() => setHrRoutes((current) => current.filter((item) => item.id !== route.id))}>×</button>
+                </div>
               </div>;
             })}
           </div>
