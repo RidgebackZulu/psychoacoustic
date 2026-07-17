@@ -19,7 +19,7 @@ type TubeKey = "ECC83" | "12AU7" | "6V6" | "EL34";
 type AutomationParam = string;
 type AutomationPoint = { id: string; time: number; value: number };
 type AutomationTrack = { id: string; parameter: AutomationParam; points: AutomationPoint[]; selectedPointId?: string; snap?: boolean };
-type UserPreset = { name: string; data: Record<string, unknown> };
+type UserPreset = { name: string; data: Record<string, unknown>; tags?: string[]; time?: string };
 type ImportCandidate = UserPreset & { id: string; selected: boolean };
 
 type BeatLayer = {
@@ -191,6 +191,17 @@ const presets = {
   Sleep: { carrier: 220, beat: 3.2, bpm: 42, noise: "BROWN", layers: { beat: 0.31, veil: 0.23, pulse: 0.03, drone: 0.13 } },
   Perform: { carrier: 480, beat: 18, bpm: 88, noise: "PINK", layers: { beat: 0.42, veil: 0.08, pulse: 0.16, drone: 0.07 } },
 } as const;
+
+// Program library — tag/time vocabulary for the preset flyout. User additions
+// and deletions persist to localStorage; factory programs carry fixed tags.
+const DEFAULT_PRESET_TAGS = ["RELAX", "UNWIND", "SLEEP", "TRIP", "OUT OF BODY", "PAST LIVES", "FOCUS", "PERFORMANCE"];
+const DEFAULT_PRESET_TIMES = ["10 MIN", "15 MIN", "20 MIN", "30 MIN", "45 MIN", "60 MIN", "90 MIN"];
+const BUILTIN_PRESET_TAGS: Record<keyof typeof presets, string[]> = {
+  Focus: ["FOCUS"],
+  Unwind: ["UNWIND", "RELAX"],
+  Sleep: ["SLEEP", "RELAX"],
+  Perform: ["PERFORMANCE", "FOCUS"],
+};
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -1526,6 +1537,15 @@ export default function Home() {
   const [selectedPreset, setSelectedPreset] = useState("");
   const presetFileRef = useRef<HTMLInputElement>(null);
   const [importCandidates, setImportCandidates] = useState<ImportCandidate[] | null>(null);
+  // Program library flyout + tag/time vocabulary + save-dialog draft
+  const [presetMenuOpen, setPresetMenuOpen] = useState(false);
+  const [presetTagFilter, setPresetTagFilter] = useState<string | null>(null);
+  const [presetTags, setPresetTags] = useState<string[]>(DEFAULT_PRESET_TAGS);
+  const [presetTimes, setPresetTimes] = useState<string[]>(DEFAULT_PRESET_TIMES);
+  const [saveDraft, setSaveDraft] = useState<{ name: string; tags: string[]; time: string } | null>(null);
+  const [vocabEdit, setVocabEdit] = useState(false);
+  const [newTagText, setNewTagText] = useState("");
+  const [newTimeText, setNewTimeText] = useState("");
   // Feature 2 — offline render/export status
   const [exportStatus, setExportStatus] = useState<{ busy: boolean; msg: string }>({ busy: false, msg: "" });
   // Live heart-rate telemetry (Amazfit Active Max via local websocket bridge)
@@ -2115,7 +2135,7 @@ export default function Home() {
   };
 
   const loadPreset = (name: keyof typeof presets) => {
-    const next = presets[name]; setPreset(name); setCarrier(next.carrier); setBeat(next.beat); setBpm(next.bpm);
+    const next = presets[name]; setPreset(name); setSelectedPreset(""); setCarrier(next.carrier); setBeat(next.beat); setBpm(next.bpm);
     setNoiseActive({ WHITE: false, PINK: next.noise === "PINK", BROWN: next.noise === "BROWN", BLUE: false, VIOLET: false, GREY: false });
     setLayers((current) => ({ ...current, beat: { ...current.beat, gain: next.layers.beat }, veil: { ...current.veil, gain: next.layers.veil }, pulse: { ...current.pulse, gain: next.layers.pulse }, drone: { ...current.drone, gain: next.layers.drone } }));
   };
@@ -2181,7 +2201,14 @@ export default function Home() {
           : [];
       const valid = rows.filter((row): row is UserPreset => !!row && typeof row === "object" && typeof (row as UserPreset).name === "string" && !!(row as UserPreset).name.trim() && !!(row as UserPreset).data && typeof (row as UserPreset).data === "object" && !Array.isArray((row as UserPreset).data));
       if (!valid.length) throw new Error("No valid presets were found in this file.");
-      setImportCandidates(valid.map((row, index) => ({ name: row.name.trim(), data: row.data, id: `${index}-${row.name}`, selected: false })));
+      setImportCandidates(valid.map((row, index) => ({
+        name: row.name.trim(),
+        data: row.data,
+        tags: Array.isArray(row.tags) ? row.tags.filter((tag): tag is string => typeof tag === "string") : undefined,
+        time: typeof row.time === "string" ? row.time : undefined,
+        id: `${index}-${row.name}`,
+        selected: false,
+      })));
     } catch (error) {
       window.alert(error instanceof Error ? error.message : "This is not a valid Nocturne preset file.");
     }
@@ -2200,7 +2227,7 @@ export default function Home() {
       throw new Error(`Too many presets are named “${requested}”.`);
     };
     try {
-      const imported = selected.map(({ name, data }) => ({ name: uniqueName(name), data }));
+      const imported = selected.map(({ name, data, tags, time }) => ({ name: uniqueName(name), data, tags, time }));
       persistPresets([...userPresets, ...imported].sort((a, b) => a.name.localeCompare(b.name)));
       setImportCandidates(null);
     } catch (error) {
@@ -2208,23 +2235,72 @@ export default function Home() {
     }
   };
 
-  const saveUserPreset = () => {
-    const name = window.prompt("Save current settings as:", `Setting ${userPresets.length + 1}`)?.trim();
-    if (!name) return;
-    const list = [...userPresets.filter((p) => p.name !== name), { name, data: collectSnapshot() }].sort((a, b) => a.name.localeCompare(b.name));
-    persistPresets(list); setSelectedPreset(name);
+  // Save flow — the dialog drafts a name plus tag/time labels, then commits the
+  // full snapshot. Re-saving a loaded setting pre-fills its existing labels.
+  const openSavePresetDialog = () => {
+    const loaded = userPresets.find((p) => p.name === selectedPreset);
+    const suggestedTime = `${sessionLength} MIN`;
+    setVocabEdit(false); setNewTagText(""); setNewTimeText("");
+    setSaveDraft({
+      name: loaded ? loaded.name : `Setting ${userPresets.length + 1}`,
+      tags: loaded?.tags ?? [],
+      time: loaded?.time ?? suggestedTime,
+    });
+  };
+  const confirmSavePreset = () => {
+    const name = saveDraft?.name.trim();
+    if (!saveDraft || !name) return;
+    const entry: UserPreset = { name, data: collectSnapshot(), tags: saveDraft.tags, time: saveDraft.time || undefined };
+    persistPresets([...userPresets.filter((p) => p.name !== name), entry].sort((a, b) => a.name.localeCompare(b.name)));
+    setSelectedPreset(name); setSaveDraft(null);
   };
   const loadUserPreset = (name: string) => {
     const found = userPresets.find((p) => p.name === name); if (found) { applySnapshot(found.data); setSelectedPreset(name); }
   };
-  const deleteUserPreset = () => {
-    if (!selectedPreset) return;
-    if (!window.confirm(`Delete saved setting “${selectedPreset}”?`)) return;
-    persistPresets(userPresets.filter((p) => p.name !== selectedPreset)); setSelectedPreset("");
+  const deleteUserPreset = (name: string) => {
+    if (!window.confirm(`Delete saved setting “${name}”?`)) return;
+    persistPresets(userPresets.filter((p) => p.name !== name));
+    if (selectedPreset === name) setSelectedPreset("");
+  };
+
+  // Tag/time vocabulary — additions and deletions persist; deleting an entry
+  // leaves the labels already stamped on saved presets untouched.
+  const persistPresetVocab = (tags: string[], times: string[]) => {
+    setPresetTags(tags); setPresetTimes(times);
+    try { window.localStorage.setItem("nocturne.preset-vocab", JSON.stringify({ tags, times })); } catch { /* storage blocked */ }
+  };
+  const addPresetTag = () => {
+    const tag = newTagText.trim().toUpperCase().slice(0, 24);
+    setNewTagText("");
+    if (tag && !presetTags.includes(tag)) persistPresetVocab([...presetTags, tag], presetTimes);
+  };
+  const addPresetTime = () => {
+    const raw = newTimeText.trim().toUpperCase();
+    setNewTimeText("");
+    if (!raw) return;
+    const time = /^\d+$/.test(raw) ? `${raw} MIN` : raw.slice(0, 24);
+    if (!presetTimes.includes(time)) persistPresetVocab(presetTags, [...presetTimes, time]);
+  };
+  const removePresetTag = (tag: string) => {
+    persistPresetVocab(presetTags.filter((item) => item !== tag), presetTimes);
+    if (presetTagFilter === tag) setPresetTagFilter(null);
+    setSaveDraft((draft) => draft ? { ...draft, tags: draft.tags.filter((item) => item !== tag) } : draft);
+  };
+  const removePresetTime = (time: string) => {
+    persistPresetVocab(presetTags, presetTimes.filter((item) => item !== time));
+    setSaveDraft((draft) => draft && draft.time === time ? { ...draft, time: "" } : draft);
   };
 
   useEffect(() => {
     try { const raw = window.localStorage.getItem("nocturne.presets"); if (raw) setUserPresets(JSON.parse(raw)); } catch { /* ignore */ }
+    try {
+      const raw = window.localStorage.getItem("nocturne.preset-vocab");
+      if (raw) {
+        const vocab = JSON.parse(raw) as { tags?: unknown; times?: unknown };
+        if (Array.isArray(vocab.tags)) setPresetTags(vocab.tags.filter((tag): tag is string => typeof tag === "string"));
+        if (Array.isArray(vocab.times)) setPresetTimes(vocab.times.filter((time): time is string => typeof time === "string"));
+      }
+    } catch { /* ignore */ }
   }, []);
 
   // Feature 2 — offline-render the session to a FLAC file (no realtime playback).
@@ -2309,6 +2385,15 @@ export default function Home() {
 
   const band = beat < 4 ? "DELTA" : beat < 8 ? "THETA" : beat < 13 ? "ALPHA" : beat < 30 ? "BETA" : "EXPERIMENTAL";
   const graph = graphRef.current;
+
+  // Program library — what the trigger shows and what the flyout lists.
+  const activeUserPreset = userPresets.find((p) => p.name === selectedPreset) || null;
+  const activeProgramName = activeUserPreset ? activeUserPreset.name : preset;
+  const activeProgramTags = activeUserPreset ? activeUserPreset.tags ?? [] : BUILTIN_PRESET_TAGS[preset];
+  const activeProgramTime = activeUserPreset?.time;
+  const factoryVisible = (Object.keys(presets) as (keyof typeof presets)[]).filter((name) => !presetTagFilter || BUILTIN_PRESET_TAGS[name].includes(presetTagFilter));
+  const savedVisible = userPresets.filter((p) => !presetTagFilter || (p.tags ?? []).includes(presetTagFilter));
+  const draftTimes = saveDraft && saveDraft.time && !presetTimes.includes(saveDraft.time) ? [...presetTimes, saveDraft.time] : presetTimes;
   const masterDb = master <= .01 ? "−∞" : (20 * Math.log10(master * .58)).toFixed(1);
   const activeNoise = NOISE_COLORS.filter((c) => noiseActive[c]);
   const noiseSummary = activeNoise.length === 0 ? "SILENT" : activeNoise.length === 1 ? activeNoise[0] : `${activeNoise.length}× MIX`;
@@ -2363,23 +2448,81 @@ export default function Home() {
       </section>
 
       <nav className="preset-strip" aria-label="Session presets">
-        <span>PROGRAM</span>
-        {(Object.keys(presets) as (keyof typeof presets)[]).map((name) => <button key={name} className={preset === name ? "selected" : ""} onClick={() => loadPreset(name)}>{name}</button>)}
-        <div className="preset-sep" />
-        <span>SAVED</span>
-        <div className="user-presets">
-          <select value="" onChange={(e) => e.target.value && loadUserPreset(e.target.value)} aria-label="Load saved setting" title="Load a saved setting">
-            <option value="">{selectedPreset ? `Loaded: ${selectedPreset}` : "— select —"}</option>
-            {userPresets.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
-          </select>
-          <button onClick={saveUserPreset} title="Save current settings">＋ SAVE</button>
-          <button onClick={exportUserPresets} disabled={!userPresets.length} title="Export all saved presets as JSON">⇩ EXPORT</button>
-          <button onClick={() => presetFileRef.current?.click()} title="Import presets from JSON">⇧ IMPORT</button>
-          <input ref={presetFileRef} className="preset-file-input" type="file" accept="application/json,.json" onChange={readPresetFile} />
-          <button className="preset-del" onClick={deleteUserPreset} disabled={!selectedPreset} title="Delete selected saved setting">🗑</button>
-        </div>
+        <button className="preset-menu-trigger" onClick={() => setPresetMenuOpen(true)} aria-haspopup="dialog" aria-expanded={presetMenuOpen}>
+          <span className="pmt-label">PROGRAM</span>
+          <span className="pmt-name">{activeProgramName}</span>
+          <span className="pm-chips">{activeProgramTags.slice(0, 3).map((tag) => <i key={tag}>{tag}</i>)}{activeProgramTime && <i className="time">{activeProgramTime}</i>}</span>
+          <span className="pmt-caret">▾</span>
+        </button>
+        <input ref={presetFileRef} className="preset-file-input" type="file" accept="application/json,.json" onChange={readPresetFile} />
         <div className="strip-spacer" /><span>RESEARCH MODE</span><strong>{band}</strong><span className="calibration">CAL · 48kHz</span>
       </nav>
+
+      {presetMenuOpen && <div className="preset-menu-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setPresetMenuOpen(false); }}>
+        <section className="preset-menu" role="dialog" aria-modal="true" aria-labelledby="preset-menu-title">
+          <header><div><small>PROGRAM LIBRARY</small><h2 id="preset-menu-title">Choose a session program</h2></div><button onClick={() => setPresetMenuOpen(false)} aria-label="Close program menu">×</button></header>
+          <div className="preset-menu-filters" role="group" aria-label="Filter programs by tag">
+            <button className={presetTagFilter == null ? "on" : ""} onClick={() => setPresetTagFilter(null)}>ALL</button>
+            {presetTags.map((tag) => <button key={tag} className={presetTagFilter === tag ? "on" : ""} onClick={() => setPresetTagFilter((current) => current === tag ? null : tag)}>{tag}</button>)}
+          </div>
+          <div className="preset-menu-list">
+            <small className="pm-section">FACTORY PROGRAMS</small>
+            {factoryVisible.map((name) => <div className={`pm-row ${!selectedPreset && preset === name ? "active" : ""}`} key={name}>
+              <button className="pm-load" onClick={() => { loadPreset(name); setPresetMenuOpen(false); }}>
+                <b>{name}</b>
+                <span className="pm-chips">{BUILTIN_PRESET_TAGS[name].map((tag) => <i key={tag}>{tag}</i>)}</span>
+              </button>
+            </div>)}
+            {factoryVisible.length === 0 && <p className="pm-empty">No factory program carries this tag.</p>}
+            <small className="pm-section">SAVED SETTINGS</small>
+            {savedVisible.map((p) => <div className={`pm-row ${selectedPreset === p.name ? "active" : ""}`} key={p.name}>
+              <button className="pm-load" onClick={() => { loadUserPreset(p.name); setPresetMenuOpen(false); }}>
+                <b>{p.name}</b>
+                <span className="pm-chips">{(p.tags ?? []).map((tag) => <i key={tag}>{tag}</i>)}{p.time && <i className="time">{p.time}</i>}</span>
+              </button>
+              <button className="pm-del" aria-label={`Delete saved setting ${p.name}`} title="Delete this saved setting" onClick={() => deleteUserPreset(p.name)}>×</button>
+            </div>)}
+            {userPresets.length === 0 && <p className="pm-empty">Nothing saved yet — dial in the console, then tap SAVE CURRENT.</p>}
+            {userPresets.length > 0 && savedVisible.length === 0 && <p className="pm-empty">No saved setting carries this tag.</p>}
+          </div>
+          <footer>
+            <button className="confirm" onClick={openSavePresetDialog}>＋ SAVE CURRENT</button>
+            <button onClick={exportUserPresets} disabled={!userPresets.length}>⇩ EXPORT</button>
+            <button onClick={() => presetFileRef.current?.click()}>⇧ IMPORT</button>
+          </footer>
+        </section>
+      </div>}
+
+      {saveDraft && <div className="preset-save-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSaveDraft(null); }}>
+        <section className="preset-save-dialog" role="dialog" aria-modal="true" aria-labelledby="preset-save-title">
+          <header><div><small>SAVE SETTING</small><h2 id="preset-save-title">Name &amp; label this program</h2></div><button onClick={() => setSaveDraft(null)} aria-label="Close save dialog">×</button></header>
+          <label className="ps-field"><span>NAME</span><input value={saveDraft.name} onChange={(event) => setSaveDraft({ ...saveDraft, name: event.target.value })} maxLength={40} placeholder="Setting name" /></label>
+          <div className="ps-field">
+            <span>TAGS <em>{vocabEdit ? "tap × to remove from library" : "choose any"}</em></span>
+            <div className="ps-chips">
+              {presetTags.map((tag) => vocabEdit
+                ? <button key={tag} className="chip edit" onClick={() => removePresetTag(tag)}>{tag}<i>×</i></button>
+                : <button key={tag} className={`chip ${saveDraft.tags.includes(tag) ? "on" : ""}`} onClick={() => setSaveDraft({ ...saveDraft, tags: saveDraft.tags.includes(tag) ? saveDraft.tags.filter((item) => item !== tag) : [...saveDraft.tags, tag] })}>{tag}</button>)}
+            </div>
+          </div>
+          <div className="ps-field">
+            <span>LENGTH <em>{vocabEdit ? "tap × to remove from library" : "choose one"}</em></span>
+            <div className="ps-chips">
+              {draftTimes.map((time) => vocabEdit && presetTimes.includes(time)
+                ? <button key={time} className="chip edit" onClick={() => removePresetTime(time)}>{time}<i>×</i></button>
+                : <button key={time} className={`chip ${saveDraft.time === time ? "on" : ""}`} onClick={() => setSaveDraft({ ...saveDraft, time: saveDraft.time === time ? "" : time })}>{time}</button>)}
+            </div>
+          </div>
+          <div className="ps-manage">
+            <button className={`chip-edit-toggle ${vocabEdit ? "on" : ""}`} onClick={() => setVocabEdit(!vocabEdit)}>{vocabEdit ? "✓ DONE EDITING" : "✎ EDIT TAGS & LENGTHS"}</button>
+            {vocabEdit && <>
+              <div className="ps-add"><input value={newTagText} onChange={(event) => setNewTagText(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addPresetTag(); }} maxLength={24} placeholder="New tag" /><button onClick={addPresetTag}>＋ TAG</button></div>
+              <div className="ps-add"><input value={newTimeText} onChange={(event) => setNewTimeText(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addPresetTime(); }} maxLength={24} inputMode="numeric" placeholder="Minutes" /><button onClick={addPresetTime}>＋ LENGTH</button></div>
+            </>}
+          </div>
+          <footer><button onClick={() => setSaveDraft(null)}>CANCEL</button><button className="confirm" disabled={!saveDraft.name.trim()} onClick={confirmSavePreset}>SAVE PROGRAM</button></footer>
+        </section>
+      </div>}
 
       {importCandidates && <div className="preset-import-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setImportCandidates(null); }}>
         <section className="preset-import-dialog" role="dialog" aria-modal="true" aria-labelledby="preset-import-title">
