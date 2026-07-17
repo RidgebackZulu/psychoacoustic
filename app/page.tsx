@@ -3,6 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { encodeFlacFromBuffer, downloadBytes } from "./flac";
 import { analyzeTextureBuffer, generateHugginsPcm, makeErbCenters, pcmToAudioBuffer, synthesizeTexturePcm, type PcmData, type TextureAnalysis } from "./psychoacoustic";
+import journeyPresetArchive from "../presets/nocturne-journeys-5m-15m.json";
+import meditationPresetArchive from "../presets/nocturne-deep-meditation-journeys-15m.json";
 
 type BeatMode = "binaural" | "monaural" | "isochronic";
 type Waveform = OscillatorType;
@@ -20,6 +22,7 @@ type AutomationParam = string;
 type AutomationPoint = { id: string; time: number; value: number };
 type AutomationTrack = { id: string; parameter: AutomationParam; points: AutomationPoint[]; selectedPointId?: string; snap?: boolean };
 type UserPreset = { name: string; data: Record<string, unknown>; tags?: string[]; time?: string };
+type FactoryPreset = Omit<UserPreset, "tags"> & { tags: string[] };
 type ImportCandidate = UserPreset & { id: string; selected: boolean };
 
 type BeatLayer = {
@@ -185,23 +188,39 @@ const initialLayers: LayerState = {
   drone: { gain: 0.14, pan: 0, muted: false, solo: false },
 };
 
-const presets = {
-  Focus: { carrier: 400, beat: 13, bpm: 72, noise: "PINK", layers: { beat: 0.46, veil: 0.1, pulse: 0.1, drone: 0.08 } },
-  Unwind: { carrier: 320, beat: 7.5, bpm: 58, noise: "BROWN", layers: { beat: 0.38, veil: 0.19, pulse: 0.06, drone: 0.16 } },
-  Sleep: { carrier: 220, beat: 3.2, bpm: 42, noise: "BROWN", layers: { beat: 0.31, veil: 0.23, pulse: 0.03, drone: 0.13 } },
-  Perform: { carrier: 480, beat: 18, bpm: 88, noise: "PINK", layers: { beat: 0.42, veil: 0.08, pulse: 0.16, drone: 0.07 } },
-} as const;
+function classicFactoryPreset(name: string, tags: string[], carrier: number, beat: number, bpm: number, noise: "PINK" | "BROWN", gains: Record<LayerKey, number>): FactoryPreset {
+  return {
+    name,
+    tags,
+    data: {
+      carrier,
+      beat,
+      bpm,
+      noiseActive: { WHITE: false, PINK: noise === "PINK", BROWN: noise === "BROWN", BLUE: false, VIOLET: false, GREY: false },
+      layers: Object.fromEntries((Object.keys(initialLayers) as LayerKey[]).map((key) => [key, { ...initialLayers[key], gain: gains[key] }])) as LayerState,
+    },
+  };
+}
+
+function archiveFactoryPresets(archive: { presets: Array<{ name: string; data: Record<string, unknown>; tags?: string[]; time?: string }> }): FactoryPreset[] {
+  return archive.presets.map((program) => ({ name: program.name, data: program.data, tags: program.tags ?? [], time: program.time }));
+}
+
+const FACTORY_PRESETS: FactoryPreset[] = [
+  classicFactoryPreset("Focus", ["FOCUS"], 400, 13, 72, "PINK", { beat: 0.46, veil: 0.1, pulse: 0.1, drone: 0.08 }),
+  classicFactoryPreset("Unwind", ["UNWIND", "RELAX"], 320, 7.5, 58, "BROWN", { beat: 0.38, veil: 0.19, pulse: 0.06, drone: 0.16 }),
+  classicFactoryPreset("Sleep", ["SLEEP", "RELAX"], 220, 3.2, 42, "BROWN", { beat: 0.31, veil: 0.23, pulse: 0.03, drone: 0.13 }),
+  classicFactoryPreset("Perform", ["PERFORMANCE", "FOCUS"], 480, 18, 88, "PINK", { beat: 0.42, veil: 0.08, pulse: 0.16, drone: 0.07 }),
+  ...archiveFactoryPresets(journeyPresetArchive),
+  ...archiveFactoryPresets(meditationPresetArchive),
+];
+const FACTORY_PRESET_MAP = new Map(FACTORY_PRESETS.map((program) => [program.name, program] as const));
 
 // Program library — tag/time vocabulary for the preset flyout. User additions
 // and deletions persist to localStorage; factory programs carry fixed tags.
-const DEFAULT_PRESET_TAGS = ["RELAX", "UNWIND", "SLEEP", "TRIP", "OUT OF BODY", "PAST LIVES", "FOCUS", "PERFORMANCE"];
+const DEFAULT_PRESET_TAGS = [...new Set(["RELAX", "UNWIND", "SLEEP", "TRIP", "OUT OF BODY", "PAST LIVES", "FOCUS", "PERFORMANCE", ...FACTORY_PRESETS.flatMap((program) => program.tags)])];
 const DEFAULT_PRESET_TIMES = ["5 MIN", "10 MIN", "15 MIN", "20 MIN", "30 MIN", "45 MIN", "60 MIN", "90 MIN"];
-const BUILTIN_PRESET_TAGS: Record<keyof typeof presets, string[]> = {
-  Focus: ["FOCUS"],
-  Unwind: ["UNWIND", "RELAX"],
-  Sleep: ["SLEEP", "RELAX"],
-  Perform: ["PERFORMANCE", "FOCUS"],
-};
+const PRESET_VOCAB_VERSION = 2;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -1525,7 +1544,7 @@ export default function Home() {
   const [sessionLength, setSessionLength] = useState(30);
   const [automation, setAutomation] = useState(false);
   const [drift, setDrift] = useState(0.18);
-  const [preset, setPreset] = useState<keyof typeof presets>("Focus");
+  const [preset, setPreset] = useState("Focus");
   const [hintDismissed, setHintDismissed] = useState(false);
   const safeMode = true;
   const [tubeDrive, setTubeDrive] = useState<Record<TubeKey, number>>({ ECC83: .18, "12AU7": 0, "6V6": 0, EL34: 0 });
@@ -2136,12 +2155,6 @@ export default function Home() {
     setTextureStatus("IMPORT MP3 OR WAV");
   };
 
-  const loadPreset = (name: keyof typeof presets) => {
-    const next = presets[name]; setPreset(name); setSelectedPreset(""); setCarrier(next.carrier); setBeat(next.beat); setBpm(next.bpm);
-    setNoiseActive({ WHITE: false, PINK: next.noise === "PINK", BROWN: next.noise === "BROWN", BLUE: false, VIOLET: false, GREY: false });
-    setLayers((current) => ({ ...current, beat: { ...current.beat, gain: next.layers.beat }, veil: { ...current.veil, gain: next.layers.veil }, pulse: { ...current.pulse, gain: next.layers.pulse }, drone: { ...current.drone, gain: next.layers.drone } }));
-  };
-
   // Feature 1 — a full snapshot of every control the instrument exposes.
   const collectSnapshot = (): Record<string, unknown> => ({
     carrier, beat, master, bpm, pulseDepth, pulseToneHz, pulseWave, pulseDuty, pulseSmooth, mode, waveform,
@@ -2176,6 +2189,14 @@ export default function Home() {
       automation: (v) => setAutomation(v as boolean), drift: (v) => setDrift(v as number), tubeDrive: (v) => setTubeDrive(v as Record<TubeKey, number>), automationTracks: (v) => setAutomationTracks(v as AutomationTrack[]),
     };
     Object.keys(setters).forEach((k) => { if (d[k] !== undefined) setters[k](d[k]); });
+  };
+
+  const loadPreset = (name: string) => {
+    const program = FACTORY_PRESET_MAP.get(name);
+    if (!program) return;
+    applySnapshot(program.data);
+    setPreset(program.name);
+    setSelectedPreset("");
   };
 
   const persistPresets = (list: UserPreset[]) => {
@@ -2284,7 +2305,7 @@ export default function Home() {
   // leaves the labels already stamped on saved presets untouched.
   const persistPresetVocab = (tags: string[], times: string[]) => {
     setPresetTags(tags); setPresetTimes(times);
-    try { window.localStorage.setItem("nocturne.preset-vocab", JSON.stringify({ tags, times })); } catch { /* storage blocked */ }
+    try { window.localStorage.setItem("nocturne.preset-vocab", JSON.stringify({ version: PRESET_VOCAB_VERSION, tags, times })); } catch { /* storage blocked */ }
   };
   const addPresetTag = () => {
     const tag = newTagText.trim().toUpperCase().slice(0, 24);
@@ -2313,9 +2334,13 @@ export default function Home() {
     try {
       const raw = window.localStorage.getItem("nocturne.preset-vocab");
       if (raw) {
-        const vocab = JSON.parse(raw) as { tags?: unknown; times?: unknown };
-        if (Array.isArray(vocab.tags)) setPresetTags(vocab.tags.filter((tag): tag is string => typeof tag === "string"));
-        if (Array.isArray(vocab.times)) setPresetTimes(vocab.times.filter((time): time is string => typeof time === "string"));
+        const vocab = JSON.parse(raw) as { version?: unknown; tags?: unknown; times?: unknown };
+        const storedTags = Array.isArray(vocab.tags) ? vocab.tags.filter((tag): tag is string => typeof tag === "string") : [];
+        const storedTimes = Array.isArray(vocab.times) ? vocab.times.filter((time): time is string => typeof time === "string") : [];
+        const tags = vocab.version === PRESET_VOCAB_VERSION ? storedTags : [...new Set([...DEFAULT_PRESET_TAGS, ...storedTags])];
+        const times = vocab.version === PRESET_VOCAB_VERSION ? storedTimes : [...new Set([...DEFAULT_PRESET_TIMES, ...storedTimes])];
+        setPresetTags(tags); setPresetTimes(times);
+        if (vocab.version !== PRESET_VOCAB_VERSION) window.localStorage.setItem("nocturne.preset-vocab", JSON.stringify({ version: PRESET_VOCAB_VERSION, tags, times }));
       }
     } catch { /* ignore */ }
   }, []);
@@ -2405,10 +2430,11 @@ export default function Home() {
 
   // Program library — what the trigger shows and what the flyout lists.
   const activeUserPreset = userPresets.find((p) => p.name === selectedPreset) || null;
-  const activeProgramName = activeUserPreset ? activeUserPreset.name : preset;
-  const activeProgramTags = activeUserPreset ? activeUserPreset.tags ?? [] : BUILTIN_PRESET_TAGS[preset];
-  const activeProgramTime = activeUserPreset?.time;
-  const factoryVisible = (Object.keys(presets) as (keyof typeof presets)[]).filter((name) => !presetTagFilter || BUILTIN_PRESET_TAGS[name].includes(presetTagFilter));
+  const activeFactoryPreset = FACTORY_PRESET_MAP.get(preset) ?? FACTORY_PRESETS[0];
+  const activeProgramName = activeUserPreset ? activeUserPreset.name : activeFactoryPreset.name;
+  const activeProgramTags = activeUserPreset ? activeUserPreset.tags ?? [] : activeFactoryPreset.tags;
+  const activeProgramTime = activeUserPreset?.time ?? activeFactoryPreset.time;
+  const factoryVisible = FACTORY_PRESETS.filter((program) => !presetTagFilter || program.tags.includes(presetTagFilter));
   const savedVisible = userPresets.filter((p) => !presetTagFilter || (p.tags ?? []).includes(presetTagFilter));
   const draftTimes = saveDraft && saveDraft.time && !presetTimes.includes(saveDraft.time) ? [...presetTimes, saveDraft.time] : presetTimes;
   const masterDb = master <= .01 ? "−∞" : (20 * Math.log10(master * .58)).toFixed(1);
@@ -2484,10 +2510,10 @@ export default function Home() {
           </div>
           <div className="preset-menu-list">
             <small className="pm-section">FACTORY PROGRAMS</small>
-            {factoryVisible.map((name) => <div className={`pm-row ${!selectedPreset && preset === name ? "active" : ""}`} key={name}>
-              <button className="pm-load" onClick={() => { loadPreset(name); setPresetMenuOpen(false); }}>
-                <b>{name}</b>
-                <span className="pm-chips">{BUILTIN_PRESET_TAGS[name].map((tag) => <i key={tag}>{tag}</i>)}</span>
+            {factoryVisible.map((program) => <div className={`pm-row ${!selectedPreset && preset === program.name ? "active" : ""}`} key={program.name}>
+              <button className="pm-load" onClick={() => { loadPreset(program.name); setPresetMenuOpen(false); }}>
+                <b>{program.name}</b>
+                <span className="pm-chips">{program.tags.map((tag) => <i key={tag}>{tag}</i>)}{program.time && <i className="time">{program.time}</i>}</span>
               </button>
             </div>)}
             {factoryVisible.length === 0 && <p className="pm-empty">No factory program carries this tag.</p>}

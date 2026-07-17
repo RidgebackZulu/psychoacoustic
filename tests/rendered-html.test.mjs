@@ -105,6 +105,27 @@ test("ships the interactive audio engine and social card", async () => {
   assert.doesNotMatch(page, /new AudioContext\(\{ latencyHint: "interactive", sampleRate:/);
 });
 
+test("bundles both preset archives as factory programs", async () => {
+  const [page, journeys, meditations] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../presets/nocturne-journeys-5m-15m.json", import.meta.url), "utf8").then(JSON.parse),
+    readFile(new URL("../presets/nocturne-deep-meditation-journeys-15m.json", import.meta.url), "utf8").then(JSON.parse),
+  ]);
+  assert.equal(journeys.format, "nocturne-presets");
+  assert.equal(meditations.format, "nocturne-presets");
+  assert.equal(journeys.presets.length, 14);
+  assert.equal(meditations.presets.length, 5);
+  assert.equal(new Set([...journeys.presets, ...meditations.presets].map((preset) => preset.name)).size, 19);
+  assert.match(page, /import journeyPresetArchive from "\.\.\/presets\/nocturne-journeys-5m-15m\.json"/);
+  assert.match(page, /import meditationPresetArchive from "\.\.\/presets\/nocturne-deep-meditation-journeys-15m\.json"/);
+  assert.match(page, /\.\.\.archiveFactoryPresets\(journeyPresetArchive\)/);
+  assert.match(page, /\.\.\.archiveFactoryPresets\(meditationPresetArchive\)/);
+  for (const preset of meditations.presets) {
+    const master = preset.data.automationTracks.find((track) => track.parameter === "master");
+    assert.equal(master?.points.at(-1)?.value, 0, `${preset.name} must retain its fade-to-zero factory automation`);
+  }
+});
+
 test("routes every frontier engine and its automation into offline FLAC rendering", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   assert.match(page, /const exportFlac = async \(\) =>/);

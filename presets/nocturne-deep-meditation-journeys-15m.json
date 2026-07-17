@@ -1,0 +1,3788 @@
+{
+  "format": "nocturne-presets",
+  "version": 1,
+  "exportedAt": "2026-07-17T03:07:34.054Z",
+  "presets": [
+    {
+      "name": "Deep Meditation · Descent Through the Moonwell · 15 MIN",
+      "tags": [
+        "DEEP MEDITATION",
+        "JOURNEY",
+        "RELAX",
+        "TRIP"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 280,
+        "beat": 6.2,
+        "master": 0.34,
+        "bpm": 50,
+        "pulseDepth": 0.08,
+        "pulseToneHz": 112,
+        "pulseWave": "sine",
+        "pulseDuty": 0.66,
+        "pulseSmooth": 0.99,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.04,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 4.5,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 640,
+        "hugginsWidth": 160,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.04,
+        "hugginsSeed": 101,
+        "coherenceOn": true,
+        "coherence": 0.55,
+        "coherenceClusters": 4,
+        "coherenceRate": 0.5,
+        "coherenceDepth": 0.26,
+        "coherenceSpread": 0.7,
+        "coherenceLevel": 0.06,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.48,
+        "coherenceMix": 0.74,
+        "coherenceDrive": 0.65,
+        "coherenceFollower": 450,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.03,
+          "PINK": 0.2,
+          "BROWN": 0.42,
+          "BLUE": 0.018,
+          "VIOLET": 0.018,
+          "GREY": 0.1
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1100,
+        "veilQ": 0.65,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.55,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.26,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.1,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.012,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.13,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.12,
+        "tubeDrive": {
+          "ECC83": 0.055,
+          "12AU7": 0.09,
+          "6V6": 0.04,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-moonwell-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-moonwell-01-01",
+                "time": 0,
+                "value": 0.18
+              },
+              {
+                "id": "p-moonwell-01-02",
+                "time": 0.035,
+                "value": 0.29
+              },
+              {
+                "id": "p-moonwell-01-03",
+                "time": 0.1,
+                "value": 0.33
+              },
+              {
+                "id": "p-moonwell-01-04",
+                "time": 0.28,
+                "value": 0.35
+              },
+              {
+                "id": "p-moonwell-01-05",
+                "time": 0.52,
+                "value": 0.36
+              },
+              {
+                "id": "p-moonwell-01-06",
+                "time": 0.72,
+                "value": 0.35
+              },
+              {
+                "id": "p-moonwell-01-07",
+                "time": 0.86,
+                "value": 0.33
+              },
+              {
+                "id": "p-moonwell-01-08",
+                "time": 0.9,
+                "value": 0.31
+              },
+              {
+                "id": "p-moonwell-01-09",
+                "time": 0.933333,
+                "value": 0.29
+              },
+              {
+                "id": "p-moonwell-01-10",
+                "time": 0.966667,
+                "value": 0.12
+              },
+              {
+                "id": "p-moonwell-01-11",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-moonwell-02-01",
+                "time": 0,
+                "value": 0.271739
+              },
+              {
+                "id": "p-moonwell-02-02",
+                "time": 0.15,
+                "value": 0.23913
+              },
+              {
+                "id": "p-moonwell-02-03",
+                "time": 0.32,
+                "value": 0.184783
+              },
+              {
+                "id": "p-moonwell-02-04",
+                "time": 0.52,
+                "value": 0.141304
+              },
+              {
+                "id": "p-moonwell-02-05",
+                "time": 0.7,
+                "value": 0.195652
+              },
+              {
+                "id": "p-moonwell-02-06",
+                "time": 0.88,
+                "value": 0.282609
+              },
+              {
+                "id": "p-moonwell-02-07",
+                "time": 0.933333,
+                "value": 0.25
+              },
+              {
+                "id": "p-moonwell-02-08",
+                "time": 1,
+                "value": 0.217391
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-moonwell-03-01",
+                "time": 0,
+                "value": 0.21519
+              },
+              {
+                "id": "p-moonwell-03-02",
+                "time": 0.15,
+                "value": 0.16962
+              },
+              {
+                "id": "p-moonwell-03-03",
+                "time": 0.32,
+                "value": 0.129114
+              },
+              {
+                "id": "p-moonwell-03-04",
+                "time": 0.52,
+                "value": 0.083544
+              },
+              {
+                "id": "p-moonwell-03-05",
+                "time": 0.7,
+                "value": 0.118987
+              },
+              {
+                "id": "p-moonwell-03-06",
+                "time": 0.88,
+                "value": 0.18481
+              },
+              {
+                "id": "p-moonwell-03-07",
+                "time": 0.933333,
+                "value": 0.202532
+              },
+              {
+                "id": "p-moonwell-03-08",
+                "time": 1,
+                "value": 0.202532
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-04-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-moonwell-04-01",
+                "time": 0,
+                "value": 0.183468
+              },
+              {
+                "id": "p-moonwell-04-02",
+                "time": 0.15,
+                "value": 0.122984
+              },
+              {
+                "id": "p-moonwell-04-03",
+                "time": 0.32,
+                "value": 0.0625
+              },
+              {
+                "id": "p-moonwell-04-04",
+                "time": 0.52,
+                "value": 0.034274
+              },
+              {
+                "id": "p-moonwell-04-05",
+                "time": 0.7,
+                "value": 0.082661
+              },
+              {
+                "id": "p-moonwell-04-06",
+                "time": 0.88,
+                "value": 0.173387
+              },
+              {
+                "id": "p-moonwell-04-07",
+                "time": 0.933333,
+                "value": 0.112903
+              },
+              {
+                "id": "p-moonwell-04-08",
+                "time": 1,
+                "value": 0.082661
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-05-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-moonwell-05-01",
+                "time": 0,
+                "value": 0.82
+              },
+              {
+                "id": "p-moonwell-05-02",
+                "time": 0.15,
+                "value": 0.62
+              },
+              {
+                "id": "p-moonwell-05-03",
+                "time": 0.32,
+                "value": 0.35
+              },
+              {
+                "id": "p-moonwell-05-04",
+                "time": 0.52,
+                "value": 0.28
+              },
+              {
+                "id": "p-moonwell-05-05",
+                "time": 0.7,
+                "value": 0.55
+              },
+              {
+                "id": "p-moonwell-05-06",
+                "time": 0.88,
+                "value": 0.78
+              },
+              {
+                "id": "p-moonwell-05-07",
+                "time": 0.933333,
+                "value": 0.84
+              },
+              {
+                "id": "p-moonwell-05-08",
+                "time": 1,
+                "value": 0.84
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-06-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-moonwell-06-01",
+                "time": 0,
+                "value": 0.03662
+              },
+              {
+                "id": "p-moonwell-06-02",
+                "time": 0.15,
+                "value": 0.019718
+              },
+              {
+                "id": "p-moonwell-06-03",
+                "time": 0.32,
+                "value": 0.005634
+              },
+              {
+                "id": "p-moonwell-06-04",
+                "time": 0.52,
+                "value": 0
+              },
+              {
+                "id": "p-moonwell-06-05",
+                "time": 0.7,
+                "value": 0.011268
+              },
+              {
+                "id": "p-moonwell-06-06",
+                "time": 0.88,
+                "value": 0.028169
+              },
+              {
+                "id": "p-moonwell-06-07",
+                "time": 0.933333,
+                "value": 0.016901
+              },
+              {
+                "id": "p-moonwell-06-08",
+                "time": 1,
+                "value": 0.008451
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-07-coherenceSpread",
+            "parameter": "coherenceSpread",
+            "points": [
+              {
+                "id": "p-moonwell-07-01",
+                "time": 0,
+                "value": 0.35
+              },
+              {
+                "id": "p-moonwell-07-02",
+                "time": 0.15,
+                "value": 0.65
+              },
+              {
+                "id": "p-moonwell-07-03",
+                "time": 0.32,
+                "value": 0.9
+              },
+              {
+                "id": "p-moonwell-07-04",
+                "time": 0.52,
+                "value": 0.95
+              },
+              {
+                "id": "p-moonwell-07-05",
+                "time": 0.7,
+                "value": 0.75
+              },
+              {
+                "id": "p-moonwell-07-06",
+                "time": 0.88,
+                "value": 0.45
+              },
+              {
+                "id": "p-moonwell-07-07",
+                "time": 0.933333,
+                "value": 0.3
+              },
+              {
+                "id": "p-moonwell-07-08",
+                "time": 1,
+                "value": 0.25
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-08-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-moonwell-08-01",
+                "time": 0,
+                "value": 0.45
+              },
+              {
+                "id": "p-moonwell-08-02",
+                "time": 0.15,
+                "value": 0.675
+              },
+              {
+                "id": "p-moonwell-08-03",
+                "time": 0.32,
+                "value": 0.25
+              },
+              {
+                "id": "p-moonwell-08-04",
+                "time": 0.52,
+                "value": 0.775
+              },
+              {
+                "id": "p-moonwell-08-05",
+                "time": 0.7,
+                "value": 0.35
+              },
+              {
+                "id": "p-moonwell-08-06",
+                "time": 0.88,
+                "value": 0.55
+              },
+              {
+                "id": "p-moonwell-08-07",
+                "time": 0.933333,
+                "value": 0.5
+              },
+              {
+                "id": "p-moonwell-08-08",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-09-dronePan",
+            "parameter": "dronePan",
+            "points": [
+              {
+                "id": "p-moonwell-09-01",
+                "time": 0,
+                "value": 0.55
+              },
+              {
+                "id": "p-moonwell-09-02",
+                "time": 0.15,
+                "value": 0.325
+              },
+              {
+                "id": "p-moonwell-09-03",
+                "time": 0.32,
+                "value": 0.75
+              },
+              {
+                "id": "p-moonwell-09-04",
+                "time": 0.52,
+                "value": 0.225
+              },
+              {
+                "id": "p-moonwell-09-05",
+                "time": 0.7,
+                "value": 0.65
+              },
+              {
+                "id": "p-moonwell-09-06",
+                "time": 0.88,
+                "value": 0.45
+              },
+              {
+                "id": "p-moonwell-09-07",
+                "time": 0.933333,
+                "value": 0.5
+              },
+              {
+                "id": "p-moonwell-09-08",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-10-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-moonwell-10-01",
+                "time": 0,
+                "value": 0.025
+              },
+              {
+                "id": "p-moonwell-10-02",
+                "time": 0.15,
+                "value": 0.066667
+              },
+              {
+                "id": "p-moonwell-10-03",
+                "time": 0.32,
+                "value": 0.116667
+              },
+              {
+                "id": "p-moonwell-10-04",
+                "time": 0.52,
+                "value": 0.15
+              },
+              {
+                "id": "p-moonwell-10-05",
+                "time": 0.7,
+                "value": 0.1
+              },
+              {
+                "id": "p-moonwell-10-06",
+                "time": 0.88,
+                "value": 0.05
+              },
+              {
+                "id": "p-moonwell-10-07",
+                "time": 0.933333,
+                "value": 0.016667
+              },
+              {
+                "id": "p-moonwell-10-08",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-11-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-moonwell-11-01",
+                "time": 0,
+                "value": 0.08
+              },
+              {
+                "id": "p-moonwell-11-02",
+                "time": 0.15,
+                "value": 0.13
+              },
+              {
+                "id": "p-moonwell-11-03",
+                "time": 0.32,
+                "value": 0.18
+              },
+              {
+                "id": "p-moonwell-11-04",
+                "time": 0.52,
+                "value": 0.2
+              },
+              {
+                "id": "p-moonwell-11-05",
+                "time": 0.7,
+                "value": 0.15
+              },
+              {
+                "id": "p-moonwell-11-06",
+                "time": 0.88,
+                "value": 0.09
+              },
+              {
+                "id": "p-moonwell-11-07",
+                "time": 0.933333,
+                "value": 0.06
+              },
+              {
+                "id": "p-moonwell-11-08",
+                "time": 1,
+                "value": 0.03
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-moonwell-12-pulseGain",
+            "parameter": "pulseGain",
+            "points": [
+              {
+                "id": "p-moonwell-12-01",
+                "time": 0,
+                "value": 0.02
+              },
+              {
+                "id": "p-moonwell-12-02",
+                "time": 0.15,
+                "value": 0.015
+              },
+              {
+                "id": "p-moonwell-12-03",
+                "time": 0.32,
+                "value": 0.01
+              },
+              {
+                "id": "p-moonwell-12-04",
+                "time": 0.52,
+                "value": 0.005
+              },
+              {
+                "id": "p-moonwell-12-05",
+                "time": 0.7,
+                "value": 0.012
+              },
+              {
+                "id": "p-moonwell-12-06",
+                "time": 0.88,
+                "value": 0.02
+              },
+              {
+                "id": "p-moonwell-12-07",
+                "time": 0.933333,
+                "value": 0.008
+              },
+              {
+                "id": "p-moonwell-12-08",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Deep Meditation · Lanterns Beneath the Sea · 15 MIN",
+      "tags": [
+        "DEEP MEDITATION",
+        "JOURNEY",
+        "TRIP",
+        "SPATIAL"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 340,
+        "beat": 6.8,
+        "master": 0.34,
+        "bpm": 54,
+        "pulseDepth": 0.1,
+        "pulseToneHz": 128,
+        "pulseWave": "sine",
+        "pulseDuty": 0.64,
+        "pulseSmooth": 0.98,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.05,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 5,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": true,
+        "mfPartials": 5,
+        "mfBrightness": 0.2,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 880,
+        "hugginsWidth": 180,
+        "hugginsPhase": 315,
+        "hugginsLevel": 0.045,
+        "hugginsSeed": 111,
+        "coherenceOn": true,
+        "coherence": 0.58,
+        "coherenceClusters": 5,
+        "coherenceRate": 0.65,
+        "coherenceDepth": 0.3,
+        "coherenceSpread": 0.72,
+        "coherenceLevel": 0.07,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "HUGGINS",
+        "coherenceInput": 0.52,
+        "coherenceMix": 0.78,
+        "coherenceDrive": 0.68,
+        "coherenceFollower": 420,
+        "coherenceTopology": "HARMONIC",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": false,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": true
+        },
+        "noiseLevels": {
+          "WHITE": 0.025,
+          "PINK": 0.12,
+          "BROWN": 0.38,
+          "BLUE": 0.015,
+          "VIOLET": 0.015,
+          "GREY": 0.16
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1400,
+        "veilQ": 0.72,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.44,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.25,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.085,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.015,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.135,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.14,
+        "tubeDrive": {
+          "ECC83": 0.07,
+          "12AU7": 0.11,
+          "6V6": 0.045,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-lantern-sea-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-lantern-sea-01-01",
+                "time": 0,
+                "value": 0.18
+              },
+              {
+                "id": "p-lantern-sea-01-02",
+                "time": 0.035,
+                "value": 0.29
+              },
+              {
+                "id": "p-lantern-sea-01-03",
+                "time": 0.1,
+                "value": 0.33
+              },
+              {
+                "id": "p-lantern-sea-01-04",
+                "time": 0.28,
+                "value": 0.36
+              },
+              {
+                "id": "p-lantern-sea-01-05",
+                "time": 0.52,
+                "value": 0.37
+              },
+              {
+                "id": "p-lantern-sea-01-06",
+                "time": 0.72,
+                "value": 0.36
+              },
+              {
+                "id": "p-lantern-sea-01-07",
+                "time": 0.86,
+                "value": 0.33
+              },
+              {
+                "id": "p-lantern-sea-01-08",
+                "time": 0.9,
+                "value": 0.31
+              },
+              {
+                "id": "p-lantern-sea-01-09",
+                "time": 0.933333,
+                "value": 0.29
+              },
+              {
+                "id": "p-lantern-sea-01-10",
+                "time": 0.966667,
+                "value": 0.12
+              },
+              {
+                "id": "p-lantern-sea-01-11",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-lantern-sea-02-01",
+                "time": 0,
+                "value": 0.23913
+              },
+              {
+                "id": "p-lantern-sea-02-02",
+                "time": 0.14,
+                "value": 0.369565
+              },
+              {
+                "id": "p-lantern-sea-02-03",
+                "time": 0.29,
+                "value": 0.282609
+              },
+              {
+                "id": "p-lantern-sea-02-04",
+                "time": 0.45,
+                "value": 0.456522
+              },
+              {
+                "id": "p-lantern-sea-02-05",
+                "time": 0.61,
+                "value": 0.217391
+              },
+              {
+                "id": "p-lantern-sea-02-06",
+                "time": 0.77,
+                "value": 0.380435
+              },
+              {
+                "id": "p-lantern-sea-02-07",
+                "time": 0.9,
+                "value": 0.26087
+              },
+              {
+                "id": "p-lantern-sea-02-08",
+                "time": 0.933333,
+                "value": 0.23913
+              },
+              {
+                "id": "p-lantern-sea-02-09",
+                "time": 1,
+                "value": 0.217391
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-lantern-sea-03-01",
+                "time": 0,
+                "value": 0.18481
+              },
+              {
+                "id": "p-lantern-sea-03-02",
+                "time": 0.14,
+                "value": 0.144304
+              },
+              {
+                "id": "p-lantern-sea-03-03",
+                "time": 0.29,
+                "value": 0.2
+              },
+              {
+                "id": "p-lantern-sea-03-04",
+                "time": 0.45,
+                "value": 0.129114
+              },
+              {
+                "id": "p-lantern-sea-03-05",
+                "time": 0.61,
+                "value": 0.16962
+              },
+              {
+                "id": "p-lantern-sea-03-06",
+                "time": 0.77,
+                "value": 0.149367
+              },
+              {
+                "id": "p-lantern-sea-03-07",
+                "time": 0.9,
+                "value": 0.189873
+              },
+              {
+                "id": "p-lantern-sea-03-08",
+                "time": 0.933333,
+                "value": 0.16962
+              },
+              {
+                "id": "p-lantern-sea-03-09",
+                "time": 1,
+                "value": 0.16962
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-04-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-lantern-sea-04-01",
+                "time": 0,
+                "value": 0.082661
+              },
+              {
+                "id": "p-lantern-sea-04-02",
+                "time": 0.14,
+                "value": 0.243952
+              },
+              {
+                "id": "p-lantern-sea-04-03",
+                "time": 0.29,
+                "value": 0.112903
+              },
+              {
+                "id": "p-lantern-sea-04-04",
+                "time": 0.45,
+                "value": 0.354839
+              },
+              {
+                "id": "p-lantern-sea-04-05",
+                "time": 0.61,
+                "value": 0.072581
+              },
+              {
+                "id": "p-lantern-sea-04-06",
+                "time": 0.77,
+                "value": 0.21371
+              },
+              {
+                "id": "p-lantern-sea-04-07",
+                "time": 0.9,
+                "value": 0.092742
+              },
+              {
+                "id": "p-lantern-sea-04-08",
+                "time": 0.933333,
+                "value": 0.06754
+              },
+              {
+                "id": "p-lantern-sea-04-09",
+                "time": 1,
+                "value": 0.052419
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-05-beatGain",
+            "parameter": "beatGain",
+            "points": [
+              {
+                "id": "p-lantern-sea-05-01",
+                "time": 0,
+                "value": 0.22
+              },
+              {
+                "id": "p-lantern-sea-05-02",
+                "time": 0.14,
+                "value": 0.28
+              },
+              {
+                "id": "p-lantern-sea-05-03",
+                "time": 0.29,
+                "value": 0.23
+              },
+              {
+                "id": "p-lantern-sea-05-04",
+                "time": 0.45,
+                "value": 0.3
+              },
+              {
+                "id": "p-lantern-sea-05-05",
+                "time": 0.61,
+                "value": 0.21
+              },
+              {
+                "id": "p-lantern-sea-05-06",
+                "time": 0.77,
+                "value": 0.27
+              },
+              {
+                "id": "p-lantern-sea-05-07",
+                "time": 0.9,
+                "value": 0.23
+              },
+              {
+                "id": "p-lantern-sea-05-08",
+                "time": 0.933333,
+                "value": 0.18
+              },
+              {
+                "id": "p-lantern-sea-05-09",
+                "time": 1,
+                "value": 0.08
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-06-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-lantern-sea-06-01",
+                "time": 0,
+                "value": 0.1
+              },
+              {
+                "id": "p-lantern-sea-06-02",
+                "time": 0.14,
+                "value": 0.14
+              },
+              {
+                "id": "p-lantern-sea-06-03",
+                "time": 0.29,
+                "value": 0.18
+              },
+              {
+                "id": "p-lantern-sea-06-04",
+                "time": 0.45,
+                "value": 0.15
+              },
+              {
+                "id": "p-lantern-sea-06-05",
+                "time": 0.61,
+                "value": 0.2
+              },
+              {
+                "id": "p-lantern-sea-06-06",
+                "time": 0.77,
+                "value": 0.14
+              },
+              {
+                "id": "p-lantern-sea-06-07",
+                "time": 0.9,
+                "value": 0.11
+              },
+              {
+                "id": "p-lantern-sea-06-08",
+                "time": 0.933333,
+                "value": 0.08
+              },
+              {
+                "id": "p-lantern-sea-06-09",
+                "time": 1,
+                "value": 0.03
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-07-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-lantern-sea-07-01",
+                "time": 0,
+                "value": 0.35
+              },
+              {
+                "id": "p-lantern-sea-07-02",
+                "time": 0.14,
+                "value": 0.69
+              },
+              {
+                "id": "p-lantern-sea-07-03",
+                "time": 0.29,
+                "value": 0.275
+              },
+              {
+                "id": "p-lantern-sea-07-04",
+                "time": 0.45,
+                "value": 0.75
+              },
+              {
+                "id": "p-lantern-sea-07-05",
+                "time": 0.61,
+                "value": 0.29
+              },
+              {
+                "id": "p-lantern-sea-07-06",
+                "time": 0.77,
+                "value": 0.67
+              },
+              {
+                "id": "p-lantern-sea-07-07",
+                "time": 0.9,
+                "value": 0.41
+              },
+              {
+                "id": "p-lantern-sea-07-08",
+                "time": 0.933333,
+                "value": 0.5
+              },
+              {
+                "id": "p-lantern-sea-07-09",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-08-dronePan",
+            "parameter": "dronePan",
+            "points": [
+              {
+                "id": "p-lantern-sea-08-01",
+                "time": 0,
+                "value": 0.65
+              },
+              {
+                "id": "p-lantern-sea-08-02",
+                "time": 0.14,
+                "value": 0.31
+              },
+              {
+                "id": "p-lantern-sea-08-03",
+                "time": 0.29,
+                "value": 0.725
+              },
+              {
+                "id": "p-lantern-sea-08-04",
+                "time": 0.45,
+                "value": 0.25
+              },
+              {
+                "id": "p-lantern-sea-08-05",
+                "time": 0.61,
+                "value": 0.71
+              },
+              {
+                "id": "p-lantern-sea-08-06",
+                "time": 0.77,
+                "value": 0.33
+              },
+              {
+                "id": "p-lantern-sea-08-07",
+                "time": 0.9,
+                "value": 0.59
+              },
+              {
+                "id": "p-lantern-sea-08-08",
+                "time": 0.933333,
+                "value": 0.5
+              },
+              {
+                "id": "p-lantern-sea-08-09",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-09-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-lantern-sea-09-01",
+                "time": 0,
+                "value": 0.42
+              },
+              {
+                "id": "p-lantern-sea-09-02",
+                "time": 0.14,
+                "value": 0.76
+              },
+              {
+                "id": "p-lantern-sea-09-03",
+                "time": 0.29,
+                "value": 0.5
+              },
+              {
+                "id": "p-lantern-sea-09-04",
+                "time": 0.45,
+                "value": 0.84
+              },
+              {
+                "id": "p-lantern-sea-09-05",
+                "time": 0.61,
+                "value": 0.38
+              },
+              {
+                "id": "p-lantern-sea-09-06",
+                "time": 0.77,
+                "value": 0.72
+              },
+              {
+                "id": "p-lantern-sea-09-07",
+                "time": 0.9,
+                "value": 0.56
+              },
+              {
+                "id": "p-lantern-sea-09-08",
+                "time": 0.933333,
+                "value": 0.72
+              },
+              {
+                "id": "p-lantern-sea-09-09",
+                "time": 1,
+                "value": 0.8
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-10-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-lantern-sea-10-01",
+                "time": 0,
+                "value": 0.008451
+              },
+              {
+                "id": "p-lantern-sea-10-02",
+                "time": 0.14,
+                "value": 0.047887
+              },
+              {
+                "id": "p-lantern-sea-10-03",
+                "time": 0.29,
+                "value": 0.016901
+              },
+              {
+                "id": "p-lantern-sea-10-04",
+                "time": 0.45,
+                "value": 0.070423
+              },
+              {
+                "id": "p-lantern-sea-10-05",
+                "time": 0.61,
+                "value": 0.005634
+              },
+              {
+                "id": "p-lantern-sea-10-06",
+                "time": 0.77,
+                "value": 0.042254
+              },
+              {
+                "id": "p-lantern-sea-10-07",
+                "time": 0.9,
+                "value": 0.014085
+              },
+              {
+                "id": "p-lantern-sea-10-08",
+                "time": 0.933333,
+                "value": 0.008451
+              },
+              {
+                "id": "p-lantern-sea-10-09",
+                "time": 1,
+                "value": 0.002817
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-11-coherenceLevel",
+            "parameter": "coherenceLevel",
+            "points": [
+              {
+                "id": "p-lantern-sea-11-01",
+                "time": 0,
+                "value": 0.05
+              },
+              {
+                "id": "p-lantern-sea-11-02",
+                "time": 0.14,
+                "value": 0.09375
+              },
+              {
+                "id": "p-lantern-sea-11-03",
+                "time": 0.29,
+                "value": 0.06875
+              },
+              {
+                "id": "p-lantern-sea-11-04",
+                "time": 0.45,
+                "value": 0.1125
+              },
+              {
+                "id": "p-lantern-sea-11-05",
+                "time": 0.61,
+                "value": 0.0625
+              },
+              {
+                "id": "p-lantern-sea-11-06",
+                "time": 0.77,
+                "value": 0.1
+              },
+              {
+                "id": "p-lantern-sea-11-07",
+                "time": 0.9,
+                "value": 0.05625
+              },
+              {
+                "id": "p-lantern-sea-11-08",
+                "time": 0.933333,
+                "value": 0.0375
+              },
+              {
+                "id": "p-lantern-sea-11-09",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-lantern-sea-12-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-lantern-sea-12-01",
+                "time": 0,
+                "value": 0.033333
+              },
+              {
+                "id": "p-lantern-sea-12-02",
+                "time": 0.14,
+                "value": 0.091667
+              },
+              {
+                "id": "p-lantern-sea-12-03",
+                "time": 0.29,
+                "value": 0.066667
+              },
+              {
+                "id": "p-lantern-sea-12-04",
+                "time": 0.45,
+                "value": 0.15
+              },
+              {
+                "id": "p-lantern-sea-12-05",
+                "time": 0.61,
+                "value": 0.075
+              },
+              {
+                "id": "p-lantern-sea-12-06",
+                "time": 0.77,
+                "value": 0.133333
+              },
+              {
+                "id": "p-lantern-sea-12-07",
+                "time": 0.9,
+                "value": 0.058333
+              },
+              {
+                "id": "p-lantern-sea-12-08",
+                "time": 0.933333,
+                "value": 0.03
+              },
+              {
+                "id": "p-lantern-sea-12-09",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Deep Meditation · River Beyond the Stars · 15 MIN",
+      "tags": [
+        "DEEP MEDITATION",
+        "JOURNEY",
+        "OUT OF BODY",
+        "TRIP"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 250,
+        "beat": 4.8,
+        "master": 0.33,
+        "bpm": 52,
+        "pulseDepth": 0.08,
+        "pulseToneHz": 108,
+        "pulseWave": "sine",
+        "pulseDuty": 0.67,
+        "pulseSmooth": 0.99,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.04,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 4.4,
+        "rissetOn": true,
+        "rissetDir": -1,
+        "rissetRate": 0.01,
+        "rissetLayers": 4,
+        "rissetRatio": 1.5,
+        "rissetFocus": 1.35,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 960,
+        "hugginsWidth": 200,
+        "hugginsPhase": 360,
+        "hugginsLevel": 0.04,
+        "hugginsSeed": 121,
+        "coherenceOn": true,
+        "coherence": 0.38,
+        "coherenceClusters": 5,
+        "coherenceRate": 0.45,
+        "coherenceDepth": 0.28,
+        "coherenceSpread": 0.88,
+        "coherenceLevel": 0.06,
+        "coherenceCarrier": "GREY",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.46,
+        "coherenceMix": 0.84,
+        "coherenceDrive": 0.62,
+        "coherenceFollower": 500,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": false,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": true
+        },
+        "noiseLevels": {
+          "WHITE": 0.02,
+          "PINK": 0.1,
+          "BROWN": 0.34,
+          "BLUE": 0.012,
+          "VIOLET": 0.012,
+          "GREY": 0.17
+        },
+        "veilType": "lowpass",
+        "veilCenter": 950,
+        "veilQ": 0.66,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.5,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.23,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.075,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.012,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.12,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.16,
+        "tubeDrive": {
+          "ECC83": 0.05,
+          "12AU7": 0.08,
+          "6V6": 0.035,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-star-river-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-star-river-01-01",
+                "time": 0,
+                "value": 0.18
+              },
+              {
+                "id": "p-star-river-01-02",
+                "time": 0.035,
+                "value": 0.29
+              },
+              {
+                "id": "p-star-river-01-03",
+                "time": 0.1,
+                "value": 0.33
+              },
+              {
+                "id": "p-star-river-01-04",
+                "time": 0.28,
+                "value": 0.35
+              },
+              {
+                "id": "p-star-river-01-05",
+                "time": 0.52,
+                "value": 0.36
+              },
+              {
+                "id": "p-star-river-01-06",
+                "time": 0.72,
+                "value": 0.35
+              },
+              {
+                "id": "p-star-river-01-07",
+                "time": 0.86,
+                "value": 0.33
+              },
+              {
+                "id": "p-star-river-01-08",
+                "time": 0.9,
+                "value": 0.31
+              },
+              {
+                "id": "p-star-river-01-09",
+                "time": 0.933333,
+                "value": 0.29
+              },
+              {
+                "id": "p-star-river-01-10",
+                "time": 0.966667,
+                "value": 0.12
+              },
+              {
+                "id": "p-star-river-01-11",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-star-river-02-01",
+                "time": 0,
+                "value": 0.206522
+              },
+              {
+                "id": "p-star-river-02-02",
+                "time": 0.12,
+                "value": 0.141304
+              },
+              {
+                "id": "p-star-river-02-03",
+                "time": 0.25,
+                "value": 0.336957
+              },
+              {
+                "id": "p-star-river-02-04",
+                "time": 0.4,
+                "value": 0.108696
+              },
+              {
+                "id": "p-star-river-02-05",
+                "time": 0.56,
+                "value": 0.369565
+              },
+              {
+                "id": "p-star-river-02-06",
+                "time": 0.72,
+                "value": 0.130435
+              },
+              {
+                "id": "p-star-river-02-07",
+                "time": 0.86,
+                "value": 0.293478
+              },
+              {
+                "id": "p-star-river-02-08",
+                "time": 0.933333,
+                "value": 0.217391
+              },
+              {
+                "id": "p-star-river-02-09",
+                "time": 1,
+                "value": 0.184783
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-star-river-03-01",
+                "time": 0,
+                "value": 0.118987
+              },
+              {
+                "id": "p-star-river-03-02",
+                "time": 0.12,
+                "value": 0.159494
+              },
+              {
+                "id": "p-star-river-03-03",
+                "time": 0.25,
+                "value": 0.088608
+              },
+              {
+                "id": "p-star-river-03-04",
+                "time": 0.4,
+                "value": 0.174684
+              },
+              {
+                "id": "p-star-river-03-05",
+                "time": 0.56,
+                "value": 0.078481
+              },
+              {
+                "id": "p-star-river-03-06",
+                "time": 0.72,
+                "value": 0.151899
+              },
+              {
+                "id": "p-star-river-03-07",
+                "time": 0.86,
+                "value": 0.093671
+              },
+              {
+                "id": "p-star-river-03-08",
+                "time": 0.933333,
+                "value": 0.124051
+              },
+              {
+                "id": "p-star-river-03-09",
+                "time": 1,
+                "value": 0.124051
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-04-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-star-river-04-01",
+                "time": 0,
+                "value": 0.054435
+              },
+              {
+                "id": "p-star-river-04-02",
+                "time": 0.12,
+                "value": 0.173387
+              },
+              {
+                "id": "p-star-river-04-03",
+                "time": 0.25,
+                "value": 0.064516
+              },
+              {
+                "id": "p-star-river-04-04",
+                "time": 0.4,
+                "value": 0.254032
+              },
+              {
+                "id": "p-star-river-04-05",
+                "time": 0.56,
+                "value": 0.048387
+              },
+              {
+                "id": "p-star-river-04-06",
+                "time": 0.72,
+                "value": 0.294355
+              },
+              {
+                "id": "p-star-river-04-07",
+                "time": 0.86,
+                "value": 0.087702
+              },
+              {
+                "id": "p-star-river-04-08",
+                "time": 0.933333,
+                "value": 0.060484
+              },
+              {
+                "id": "p-star-river-04-09",
+                "time": 1,
+                "value": 0.042339
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-05-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-star-river-05-01",
+                "time": 0,
+                "value": 0.14
+              },
+              {
+                "id": "p-star-river-05-02",
+                "time": 0.12,
+                "value": 0.81
+              },
+              {
+                "id": "p-star-river-05-03",
+                "time": 0.25,
+                "value": 0.16
+              },
+              {
+                "id": "p-star-river-05-04",
+                "time": 0.4,
+                "value": 0.87
+              },
+              {
+                "id": "p-star-river-05-05",
+                "time": 0.56,
+                "value": 0.15
+              },
+              {
+                "id": "p-star-river-05-06",
+                "time": 0.72,
+                "value": 0.83
+              },
+              {
+                "id": "p-star-river-05-07",
+                "time": 0.86,
+                "value": 0.29
+              },
+              {
+                "id": "p-star-river-05-08",
+                "time": 0.933333,
+                "value": 0.5
+              },
+              {
+                "id": "p-star-river-05-09",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-06-dronePan",
+            "parameter": "dronePan",
+            "points": [
+              {
+                "id": "p-star-river-06-01",
+                "time": 0,
+                "value": 0.86
+              },
+              {
+                "id": "p-star-river-06-02",
+                "time": 0.12,
+                "value": 0.19
+              },
+              {
+                "id": "p-star-river-06-03",
+                "time": 0.25,
+                "value": 0.84
+              },
+              {
+                "id": "p-star-river-06-04",
+                "time": 0.4,
+                "value": 0.13
+              },
+              {
+                "id": "p-star-river-06-05",
+                "time": 0.56,
+                "value": 0.85
+              },
+              {
+                "id": "p-star-river-06-06",
+                "time": 0.72,
+                "value": 0.17
+              },
+              {
+                "id": "p-star-river-06-07",
+                "time": 0.86,
+                "value": 0.71
+              },
+              {
+                "id": "p-star-river-06-08",
+                "time": 0.933333,
+                "value": 0.5
+              },
+              {
+                "id": "p-star-river-06-09",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-07-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-star-river-07-01",
+                "time": 0,
+                "value": 0.24
+              },
+              {
+                "id": "p-star-river-07-02",
+                "time": 0.12,
+                "value": 0.65
+              },
+              {
+                "id": "p-star-river-07-03",
+                "time": 0.25,
+                "value": 0.3
+              },
+              {
+                "id": "p-star-river-07-04",
+                "time": 0.4,
+                "value": 0.8
+              },
+              {
+                "id": "p-star-river-07-05",
+                "time": 0.56,
+                "value": 0.26
+              },
+              {
+                "id": "p-star-river-07-06",
+                "time": 0.72,
+                "value": 0.84
+              },
+              {
+                "id": "p-star-river-07-07",
+                "time": 0.86,
+                "value": 0.4
+              },
+              {
+                "id": "p-star-river-07-08",
+                "time": 0.933333,
+                "value": 0.68
+              },
+              {
+                "id": "p-star-river-07-09",
+                "time": 1,
+                "value": 0.78
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-08-coherenceSpread",
+            "parameter": "coherenceSpread",
+            "points": [
+              {
+                "id": "p-star-river-08-01",
+                "time": 0,
+                "value": 0.96
+              },
+              {
+                "id": "p-star-river-08-02",
+                "time": 0.12,
+                "value": 0.55
+              },
+              {
+                "id": "p-star-river-08-03",
+                "time": 0.25,
+                "value": 0.92
+              },
+              {
+                "id": "p-star-river-08-04",
+                "time": 0.4,
+                "value": 0.42
+              },
+              {
+                "id": "p-star-river-08-05",
+                "time": 0.56,
+                "value": 0.95
+              },
+              {
+                "id": "p-star-river-08-06",
+                "time": 0.72,
+                "value": 0.38
+              },
+              {
+                "id": "p-star-river-08-07",
+                "time": 0.86,
+                "value": 0.78
+              },
+              {
+                "id": "p-star-river-08-08",
+                "time": 0.933333,
+                "value": 0.4
+              },
+              {
+                "id": "p-star-river-08-09",
+                "time": 1,
+                "value": 0.25
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-09-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-star-river-09-01",
+                "time": 0,
+                "value": 0
+              },
+              {
+                "id": "p-star-river-09-02",
+                "time": 0.12,
+                "value": 0.026479
+              },
+              {
+                "id": "p-star-river-09-03",
+                "time": 0.25,
+                "value": 0.002817
+              },
+              {
+                "id": "p-star-river-09-04",
+                "time": 0.4,
+                "value": 0.04507
+              },
+              {
+                "id": "p-star-river-09-05",
+                "time": 0.56,
+                "value": 0.001127
+              },
+              {
+                "id": "p-star-river-09-06",
+                "time": 0.72,
+                "value": 0.053521
+              },
+              {
+                "id": "p-star-river-09-07",
+                "time": 0.86,
+                "value": 0.012958
+              },
+              {
+                "id": "p-star-river-09-08",
+                "time": 0.933333,
+                "value": 0.005634
+              },
+              {
+                "id": "p-star-river-09-09",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-10-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-star-river-10-01",
+                "time": 0,
+                "value": 0.03
+              },
+              {
+                "id": "p-star-river-10-02",
+                "time": 0.12,
+                "value": 0.1
+              },
+              {
+                "id": "p-star-river-10-03",
+                "time": 0.25,
+                "value": 0.058333
+              },
+              {
+                "id": "p-star-river-10-04",
+                "time": 0.4,
+                "value": 0.15
+              },
+              {
+                "id": "p-star-river-10-05",
+                "time": 0.56,
+                "value": 0.05
+              },
+              {
+                "id": "p-star-river-10-06",
+                "time": 0.72,
+                "value": 0.166667
+              },
+              {
+                "id": "p-star-river-10-07",
+                "time": 0.86,
+                "value": 0.075
+              },
+              {
+                "id": "p-star-river-10-08",
+                "time": 0.933333,
+                "value": 0.03
+              },
+              {
+                "id": "p-star-river-10-09",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-11-rissetRate",
+            "parameter": "rissetRate",
+            "points": [
+              {
+                "id": "p-star-river-11-01",
+                "time": 0,
+                "value": 0.02069
+              },
+              {
+                "id": "p-star-river-11-02",
+                "time": 0.12,
+                "value": 0.075862
+              },
+              {
+                "id": "p-star-river-11-03",
+                "time": 0.25,
+                "value": 0.034483
+              },
+              {
+                "id": "p-star-river-11-04",
+                "time": 0.4,
+                "value": 0.131034
+              },
+              {
+                "id": "p-star-river-11-05",
+                "time": 0.56,
+                "value": 0.02069
+              },
+              {
+                "id": "p-star-river-11-06",
+                "time": 0.72,
+                "value": 0.158621
+              },
+              {
+                "id": "p-star-river-11-07",
+                "time": 0.86,
+                "value": 0.048276
+              },
+              {
+                "id": "p-star-river-11-08",
+                "time": 0.933333,
+                "value": 0.013793
+              },
+              {
+                "id": "p-star-river-11-09",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-star-river-12-pulseGain",
+            "parameter": "pulseGain",
+            "points": [
+              {
+                "id": "p-star-river-12-01",
+                "time": 0,
+                "value": 0.01
+              },
+              {
+                "id": "p-star-river-12-02",
+                "time": 0.12,
+                "value": 0.024
+              },
+              {
+                "id": "p-star-river-12-03",
+                "time": 0.25,
+                "value": 0.012
+              },
+              {
+                "id": "p-star-river-12-04",
+                "time": 0.4,
+                "value": 0.03
+              },
+              {
+                "id": "p-star-river-12-05",
+                "time": 0.56,
+                "value": 0.01
+              },
+              {
+                "id": "p-star-river-12-06",
+                "time": 0.72,
+                "value": 0.032
+              },
+              {
+                "id": "p-star-river-12-07",
+                "time": 0.86,
+                "value": 0.014
+              },
+              {
+                "id": "p-star-river-12-08",
+                "time": 0.933333,
+                "value": 0.006
+              },
+              {
+                "id": "p-star-river-12-09",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Deep Meditation · The Impossible Garden · 15 MIN",
+      "tags": [
+        "DEEP MEDITATION",
+        "JOURNEY",
+        "UNWIND",
+        "TRIP"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 330,
+        "beat": 6.6,
+        "master": 0.34,
+        "bpm": 58,
+        "pulseDepth": 0.1,
+        "pulseToneHz": 132,
+        "pulseWave": "sine",
+        "pulseDuty": 0.62,
+        "pulseSmooth": 0.98,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.055,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 5.3,
+        "rissetOn": true,
+        "rissetDir": 1,
+        "rissetRate": 0.012,
+        "rissetLayers": 3,
+        "rissetRatio": 1.6,
+        "rissetFocus": 1.3,
+        "missingFund": true,
+        "mfPartials": 6,
+        "mfBrightness": 0.18,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 740,
+        "hugginsWidth": 150,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.045,
+        "hugginsSeed": 131,
+        "coherenceOn": true,
+        "coherence": 0.52,
+        "coherenceClusters": 4,
+        "coherenceRate": 0.7,
+        "coherenceDepth": 0.3,
+        "coherenceSpread": 0.76,
+        "coherenceLevel": 0.07,
+        "coherenceCarrier": "PINK",
+        "coherenceDriver": "HUGGINS",
+        "coherenceInput": 0.5,
+        "coherenceMix": 0.78,
+        "coherenceDrive": 0.66,
+        "coherenceFollower": 390,
+        "coherenceTopology": "HARMONIC",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.02,
+          "PINK": 0.26,
+          "BROWN": 0.34,
+          "BLUE": 0.012,
+          "VIOLET": 0.012,
+          "GREY": 0.1
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1500,
+        "veilQ": 0.74,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.38,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.25,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.085,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.018,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.125,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.15,
+        "tubeDrive": {
+          "ECC83": 0.08,
+          "12AU7": 0.11,
+          "6V6": 0.04,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-garden-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-garden-01-01",
+                "time": 0,
+                "value": 0.18
+              },
+              {
+                "id": "p-garden-01-02",
+                "time": 0.035,
+                "value": 0.29
+              },
+              {
+                "id": "p-garden-01-03",
+                "time": 0.1,
+                "value": 0.33
+              },
+              {
+                "id": "p-garden-01-04",
+                "time": 0.28,
+                "value": 0.36
+              },
+              {
+                "id": "p-garden-01-05",
+                "time": 0.52,
+                "value": 0.37
+              },
+              {
+                "id": "p-garden-01-06",
+                "time": 0.72,
+                "value": 0.36
+              },
+              {
+                "id": "p-garden-01-07",
+                "time": 0.86,
+                "value": 0.33
+              },
+              {
+                "id": "p-garden-01-08",
+                "time": 0.9,
+                "value": 0.31
+              },
+              {
+                "id": "p-garden-01-09",
+                "time": 0.933333,
+                "value": 0.29
+              },
+              {
+                "id": "p-garden-01-10",
+                "time": 0.966667,
+                "value": 0.12
+              },
+              {
+                "id": "p-garden-01-11",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-garden-02-01",
+                "time": 0,
+                "value": 0.23913
+              },
+              {
+                "id": "p-garden-02-02",
+                "time": 0.13,
+                "value": 0.380435
+              },
+              {
+                "id": "p-garden-02-03",
+                "time": 0.27,
+                "value": 0.293478
+              },
+              {
+                "id": "p-garden-02-04",
+                "time": 0.42,
+                "value": 0.456522
+              },
+              {
+                "id": "p-garden-02-05",
+                "time": 0.57,
+                "value": 0.25
+              },
+              {
+                "id": "p-garden-02-06",
+                "time": 0.72,
+                "value": 0.413043
+              },
+              {
+                "id": "p-garden-02-07",
+                "time": 0.86,
+                "value": 0.315217
+              },
+              {
+                "id": "p-garden-02-08",
+                "time": 0.933333,
+                "value": 0.26087
+              },
+              {
+                "id": "p-garden-02-09",
+                "time": 1,
+                "value": 0.23913
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-garden-03-01",
+                "time": 0,
+                "value": 0.164557
+              },
+              {
+                "id": "p-garden-03-02",
+                "time": 0.13,
+                "value": 0.210127
+              },
+              {
+                "id": "p-garden-03-03",
+                "time": 0.27,
+                "value": 0.144304
+              },
+              {
+                "id": "p-garden-03-04",
+                "time": 0.42,
+                "value": 0.225316
+              },
+              {
+                "id": "p-garden-03-05",
+                "time": 0.57,
+                "value": 0.129114
+              },
+              {
+                "id": "p-garden-03-06",
+                "time": 0.72,
+                "value": 0.194937
+              },
+              {
+                "id": "p-garden-03-07",
+                "time": 0.86,
+                "value": 0.149367
+              },
+              {
+                "id": "p-garden-03-08",
+                "time": 0.933333,
+                "value": 0.174684
+              },
+              {
+                "id": "p-garden-03-09",
+                "time": 1,
+                "value": 0.174684
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-04-bpm",
+            "parameter": "bpm",
+            "points": [
+              {
+                "id": "p-garden-04-01",
+                "time": 0,
+                "value": 0.16
+              },
+              {
+                "id": "p-garden-04-02",
+                "time": 0.13,
+                "value": 0.213333
+              },
+              {
+                "id": "p-garden-04-03",
+                "time": 0.27,
+                "value": 0.173333
+              },
+              {
+                "id": "p-garden-04-04",
+                "time": 0.42,
+                "value": 0.253333
+              },
+              {
+                "id": "p-garden-04-05",
+                "time": 0.57,
+                "value": 0.146667
+              },
+              {
+                "id": "p-garden-04-06",
+                "time": 0.72,
+                "value": 0.226667
+              },
+              {
+                "id": "p-garden-04-07",
+                "time": 0.86,
+                "value": 0.173333
+              },
+              {
+                "id": "p-garden-04-08",
+                "time": 0.933333,
+                "value": 0.146667
+              },
+              {
+                "id": "p-garden-04-09",
+                "time": 1,
+                "value": 0.133333
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-05-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-garden-05-01",
+                "time": 0,
+                "value": 0.077621
+              },
+              {
+                "id": "p-garden-05-02",
+                "time": 0.13,
+                "value": 0.274194
+              },
+              {
+                "id": "p-garden-05-03",
+                "time": 0.27,
+                "value": 0.112903
+              },
+              {
+                "id": "p-garden-05-04",
+                "time": 0.42,
+                "value": 0.415323
+              },
+              {
+                "id": "p-garden-05-05",
+                "time": 0.57,
+                "value": 0.082661
+              },
+              {
+                "id": "p-garden-05-06",
+                "time": 0.72,
+                "value": 0.334677
+              },
+              {
+                "id": "p-garden-05-07",
+                "time": 0.86,
+                "value": 0.143145
+              },
+              {
+                "id": "p-garden-05-08",
+                "time": 0.933333,
+                "value": 0.082661
+              },
+              {
+                "id": "p-garden-05-09",
+                "time": 1,
+                "value": 0.05746
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-06-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-garden-06-01",
+                "time": 0,
+                "value": 0.31
+              },
+              {
+                "id": "p-garden-06-02",
+                "time": 0.13,
+                "value": 0.71
+              },
+              {
+                "id": "p-garden-06-03",
+                "time": 0.27,
+                "value": 0.33
+              },
+              {
+                "id": "p-garden-06-04",
+                "time": 0.42,
+                "value": 0.74
+              },
+              {
+                "id": "p-garden-06-05",
+                "time": 0.57,
+                "value": 0.28
+              },
+              {
+                "id": "p-garden-06-06",
+                "time": 0.72,
+                "value": 0.7
+              },
+              {
+                "id": "p-garden-06-07",
+                "time": 0.86,
+                "value": 0.39
+              },
+              {
+                "id": "p-garden-06-08",
+                "time": 0.933333,
+                "value": 0.5
+              },
+              {
+                "id": "p-garden-06-09",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-07-dronePan",
+            "parameter": "dronePan",
+            "points": [
+              {
+                "id": "p-garden-07-01",
+                "time": 0,
+                "value": 0.69
+              },
+              {
+                "id": "p-garden-07-02",
+                "time": 0.13,
+                "value": 0.29
+              },
+              {
+                "id": "p-garden-07-03",
+                "time": 0.27,
+                "value": 0.67
+              },
+              {
+                "id": "p-garden-07-04",
+                "time": 0.42,
+                "value": 0.26
+              },
+              {
+                "id": "p-garden-07-05",
+                "time": 0.57,
+                "value": 0.72
+              },
+              {
+                "id": "p-garden-07-06",
+                "time": 0.72,
+                "value": 0.3
+              },
+              {
+                "id": "p-garden-07-07",
+                "time": 0.86,
+                "value": 0.61
+              },
+              {
+                "id": "p-garden-07-08",
+                "time": 0.933333,
+                "value": 0.5
+              },
+              {
+                "id": "p-garden-07-09",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-08-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-garden-08-01",
+                "time": 0,
+                "value": 0.38
+              },
+              {
+                "id": "p-garden-08-02",
+                "time": 0.13,
+                "value": 0.72
+              },
+              {
+                "id": "p-garden-08-03",
+                "time": 0.27,
+                "value": 0.46
+              },
+              {
+                "id": "p-garden-08-04",
+                "time": 0.42,
+                "value": 0.86
+              },
+              {
+                "id": "p-garden-08-05",
+                "time": 0.57,
+                "value": 0.42
+              },
+              {
+                "id": "p-garden-08-06",
+                "time": 0.72,
+                "value": 0.8
+              },
+              {
+                "id": "p-garden-08-07",
+                "time": 0.86,
+                "value": 0.58
+              },
+              {
+                "id": "p-garden-08-08",
+                "time": 0.933333,
+                "value": 0.76
+              },
+              {
+                "id": "p-garden-08-09",
+                "time": 1,
+                "value": 0.84
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-09-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-garden-09-01",
+                "time": 0,
+                "value": 0.008451
+              },
+              {
+                "id": "p-garden-09-02",
+                "time": 0.13,
+                "value": 0.056338
+              },
+              {
+                "id": "p-garden-09-03",
+                "time": 0.27,
+                "value": 0.019718
+              },
+              {
+                "id": "p-garden-09-04",
+                "time": 0.42,
+                "value": 0.087324
+              },
+              {
+                "id": "p-garden-09-05",
+                "time": 0.57,
+                "value": 0.012958
+              },
+              {
+                "id": "p-garden-09-06",
+                "time": 0.72,
+                "value": 0.067606
+              },
+              {
+                "id": "p-garden-09-07",
+                "time": 0.86,
+                "value": 0.026479
+              },
+              {
+                "id": "p-garden-09-08",
+                "time": 0.933333,
+                "value": 0.011268
+              },
+              {
+                "id": "p-garden-09-09",
+                "time": 1,
+                "value": 0.002817
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-10-coherenceSpread",
+            "parameter": "coherenceSpread",
+            "points": [
+              {
+                "id": "p-garden-10-01",
+                "time": 0,
+                "value": 0.86
+              },
+              {
+                "id": "p-garden-10-02",
+                "time": 0.13,
+                "value": 0.55
+              },
+              {
+                "id": "p-garden-10-03",
+                "time": 0.27,
+                "value": 0.9
+              },
+              {
+                "id": "p-garden-10-04",
+                "time": 0.42,
+                "value": 0.4
+              },
+              {
+                "id": "p-garden-10-05",
+                "time": 0.57,
+                "value": 0.92
+              },
+              {
+                "id": "p-garden-10-06",
+                "time": 0.72,
+                "value": 0.44
+              },
+              {
+                "id": "p-garden-10-07",
+                "time": 0.86,
+                "value": 0.76
+              },
+              {
+                "id": "p-garden-10-08",
+                "time": 0.933333,
+                "value": 0.38
+              },
+              {
+                "id": "p-garden-10-09",
+                "time": 1,
+                "value": 0.28
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-11-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-garden-11-01",
+                "time": 0,
+                "value": 0.041667
+              },
+              {
+                "id": "p-garden-11-02",
+                "time": 0.13,
+                "value": 0.116667
+              },
+              {
+                "id": "p-garden-11-03",
+                "time": 0.27,
+                "value": 0.075
+              },
+              {
+                "id": "p-garden-11-04",
+                "time": 0.42,
+                "value": 0.166667
+              },
+              {
+                "id": "p-garden-11-05",
+                "time": 0.57,
+                "value": 0.066667
+              },
+              {
+                "id": "p-garden-11-06",
+                "time": 0.72,
+                "value": 0.15
+              },
+              {
+                "id": "p-garden-11-07",
+                "time": 0.86,
+                "value": 0.083333
+              },
+              {
+                "id": "p-garden-11-08",
+                "time": 0.933333,
+                "value": 0.03
+              },
+              {
+                "id": "p-garden-11-09",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-garden-12-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-garden-12-01",
+                "time": 0,
+                "value": 0.09
+              },
+              {
+                "id": "p-garden-12-02",
+                "time": 0.13,
+                "value": 0.14
+              },
+              {
+                "id": "p-garden-12-03",
+                "time": 0.27,
+                "value": 0.18
+              },
+              {
+                "id": "p-garden-12-04",
+                "time": 0.42,
+                "value": 0.15
+              },
+              {
+                "id": "p-garden-12-05",
+                "time": 0.57,
+                "value": 0.2
+              },
+              {
+                "id": "p-garden-12-06",
+                "time": 0.72,
+                "value": 0.14
+              },
+              {
+                "id": "p-garden-12-07",
+                "time": 0.86,
+                "value": 0.11
+              },
+              {
+                "id": "p-garden-12-08",
+                "time": 0.933333,
+                "value": 0.07
+              },
+              {
+                "id": "p-garden-12-09",
+                "time": 1,
+                "value": 0.03
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Deep Meditation · Temple of the Returning Sun · 15 MIN",
+      "tags": [
+        "DEEP MEDITATION",
+        "JOURNEY",
+        "RELAX",
+        "GROUNDING",
+        "FOCUS"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 320,
+        "beat": 7,
+        "master": 0.34,
+        "bpm": 56,
+        "pulseDepth": 0.08,
+        "pulseToneHz": 124,
+        "pulseWave": "sine",
+        "pulseDuty": 0.65,
+        "pulseSmooth": 0.99,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.04,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 4.8,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": true,
+        "mfPartials": 5,
+        "mfBrightness": 0.2,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 620,
+        "hugginsWidth": 130,
+        "hugginsPhase": 225,
+        "hugginsLevel": 0.03,
+        "hugginsSeed": 141,
+        "coherenceOn": true,
+        "coherence": 0.68,
+        "coherenceClusters": 3,
+        "coherenceRate": 0.55,
+        "coherenceDepth": 0.2,
+        "coherenceSpread": 0.38,
+        "coherenceLevel": 0.055,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.46,
+        "coherenceMix": 0.66,
+        "coherenceDrive": 0.58,
+        "coherenceFollower": 480,
+        "coherenceTopology": "CONTIGUOUS",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.02,
+          "PINK": 0.18,
+          "BROWN": 0.38,
+          "BLUE": 0.01,
+          "VIOLET": 0.01,
+          "GREY": 0.08
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1300,
+        "veilQ": 0.64,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.48,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.28,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.095,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.012,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.12,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.09,
+        "tubeDrive": {
+          "ECC83": 0.06,
+          "12AU7": 0.095,
+          "6V6": 0.04,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-returning-sun-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-returning-sun-01-01",
+                "time": 0,
+                "value": 0.18
+              },
+              {
+                "id": "p-returning-sun-01-02",
+                "time": 0.035,
+                "value": 0.29
+              },
+              {
+                "id": "p-returning-sun-01-03",
+                "time": 0.1,
+                "value": 0.33
+              },
+              {
+                "id": "p-returning-sun-01-04",
+                "time": 0.28,
+                "value": 0.35
+              },
+              {
+                "id": "p-returning-sun-01-05",
+                "time": 0.52,
+                "value": 0.36
+              },
+              {
+                "id": "p-returning-sun-01-06",
+                "time": 0.72,
+                "value": 0.35
+              },
+              {
+                "id": "p-returning-sun-01-07",
+                "time": 0.86,
+                "value": 0.33
+              },
+              {
+                "id": "p-returning-sun-01-08",
+                "time": 0.9,
+                "value": 0.31
+              },
+              {
+                "id": "p-returning-sun-01-09",
+                "time": 0.933333,
+                "value": 0.29
+              },
+              {
+                "id": "p-returning-sun-01-10",
+                "time": 0.966667,
+                "value": 0.12
+              },
+              {
+                "id": "p-returning-sun-01-11",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-returning-sun-02-01",
+                "time": 0,
+                "value": 0.315217
+              },
+              {
+                "id": "p-returning-sun-02-02",
+                "time": 0.14,
+                "value": 0.26087
+              },
+              {
+                "id": "p-returning-sun-02-03",
+                "time": 0.29,
+                "value": 0.206522
+              },
+              {
+                "id": "p-returning-sun-02-04",
+                "time": 0.45,
+                "value": 0.152174
+              },
+              {
+                "id": "p-returning-sun-02-05",
+                "time": 0.61,
+                "value": 0.184783
+              },
+              {
+                "id": "p-returning-sun-02-06",
+                "time": 0.76,
+                "value": 0.271739
+              },
+              {
+                "id": "p-returning-sun-02-07",
+                "time": 0.88,
+                "value": 0.358696
+              },
+              {
+                "id": "p-returning-sun-02-08",
+                "time": 0.933333,
+                "value": 0.369565
+              },
+              {
+                "id": "p-returning-sun-02-09",
+                "time": 1,
+                "value": 0.347826
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-returning-sun-03-01",
+                "time": 0,
+                "value": 0.240506
+              },
+              {
+                "id": "p-returning-sun-03-02",
+                "time": 0.14,
+                "value": 0.194937
+              },
+              {
+                "id": "p-returning-sun-03-03",
+                "time": 0.29,
+                "value": 0.144304
+              },
+              {
+                "id": "p-returning-sun-03-04",
+                "time": 0.45,
+                "value": 0.093671
+              },
+              {
+                "id": "p-returning-sun-03-05",
+                "time": 0.61,
+                "value": 0.118987
+              },
+              {
+                "id": "p-returning-sun-03-06",
+                "time": 0.76,
+                "value": 0.18481
+              },
+              {
+                "id": "p-returning-sun-03-07",
+                "time": 0.88,
+                "value": 0.24557
+              },
+              {
+                "id": "p-returning-sun-03-08",
+                "time": 0.933333,
+                "value": 0.253165
+              },
+              {
+                "id": "p-returning-sun-03-09",
+                "time": 1,
+                "value": 0.253165
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-04-bpm",
+            "parameter": "bpm",
+            "points": [
+              {
+                "id": "p-returning-sun-04-01",
+                "time": 0,
+                "value": 0.213333
+              },
+              {
+                "id": "p-returning-sun-04-02",
+                "time": 0.14,
+                "value": 0.173333
+              },
+              {
+                "id": "p-returning-sun-04-03",
+                "time": 0.29,
+                "value": 0.133333
+              },
+              {
+                "id": "p-returning-sun-04-04",
+                "time": 0.45,
+                "value": 0.093333
+              },
+              {
+                "id": "p-returning-sun-04-05",
+                "time": 0.61,
+                "value": 0.12
+              },
+              {
+                "id": "p-returning-sun-04-06",
+                "time": 0.76,
+                "value": 0.173333
+              },
+              {
+                "id": "p-returning-sun-04-07",
+                "time": 0.88,
+                "value": 0.226667
+              },
+              {
+                "id": "p-returning-sun-04-08",
+                "time": 0.933333,
+                "value": 0.24
+              },
+              {
+                "id": "p-returning-sun-04-09",
+                "time": 1,
+                "value": 0.24
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-05-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-returning-sun-05-01",
+                "time": 0,
+                "value": 0.21371
+              },
+              {
+                "id": "p-returning-sun-05-02",
+                "time": 0.14,
+                "value": 0.153226
+              },
+              {
+                "id": "p-returning-sun-05-03",
+                "time": 0.29,
+                "value": 0.097782
+              },
+              {
+                "id": "p-returning-sun-05-04",
+                "time": 0.45,
+                "value": 0.054435
+              },
+              {
+                "id": "p-returning-sun-05-05",
+                "time": 0.61,
+                "value": 0.077621
+              },
+              {
+                "id": "p-returning-sun-05-06",
+                "time": 0.76,
+                "value": 0.143145
+              },
+              {
+                "id": "p-returning-sun-05-07",
+                "time": 0.88,
+                "value": 0.233871
+              },
+              {
+                "id": "p-returning-sun-05-08",
+                "time": 0.933333,
+                "value": 0.264113
+              },
+              {
+                "id": "p-returning-sun-05-09",
+                "time": 1,
+                "value": 0.22379
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-06-beatGain",
+            "parameter": "beatGain",
+            "points": [
+              {
+                "id": "p-returning-sun-06-01",
+                "time": 0,
+                "value": 0.32
+              },
+              {
+                "id": "p-returning-sun-06-02",
+                "time": 0.14,
+                "value": 0.28
+              },
+              {
+                "id": "p-returning-sun-06-03",
+                "time": 0.29,
+                "value": 0.24
+              },
+              {
+                "id": "p-returning-sun-06-04",
+                "time": 0.45,
+                "value": 0.21
+              },
+              {
+                "id": "p-returning-sun-06-05",
+                "time": 0.61,
+                "value": 0.23
+              },
+              {
+                "id": "p-returning-sun-06-06",
+                "time": 0.76,
+                "value": 0.28
+              },
+              {
+                "id": "p-returning-sun-06-07",
+                "time": 0.88,
+                "value": 0.33
+              },
+              {
+                "id": "p-returning-sun-06-08",
+                "time": 0.933333,
+                "value": 0.31
+              },
+              {
+                "id": "p-returning-sun-06-09",
+                "time": 1,
+                "value": 0.14
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-07-veilGain",
+            "parameter": "veilGain",
+            "points": [
+              {
+                "id": "p-returning-sun-07-01",
+                "time": 0,
+                "value": 0.08
+              },
+              {
+                "id": "p-returning-sun-07-02",
+                "time": 0.14,
+                "value": 0.1
+              },
+              {
+                "id": "p-returning-sun-07-03",
+                "time": 0.29,
+                "value": 0.13
+              },
+              {
+                "id": "p-returning-sun-07-04",
+                "time": 0.45,
+                "value": 0.16
+              },
+              {
+                "id": "p-returning-sun-07-05",
+                "time": 0.61,
+                "value": 0.14
+              },
+              {
+                "id": "p-returning-sun-07-06",
+                "time": 0.76,
+                "value": 0.1
+              },
+              {
+                "id": "p-returning-sun-07-07",
+                "time": 0.88,
+                "value": 0.075
+              },
+              {
+                "id": "p-returning-sun-07-08",
+                "time": 0.933333,
+                "value": 0.05
+              },
+              {
+                "id": "p-returning-sun-07-09",
+                "time": 1,
+                "value": 0.015
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-08-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-returning-sun-08-01",
+                "time": 0,
+                "value": 0.08
+              },
+              {
+                "id": "p-returning-sun-08-02",
+                "time": 0.14,
+                "value": 0.12
+              },
+              {
+                "id": "p-returning-sun-08-03",
+                "time": 0.29,
+                "value": 0.16
+              },
+              {
+                "id": "p-returning-sun-08-04",
+                "time": 0.45,
+                "value": 0.2
+              },
+              {
+                "id": "p-returning-sun-08-05",
+                "time": 0.61,
+                "value": 0.17
+              },
+              {
+                "id": "p-returning-sun-08-06",
+                "time": 0.76,
+                "value": 0.12
+              },
+              {
+                "id": "p-returning-sun-08-07",
+                "time": 0.88,
+                "value": 0.08
+              },
+              {
+                "id": "p-returning-sun-08-08",
+                "time": 0.933333,
+                "value": 0.05
+              },
+              {
+                "id": "p-returning-sun-08-09",
+                "time": 1,
+                "value": 0.02
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-09-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-returning-sun-09-01",
+                "time": 0,
+                "value": 0.86
+              },
+              {
+                "id": "p-returning-sun-09-02",
+                "time": 0.14,
+                "value": 0.7
+              },
+              {
+                "id": "p-returning-sun-09-03",
+                "time": 0.29,
+                "value": 0.52
+              },
+              {
+                "id": "p-returning-sun-09-04",
+                "time": 0.45,
+                "value": 0.38
+              },
+              {
+                "id": "p-returning-sun-09-05",
+                "time": 0.61,
+                "value": 0.5
+              },
+              {
+                "id": "p-returning-sun-09-06",
+                "time": 0.76,
+                "value": 0.7
+              },
+              {
+                "id": "p-returning-sun-09-07",
+                "time": 0.88,
+                "value": 0.86
+              },
+              {
+                "id": "p-returning-sun-09-08",
+                "time": 0.933333,
+                "value": 0.92
+              },
+              {
+                "id": "p-returning-sun-09-09",
+                "time": 1,
+                "value": 0.94
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-10-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-returning-sun-10-01",
+                "time": 0,
+                "value": 0.030986
+              },
+              {
+                "id": "p-returning-sun-10-02",
+                "time": 0.14,
+                "value": 0.020845
+              },
+              {
+                "id": "p-returning-sun-10-03",
+                "time": 0.29,
+                "value": 0.011268
+              },
+              {
+                "id": "p-returning-sun-10-04",
+                "time": 0.45,
+                "value": 0.00169
+              },
+              {
+                "id": "p-returning-sun-10-05",
+                "time": 0.61,
+                "value": 0.008451
+              },
+              {
+                "id": "p-returning-sun-10-06",
+                "time": 0.76,
+                "value": 0.020845
+              },
+              {
+                "id": "p-returning-sun-10-07",
+                "time": 0.88,
+                "value": 0.033803
+              },
+              {
+                "id": "p-returning-sun-10-08",
+                "time": 0.933333,
+                "value": 0.022535
+              },
+              {
+                "id": "p-returning-sun-10-09",
+                "time": 1,
+                "value": 0.008451
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-11-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-returning-sun-11-01",
+                "time": 0,
+                "value": 0
+              },
+              {
+                "id": "p-returning-sun-11-02",
+                "time": 0.14,
+                "value": 0.041667
+              },
+              {
+                "id": "p-returning-sun-11-03",
+                "time": 0.29,
+                "value": 0.083333
+              },
+              {
+                "id": "p-returning-sun-11-04",
+                "time": 0.45,
+                "value": 0.125
+              },
+              {
+                "id": "p-returning-sun-11-05",
+                "time": 0.61,
+                "value": 0.1
+              },
+              {
+                "id": "p-returning-sun-11-06",
+                "time": 0.76,
+                "value": 0.058333
+              },
+              {
+                "id": "p-returning-sun-11-07",
+                "time": 0.88,
+                "value": 0.02
+              },
+              {
+                "id": "p-returning-sun-11-08",
+                "time": 0.933333,
+                "value": 0
+              },
+              {
+                "id": "p-returning-sun-11-09",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-returning-sun-12-drift",
+            "parameter": "drift",
+            "points": [
+              {
+                "id": "p-returning-sun-12-01",
+                "time": 0,
+                "value": 0.08
+              },
+              {
+                "id": "p-returning-sun-12-02",
+                "time": 0.14,
+                "value": 0.12
+              },
+              {
+                "id": "p-returning-sun-12-03",
+                "time": 0.29,
+                "value": 0.16
+              },
+              {
+                "id": "p-returning-sun-12-04",
+                "time": 0.45,
+                "value": 0.2
+              },
+              {
+                "id": "p-returning-sun-12-05",
+                "time": 0.61,
+                "value": 0.15
+              },
+              {
+                "id": "p-returning-sun-12-06",
+                "time": 0.76,
+                "value": 0.1
+              },
+              {
+                "id": "p-returning-sun-12-07",
+                "time": 0.88,
+                "value": 0.05
+              },
+              {
+                "id": "p-returning-sun-12-08",
+                "time": 0.933333,
+                "value": 0.02
+              },
+              {
+                "id": "p-returning-sun-12-09",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    }
+  ]
+}

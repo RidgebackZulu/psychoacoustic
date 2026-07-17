@@ -1,0 +1,7242 @@
+{
+  "format": "nocturne-presets",
+  "version": 1,
+  "exportedAt": "2026-07-17T02:46:26.367Z",
+  "presets": [
+    {
+      "name": "Sleep · Nocturne Descent · 5 MIN",
+      "tags": [
+        "SLEEP",
+        "RELAX"
+      ],
+      "time": "5 MIN",
+      "data": {
+        "carrier": 240,
+        "beat": 6.5,
+        "master": 0.32,
+        "bpm": 48,
+        "pulseDepth": 0.12,
+        "pulseToneHz": 110,
+        "pulseWave": "sine",
+        "pulseDuty": 0.64,
+        "pulseSmooth": 0.98,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.04,
+        "amShape": "sine",
+        "nestOn": false,
+        "thetaRate": 3.5,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": false,
+        "hugginsCenter": 720,
+        "hugginsWidth": 120,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.05,
+        "hugginsSeed": 21,
+        "coherenceOn": true,
+        "coherence": 0.82,
+        "coherenceClusters": 2,
+        "coherenceRate": 0.7,
+        "coherenceDepth": 0.18,
+        "coherenceSpread": 0.22,
+        "coherenceLevel": 0.055,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.55,
+        "coherenceMix": 0.62,
+        "coherenceDrive": 0.8,
+        "coherenceFollower": 520,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": false,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.1,
+          "PINK": 0.25,
+          "BROWN": 0.58,
+          "BLUE": 0.08,
+          "VIOLET": 0.06,
+          "GREY": 0.18
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1100,
+        "veilQ": 0.65,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.55,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.3,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.15,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.035,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.11,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 5,
+        "automation": true,
+        "drift": 0.05,
+        "tubeDrive": {
+          "ECC83": 0.04,
+          "12AU7": 0.06,
+          "6V6": 0.03,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-sleep-5-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-sleep-5-01-01",
+                "time": 0,
+                "value": 0.32
+              },
+              {
+                "id": "p-sleep-5-01-02",
+                "time": 0.12,
+                "value": 0.34
+              },
+              {
+                "id": "p-sleep-5-01-03",
+                "time": 0.62,
+                "value": 0.27
+              },
+              {
+                "id": "p-sleep-5-01-04",
+                "time": 0.84,
+                "value": 0.2
+              },
+              {
+                "id": "p-sleep-5-01-05",
+                "time": 1,
+                "value": 0.1
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-5-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-sleep-5-02-01",
+                "time": 0,
+                "value": 0.195652
+              },
+              {
+                "id": "p-sleep-5-02-02",
+                "time": 0.35,
+                "value": 0.163043
+              },
+              {
+                "id": "p-sleep-5-02-03",
+                "time": 0.72,
+                "value": 0.130435
+              },
+              {
+                "id": "p-sleep-5-02-04",
+                "time": 1,
+                "value": 0.108696
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-5-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-sleep-5-03-01",
+                "time": 0,
+                "value": 0.18481
+              },
+              {
+                "id": "p-sleep-5-03-02",
+                "time": 0.3,
+                "value": 0.144304
+              },
+              {
+                "id": "p-sleep-5-03-03",
+                "time": 0.63,
+                "value": 0.088608
+              },
+              {
+                "id": "p-sleep-5-03-04",
+                "time": 0.84,
+                "value": 0.058228
+              },
+              {
+                "id": "p-sleep-5-03-05",
+                "time": 1,
+                "value": 0.032911
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-5-04-bpm",
+            "parameter": "bpm",
+            "points": [
+              {
+                "id": "p-sleep-5-04-01",
+                "time": 0,
+                "value": 0.146667
+              },
+              {
+                "id": "p-sleep-5-04-02",
+                "time": 0.4,
+                "value": 0.106667
+              },
+              {
+                "id": "p-sleep-5-04-03",
+                "time": 0.74,
+                "value": 0.066667
+              },
+              {
+                "id": "p-sleep-5-04-04",
+                "time": 1,
+                "value": 0.026667
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-5-05-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-sleep-5-05-01",
+                "time": 0,
+                "value": 0.133065
+              },
+              {
+                "id": "p-sleep-5-05-02",
+                "time": 0.35,
+                "value": 0.087702
+              },
+              {
+                "id": "p-sleep-5-05-03",
+                "time": 0.7,
+                "value": 0.052419
+              },
+              {
+                "id": "p-sleep-5-05-04",
+                "time": 1,
+                "value": 0.024194
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-5-06-beatGain",
+            "parameter": "beatGain",
+            "points": [
+              {
+                "id": "p-sleep-5-06-01",
+                "time": 0,
+                "value": 0.3
+              },
+              {
+                "id": "p-sleep-5-06-02",
+                "time": 0.5,
+                "value": 0.24
+              },
+              {
+                "id": "p-sleep-5-06-03",
+                "time": 0.8,
+                "value": 0.16
+              },
+              {
+                "id": "p-sleep-5-06-04",
+                "time": 1,
+                "value": 0.07
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-5-07-pulseGain",
+            "parameter": "pulseGain",
+            "points": [
+              {
+                "id": "p-sleep-5-07-01",
+                "time": 0,
+                "value": 0.035
+              },
+              {
+                "id": "p-sleep-5-07-02",
+                "time": 0.48,
+                "value": 0.025
+              },
+              {
+                "id": "p-sleep-5-07-03",
+                "time": 0.8,
+                "value": 0.015
+              },
+              {
+                "id": "p-sleep-5-07-04",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-5-08-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-sleep-5-08-01",
+                "time": 0,
+                "value": 0.042254
+              },
+              {
+                "id": "p-sleep-5-08-02",
+                "time": 0.45,
+                "value": 0.025352
+              },
+              {
+                "id": "p-sleep-5-08-03",
+                "time": 0.8,
+                "value": 0.011268
+              },
+              {
+                "id": "p-sleep-5-08-04",
+                "time": 1,
+                "value": 0.00169
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Sleep · Nocturne Descent · 15 MIN",
+      "tags": [
+        "SLEEP",
+        "RELAX"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 250,
+        "beat": 7,
+        "master": 0.33,
+        "bpm": 50,
+        "pulseDepth": 0.1,
+        "pulseToneHz": 105,
+        "pulseWave": "sine",
+        "pulseDuty": 0.66,
+        "pulseSmooth": 0.99,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.035,
+        "amShape": "sine",
+        "nestOn": false,
+        "thetaRate": 3.2,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": false,
+        "hugginsCenter": 720,
+        "hugginsWidth": 120,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.05,
+        "hugginsSeed": 22,
+        "coherenceOn": true,
+        "coherence": 0.86,
+        "coherenceClusters": 2,
+        "coherenceRate": 0.65,
+        "coherenceDepth": 0.16,
+        "coherenceSpread": 0.18,
+        "coherenceLevel": 0.05,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.5,
+        "coherenceMix": 0.58,
+        "coherenceDrive": 0.8,
+        "coherenceFollower": 600,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": false,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.08,
+          "PINK": 0.2,
+          "BROWN": 0.55,
+          "BLUE": 0.05,
+          "VIOLET": 0.05,
+          "GREY": 0.15
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1050,
+        "veilQ": 0.6,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.6,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.3,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.16,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.03,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.11,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.045,
+        "tubeDrive": {
+          "ECC83": 0.035,
+          "12AU7": 0.055,
+          "6V6": 0.025,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-sleep-15-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-sleep-15-01-01",
+                "time": 0,
+                "value": 0.31
+              },
+              {
+                "id": "p-sleep-15-01-02",
+                "time": 0.08,
+                "value": 0.34
+              },
+              {
+                "id": "p-sleep-15-01-03",
+                "time": 0.3,
+                "value": 0.33
+              },
+              {
+                "id": "p-sleep-15-01-04",
+                "time": 0.52,
+                "value": 0.28
+              },
+              {
+                "id": "p-sleep-15-01-05",
+                "time": 0.72,
+                "value": 0.21
+              },
+              {
+                "id": "p-sleep-15-01-06",
+                "time": 0.88,
+                "value": 0.13
+              },
+              {
+                "id": "p-sleep-15-01-07",
+                "time": 1,
+                "value": 0.06
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-15-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-sleep-15-02-01",
+                "time": 0,
+                "value": 0.217391
+              },
+              {
+                "id": "p-sleep-15-02-02",
+                "time": 0.2,
+                "value": 0.190217
+              },
+              {
+                "id": "p-sleep-15-02-03",
+                "time": 0.42,
+                "value": 0.163043
+              },
+              {
+                "id": "p-sleep-15-02-04",
+                "time": 0.64,
+                "value": 0.13587
+              },
+              {
+                "id": "p-sleep-15-02-05",
+                "time": 0.82,
+                "value": 0.11413
+              },
+              {
+                "id": "p-sleep-15-02-06",
+                "time": 1,
+                "value": 0.092391
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-15-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-sleep-15-03-01",
+                "time": 0,
+                "value": 0.194937
+              },
+              {
+                "id": "p-sleep-15-03-02",
+                "time": 0.18,
+                "value": 0.164557
+              },
+              {
+                "id": "p-sleep-15-03-03",
+                "time": 0.38,
+                "value": 0.126582
+              },
+              {
+                "id": "p-sleep-15-03-04",
+                "time": 0.58,
+                "value": 0.083544
+              },
+              {
+                "id": "p-sleep-15-03-05",
+                "time": 0.78,
+                "value": 0.048101
+              },
+              {
+                "id": "p-sleep-15-03-06",
+                "time": 1,
+                "value": 0.017722
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-15-04-bpm",
+            "parameter": "bpm",
+            "points": [
+              {
+                "id": "p-sleep-15-04-01",
+                "time": 0,
+                "value": 0.16
+              },
+              {
+                "id": "p-sleep-15-04-02",
+                "time": 0.2,
+                "value": 0.133333
+              },
+              {
+                "id": "p-sleep-15-04-03",
+                "time": 0.42,
+                "value": 0.106667
+              },
+              {
+                "id": "p-sleep-15-04-04",
+                "time": 0.64,
+                "value": 0.08
+              },
+              {
+                "id": "p-sleep-15-04-05",
+                "time": 0.82,
+                "value": 0.04
+              },
+              {
+                "id": "p-sleep-15-04-06",
+                "time": 1,
+                "value": 0.013333
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-15-05-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-sleep-15-05-01",
+                "time": 0,
+                "value": 0.143145
+              },
+              {
+                "id": "p-sleep-15-05-02",
+                "time": 0.2,
+                "value": 0.112903
+              },
+              {
+                "id": "p-sleep-15-05-03",
+                "time": 0.43,
+                "value": 0.077621
+              },
+              {
+                "id": "p-sleep-15-05-04",
+                "time": 0.64,
+                "value": 0.048387
+              },
+              {
+                "id": "p-sleep-15-05-05",
+                "time": 0.82,
+                "value": 0.030242
+              },
+              {
+                "id": "p-sleep-15-05-06",
+                "time": 1,
+                "value": 0.016129
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-15-06-beatGain",
+            "parameter": "beatGain",
+            "points": [
+              {
+                "id": "p-sleep-15-06-01",
+                "time": 0,
+                "value": 0.3
+              },
+              {
+                "id": "p-sleep-15-06-02",
+                "time": 0.28,
+                "value": 0.27
+              },
+              {
+                "id": "p-sleep-15-06-03",
+                "time": 0.52,
+                "value": 0.21
+              },
+              {
+                "id": "p-sleep-15-06-04",
+                "time": 0.72,
+                "value": 0.15
+              },
+              {
+                "id": "p-sleep-15-06-05",
+                "time": 0.88,
+                "value": 0.09
+              },
+              {
+                "id": "p-sleep-15-06-06",
+                "time": 1,
+                "value": 0.04
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-15-07-veilGain",
+            "parameter": "veilGain",
+            "points": [
+              {
+                "id": "p-sleep-15-07-01",
+                "time": 0,
+                "value": 0.14
+              },
+              {
+                "id": "p-sleep-15-07-02",
+                "time": 0.22,
+                "value": 0.17
+              },
+              {
+                "id": "p-sleep-15-07-03",
+                "time": 0.5,
+                "value": 0.14
+              },
+              {
+                "id": "p-sleep-15-07-04",
+                "time": 0.72,
+                "value": 0.1
+              },
+              {
+                "id": "p-sleep-15-07-05",
+                "time": 0.88,
+                "value": 0.06
+              },
+              {
+                "id": "p-sleep-15-07-06",
+                "time": 1,
+                "value": 0.025
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-15-08-pulseGain",
+            "parameter": "pulseGain",
+            "points": [
+              {
+                "id": "p-sleep-15-08-01",
+                "time": 0,
+                "value": 0.03
+              },
+              {
+                "id": "p-sleep-15-08-02",
+                "time": 0.35,
+                "value": 0.025
+              },
+              {
+                "id": "p-sleep-15-08-03",
+                "time": 0.62,
+                "value": 0.016
+              },
+              {
+                "id": "p-sleep-15-08-04",
+                "time": 0.82,
+                "value": 0.008
+              },
+              {
+                "id": "p-sleep-15-08-05",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-15-09-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-sleep-15-09-01",
+                "time": 0,
+                "value": 0.03662
+              },
+              {
+                "id": "p-sleep-15-09-02",
+                "time": 0.25,
+                "value": 0.026479
+              },
+              {
+                "id": "p-sleep-15-09-03",
+                "time": 0.5,
+                "value": 0.016901
+              },
+              {
+                "id": "p-sleep-15-09-04",
+                "time": 0.72,
+                "value": 0.008451
+              },
+              {
+                "id": "p-sleep-15-09-05",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-sleep-15-10-drift",
+            "parameter": "drift",
+            "points": [
+              {
+                "id": "p-sleep-15-10-01",
+                "time": 0,
+                "value": 0.08
+              },
+              {
+                "id": "p-sleep-15-10-02",
+                "time": 0.3,
+                "value": 0.06
+              },
+              {
+                "id": "p-sleep-15-10-03",
+                "time": 0.62,
+                "value": 0.04
+              },
+              {
+                "id": "p-sleep-15-10-04",
+                "time": 0.82,
+                "value": 0.02
+              },
+              {
+                "id": "p-sleep-15-10-05",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Focus · Steady Lantern · 5 MIN",
+      "tags": [
+        "FOCUS"
+      ],
+      "time": "5 MIN",
+      "data": {
+        "carrier": 400,
+        "beat": 13.2,
+        "master": 0.36,
+        "bpm": 72,
+        "pulseDepth": 0.18,
+        "pulseToneHz": 165,
+        "pulseWave": "sine",
+        "pulseDuty": 0.55,
+        "pulseSmooth": 0.94,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.07,
+        "amShape": "sine",
+        "nestOn": false,
+        "thetaRate": 5,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": false,
+        "hugginsCenter": 720,
+        "hugginsWidth": 120,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.05,
+        "hugginsSeed": 31,
+        "coherenceOn": true,
+        "coherence": 0.78,
+        "coherenceClusters": 3,
+        "coherenceRate": 3.6,
+        "coherenceDepth": 0.2,
+        "coherenceSpread": 0.3,
+        "coherenceLevel": 0.055,
+        "coherenceCarrier": "PINK",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.52,
+        "coherenceMix": 0.55,
+        "coherenceDrive": 0.8,
+        "coherenceFollower": 260,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": false,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.1,
+          "PINK": 0.5,
+          "BROWN": 0.2,
+          "BLUE": 0.08,
+          "VIOLET": 0.06,
+          "GREY": 0.16
+        },
+        "veilType": "lowpass",
+        "veilCenter": 2200,
+        "veilQ": 0.75,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.25,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.35,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.085,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.045,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.055,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 5,
+        "automation": true,
+        "drift": 0.06,
+        "tubeDrive": {
+          "ECC83": 0.055,
+          "12AU7": 0.035,
+          "6V6": 0,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-focus-5-01-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-focus-5-01-01",
+                "time": 0,
+                "value": 0.336957
+              },
+              {
+                "id": "p-focus-5-01-02",
+                "time": 0.24,
+                "value": 0.363043
+              },
+              {
+                "id": "p-focus-5-01-03",
+                "time": 0.5,
+                "value": 0.35
+              },
+              {
+                "id": "p-focus-5-01-04",
+                "time": 0.76,
+                "value": 0.373913
+              },
+              {
+                "id": "p-focus-5-01-05",
+                "time": 1,
+                "value": 0.347826
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-5-02-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-focus-5-02-01",
+                "time": 0,
+                "value": 0.316456
+              },
+              {
+                "id": "p-focus-5-02-02",
+                "time": 0.25,
+                "value": 0.331646
+              },
+              {
+                "id": "p-focus-5-02-03",
+                "time": 0.52,
+                "value": 0.311392
+              },
+              {
+                "id": "p-focus-5-02-04",
+                "time": 0.77,
+                "value": 0.346835
+              },
+              {
+                "id": "p-focus-5-02-05",
+                "time": 1,
+                "value": 0.321519
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-5-03-beatGain",
+            "parameter": "beatGain",
+            "points": [
+              {
+                "id": "p-focus-5-03-01",
+                "time": 0,
+                "value": 0.34
+              },
+              {
+                "id": "p-focus-5-03-02",
+                "time": 0.25,
+                "value": 0.37
+              },
+              {
+                "id": "p-focus-5-03-03",
+                "time": 0.52,
+                "value": 0.35
+              },
+              {
+                "id": "p-focus-5-03-04",
+                "time": 0.76,
+                "value": 0.38
+              },
+              {
+                "id": "p-focus-5-03-05",
+                "time": 1,
+                "value": 0.34
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-5-04-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-focus-5-04-01",
+                "time": 0,
+                "value": 0.173387
+              },
+              {
+                "id": "p-focus-5-04-02",
+                "time": 0.24,
+                "value": 0.233871
+              },
+              {
+                "id": "p-focus-5-04-03",
+                "time": 0.5,
+                "value": 0.203629
+              },
+              {
+                "id": "p-focus-5-04-04",
+                "time": 0.76,
+                "value": 0.264113
+              },
+              {
+                "id": "p-focus-5-04-05",
+                "time": 1,
+                "value": 0.21371
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-5-05-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-focus-5-05-01",
+                "time": 0,
+                "value": 0.82
+              },
+              {
+                "id": "p-focus-5-05-02",
+                "time": 0.24,
+                "value": 0.7
+              },
+              {
+                "id": "p-focus-5-05-03",
+                "time": 0.5,
+                "value": 0.78
+              },
+              {
+                "id": "p-focus-5-05-04",
+                "time": 0.76,
+                "value": 0.68
+              },
+              {
+                "id": "p-focus-5-05-05",
+                "time": 1,
+                "value": 0.82
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-5-06-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-focus-5-06-01",
+                "time": 0,
+                "value": 0.166197
+              },
+              {
+                "id": "p-focus-5-06-02",
+                "time": 0.25,
+                "value": 0.216901
+              },
+              {
+                "id": "p-focus-5-06-03",
+                "time": 0.52,
+                "value": 0.183099
+              },
+              {
+                "id": "p-focus-5-06-04",
+                "time": 0.77,
+                "value": 0.233803
+              },
+              {
+                "id": "p-focus-5-06-05",
+                "time": 1,
+                "value": 0.188732
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-5-07-drift",
+            "parameter": "drift",
+            "points": [
+              {
+                "id": "p-focus-5-07-01",
+                "time": 0,
+                "value": 0.04
+              },
+              {
+                "id": "p-focus-5-07-02",
+                "time": 0.25,
+                "value": 0.1
+              },
+              {
+                "id": "p-focus-5-07-03",
+                "time": 0.5,
+                "value": 0.06
+              },
+              {
+                "id": "p-focus-5-07-04",
+                "time": 0.76,
+                "value": 0.12
+              },
+              {
+                "id": "p-focus-5-07-05",
+                "time": 1,
+                "value": 0.05
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-5-08-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-focus-5-08-01",
+                "time": 0,
+                "value": 0.05
+              },
+              {
+                "id": "p-focus-5-08-02",
+                "time": 0.25,
+                "value": 0.07
+              },
+              {
+                "id": "p-focus-5-08-03",
+                "time": 0.5,
+                "value": 0.055
+              },
+              {
+                "id": "p-focus-5-08-04",
+                "time": 0.76,
+                "value": 0.08
+              },
+              {
+                "id": "p-focus-5-08-05",
+                "time": 1,
+                "value": 0.05
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Focus · Steady Lantern · 15 MIN",
+      "tags": [
+        "FOCUS"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 405,
+        "beat": 13.4,
+        "master": 0.36,
+        "bpm": 72,
+        "pulseDepth": 0.17,
+        "pulseToneHz": 160,
+        "pulseWave": "sine",
+        "pulseDuty": 0.56,
+        "pulseSmooth": 0.95,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.065,
+        "amShape": "sine",
+        "nestOn": false,
+        "thetaRate": 5,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": false,
+        "hugginsCenter": 720,
+        "hugginsWidth": 120,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.05,
+        "hugginsSeed": 32,
+        "coherenceOn": true,
+        "coherence": 0.8,
+        "coherenceClusters": 3,
+        "coherenceRate": 3.5,
+        "coherenceDepth": 0.18,
+        "coherenceSpread": 0.28,
+        "coherenceLevel": 0.05,
+        "coherenceCarrier": "PINK",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.5,
+        "coherenceMix": 0.52,
+        "coherenceDrive": 0.8,
+        "coherenceFollower": 280,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": false,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.08,
+          "PINK": 0.48,
+          "BROWN": 0.18,
+          "BLUE": 0.06,
+          "VIOLET": 0.05,
+          "GREY": 0.14
+        },
+        "veilType": "lowpass",
+        "veilCenter": 2300,
+        "veilQ": 0.7,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.22,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.35,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.08,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.04,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.05,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.05,
+        "tubeDrive": {
+          "ECC83": 0.05,
+          "12AU7": 0.035,
+          "6V6": 0,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-focus-15-01-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-focus-15-01-01",
+                "time": 0,
+                "value": 0.342391
+              },
+              {
+                "id": "p-focus-15-01-02",
+                "time": 0.14,
+                "value": 0.367391
+              },
+              {
+                "id": "p-focus-15-01-03",
+                "time": 0.28,
+                "value": 0.35
+              },
+              {
+                "id": "p-focus-15-01-04",
+                "time": 0.43,
+                "value": 0.380435
+              },
+              {
+                "id": "p-focus-15-01-05",
+                "time": 0.58,
+                "value": 0.356522
+              },
+              {
+                "id": "p-focus-15-01-06",
+                "time": 0.72,
+                "value": 0.371739
+              },
+              {
+                "id": "p-focus-15-01-07",
+                "time": 0.86,
+                "value": 0.345652
+              },
+              {
+                "id": "p-focus-15-01-08",
+                "time": 1,
+                "value": 0.358696
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-15-02-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-focus-15-02-01",
+                "time": 0,
+                "value": 0.318987
+              },
+              {
+                "id": "p-focus-15-02-02",
+                "time": 0.14,
+                "value": 0.336709
+              },
+              {
+                "id": "p-focus-15-02-03",
+                "time": 0.29,
+                "value": 0.321519
+              },
+              {
+                "id": "p-focus-15-02-04",
+                "time": 0.43,
+                "value": 0.344304
+              },
+              {
+                "id": "p-focus-15-02-05",
+                "time": 0.58,
+                "value": 0.326582
+              },
+              {
+                "id": "p-focus-15-02-06",
+                "time": 0.72,
+                "value": 0.341772
+              },
+              {
+                "id": "p-focus-15-02-07",
+                "time": 0.86,
+                "value": 0.313924
+              },
+              {
+                "id": "p-focus-15-02-08",
+                "time": 1,
+                "value": 0.329114
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-15-03-beatGain",
+            "parameter": "beatGain",
+            "points": [
+              {
+                "id": "p-focus-15-03-01",
+                "time": 0,
+                "value": 0.34
+              },
+              {
+                "id": "p-focus-15-03-02",
+                "time": 0.18,
+                "value": 0.37
+              },
+              {
+                "id": "p-focus-15-03-03",
+                "time": 0.36,
+                "value": 0.35
+              },
+              {
+                "id": "p-focus-15-03-04",
+                "time": 0.54,
+                "value": 0.38
+              },
+              {
+                "id": "p-focus-15-03-05",
+                "time": 0.72,
+                "value": 0.35
+              },
+              {
+                "id": "p-focus-15-03-06",
+                "time": 0.88,
+                "value": 0.37
+              },
+              {
+                "id": "p-focus-15-03-07",
+                "time": 1,
+                "value": 0.34
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-15-04-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-focus-15-04-01",
+                "time": 0,
+                "value": 0.183468
+              },
+              {
+                "id": "p-focus-15-04-02",
+                "time": 0.15,
+                "value": 0.243952
+              },
+              {
+                "id": "p-focus-15-04-03",
+                "time": 0.3,
+                "value": 0.208669
+              },
+              {
+                "id": "p-focus-15-04-04",
+                "time": 0.45,
+                "value": 0.274194
+              },
+              {
+                "id": "p-focus-15-04-05",
+                "time": 0.6,
+                "value": 0.21875
+              },
+              {
+                "id": "p-focus-15-04-06",
+                "time": 0.75,
+                "value": 0.254032
+              },
+              {
+                "id": "p-focus-15-04-07",
+                "time": 0.9,
+                "value": 0.198589
+              },
+              {
+                "id": "p-focus-15-04-08",
+                "time": 1,
+                "value": 0.228831
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-15-05-veilGain",
+            "parameter": "veilGain",
+            "points": [
+              {
+                "id": "p-focus-15-05-01",
+                "time": 0,
+                "value": 0.075
+              },
+              {
+                "id": "p-focus-15-05-02",
+                "time": 0.2,
+                "value": 0.09
+              },
+              {
+                "id": "p-focus-15-05-03",
+                "time": 0.4,
+                "value": 0.08
+              },
+              {
+                "id": "p-focus-15-05-04",
+                "time": 0.6,
+                "value": 0.095
+              },
+              {
+                "id": "p-focus-15-05-05",
+                "time": 0.8,
+                "value": 0.078
+              },
+              {
+                "id": "p-focus-15-05-06",
+                "time": 1,
+                "value": 0.085
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-15-06-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-focus-15-06-01",
+                "time": 0,
+                "value": 0.48
+              },
+              {
+                "id": "p-focus-15-06-02",
+                "time": 0.25,
+                "value": 0.535
+              },
+              {
+                "id": "p-focus-15-06-03",
+                "time": 0.5,
+                "value": 0.47
+              },
+              {
+                "id": "p-focus-15-06-04",
+                "time": 0.75,
+                "value": 0.54
+              },
+              {
+                "id": "p-focus-15-06-05",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-15-07-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-focus-15-07-01",
+                "time": 0,
+                "value": 0.82
+              },
+              {
+                "id": "p-focus-15-07-02",
+                "time": 0.16,
+                "value": 0.72
+              },
+              {
+                "id": "p-focus-15-07-03",
+                "time": 0.32,
+                "value": 0.8
+              },
+              {
+                "id": "p-focus-15-07-04",
+                "time": 0.48,
+                "value": 0.69
+              },
+              {
+                "id": "p-focus-15-07-05",
+                "time": 0.64,
+                "value": 0.81
+              },
+              {
+                "id": "p-focus-15-07-06",
+                "time": 0.8,
+                "value": 0.71
+              },
+              {
+                "id": "p-focus-15-07-07",
+                "time": 1,
+                "value": 0.84
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-15-08-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-focus-15-08-01",
+                "time": 0,
+                "value": 0.171831
+              },
+              {
+                "id": "p-focus-15-08-02",
+                "time": 0.18,
+                "value": 0.222535
+              },
+              {
+                "id": "p-focus-15-08-03",
+                "time": 0.36,
+                "value": 0.183099
+              },
+              {
+                "id": "p-focus-15-08-04",
+                "time": 0.54,
+                "value": 0.233803
+              },
+              {
+                "id": "p-focus-15-08-05",
+                "time": 0.72,
+                "value": 0.188732
+              },
+              {
+                "id": "p-focus-15-08-06",
+                "time": 0.88,
+                "value": 0.216901
+              },
+              {
+                "id": "p-focus-15-08-07",
+                "time": 1,
+                "value": 0.177465
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-15-09-coherenceDepth",
+            "parameter": "coherenceDepth",
+            "points": [
+              {
+                "id": "p-focus-15-09-01",
+                "time": 0,
+                "value": 0.16
+              },
+              {
+                "id": "p-focus-15-09-02",
+                "time": 0.2,
+                "value": 0.23
+              },
+              {
+                "id": "p-focus-15-09-03",
+                "time": 0.4,
+                "value": 0.17
+              },
+              {
+                "id": "p-focus-15-09-04",
+                "time": 0.6,
+                "value": 0.24
+              },
+              {
+                "id": "p-focus-15-09-05",
+                "time": 0.8,
+                "value": 0.18
+              },
+              {
+                "id": "p-focus-15-09-06",
+                "time": 1,
+                "value": 0.16
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-focus-15-10-drift",
+            "parameter": "drift",
+            "points": [
+              {
+                "id": "p-focus-15-10-01",
+                "time": 0,
+                "value": 0.035
+              },
+              {
+                "id": "p-focus-15-10-02",
+                "time": 0.2,
+                "value": 0.09
+              },
+              {
+                "id": "p-focus-15-10-03",
+                "time": 0.4,
+                "value": 0.05
+              },
+              {
+                "id": "p-focus-15-10-04",
+                "time": 0.6,
+                "value": 0.1
+              },
+              {
+                "id": "p-focus-15-10-05",
+                "time": 0.8,
+                "value": 0.045
+              },
+              {
+                "id": "p-focus-15-10-06",
+                "time": 1,
+                "value": 0.035
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Unwind · Amber Float · 5 MIN",
+      "tags": [
+        "UNWIND",
+        "RELAX"
+      ],
+      "time": "5 MIN",
+      "data": {
+        "carrier": 305,
+        "beat": 7.2,
+        "master": 0.34,
+        "bpm": 56,
+        "pulseDepth": 0.12,
+        "pulseToneHz": 135,
+        "pulseWave": "sine",
+        "pulseDuty": 0.62,
+        "pulseSmooth": 0.97,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.05,
+        "amShape": "sine",
+        "nestOn": false,
+        "thetaRate": 5.2,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": false,
+        "hugginsCenter": 720,
+        "hugginsWidth": 120,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.05,
+        "hugginsSeed": 41,
+        "coherenceOn": true,
+        "coherence": 0.68,
+        "coherenceClusters": 3,
+        "coherenceRate": 0.65,
+        "coherenceDepth": 0.22,
+        "coherenceSpread": 0.38,
+        "coherenceLevel": 0.065,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.62,
+        "coherenceMix": 0.68,
+        "coherenceDrive": 0.8,
+        "coherenceFollower": 420,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.08,
+          "PINK": 0.3,
+          "BROWN": 0.52,
+          "BLUE": 0.05,
+          "VIOLET": 0.04,
+          "GREY": 0.14
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1450,
+        "veilQ": 0.7,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.48,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.3,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.135,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.03,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.13,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 5,
+        "automation": true,
+        "drift": 0.1,
+        "tubeDrive": {
+          "ECC83": 0.07,
+          "12AU7": 0.1,
+          "6V6": 0.05,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-unwind-5-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-unwind-5-01-01",
+                "time": 0,
+                "value": 0.28
+              },
+              {
+                "id": "p-unwind-5-01-02",
+                "time": 0.15,
+                "value": 0.36
+              },
+              {
+                "id": "p-unwind-5-01-03",
+                "time": 0.55,
+                "value": 0.36
+              },
+              {
+                "id": "p-unwind-5-01-04",
+                "time": 0.82,
+                "value": 0.32
+              },
+              {
+                "id": "p-unwind-5-01-05",
+                "time": 1,
+                "value": 0.22
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-5-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-unwind-5-02-01",
+                "time": 0,
+                "value": 0.282609
+              },
+              {
+                "id": "p-unwind-5-02-02",
+                "time": 0.28,
+                "value": 0.23913
+              },
+              {
+                "id": "p-unwind-5-02-03",
+                "time": 0.55,
+                "value": 0.206522
+              },
+              {
+                "id": "p-unwind-5-02-04",
+                "time": 0.78,
+                "value": 0.255435
+              },
+              {
+                "id": "p-unwind-5-02-05",
+                "time": 1,
+                "value": 0.228261
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-5-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-unwind-5-03-01",
+                "time": 0,
+                "value": 0.205063
+              },
+              {
+                "id": "p-unwind-5-03-02",
+                "time": 0.27,
+                "value": 0.16962
+              },
+              {
+                "id": "p-unwind-5-03-03",
+                "time": 0.54,
+                "value": 0.146835
+              },
+              {
+                "id": "p-unwind-5-03-04",
+                "time": 0.78,
+                "value": 0.174684
+              },
+              {
+                "id": "p-unwind-5-03-05",
+                "time": 1,
+                "value": 0.159494
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-5-04-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-unwind-5-04-01",
+                "time": 0,
+                "value": 0.203629
+              },
+              {
+                "id": "p-unwind-5-04-02",
+                "time": 0.28,
+                "value": 0.133065
+              },
+              {
+                "id": "p-unwind-5-04-03",
+                "time": 0.55,
+                "value": 0.077621
+              },
+              {
+                "id": "p-unwind-5-04-04",
+                "time": 0.78,
+                "value": 0.153226
+              },
+              {
+                "id": "p-unwind-5-04-05",
+                "time": 1,
+                "value": 0.102823
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-5-05-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-unwind-5-05-01",
+                "time": 0,
+                "value": 0.425
+              },
+              {
+                "id": "p-unwind-5-05-02",
+                "time": 0.28,
+                "value": 0.56
+              },
+              {
+                "id": "p-unwind-5-05-03",
+                "time": 0.55,
+                "value": 0.46
+              },
+              {
+                "id": "p-unwind-5-05-04",
+                "time": 0.78,
+                "value": 0.575
+              },
+              {
+                "id": "p-unwind-5-05-05",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-5-06-dronePan",
+            "parameter": "dronePan",
+            "points": [
+              {
+                "id": "p-unwind-5-06-01",
+                "time": 0,
+                "value": 0.56
+              },
+              {
+                "id": "p-unwind-5-06-02",
+                "time": 0.28,
+                "value": 0.45
+              },
+              {
+                "id": "p-unwind-5-06-03",
+                "time": 0.55,
+                "value": 0.54
+              },
+              {
+                "id": "p-unwind-5-06-04",
+                "time": 0.78,
+                "value": 0.44
+              },
+              {
+                "id": "p-unwind-5-06-05",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-5-07-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-unwind-5-07-01",
+                "time": 0,
+                "value": 0.78
+              },
+              {
+                "id": "p-unwind-5-07-02",
+                "time": 0.28,
+                "value": 0.58
+              },
+              {
+                "id": "p-unwind-5-07-03",
+                "time": 0.55,
+                "value": 0.42
+              },
+              {
+                "id": "p-unwind-5-07-04",
+                "time": 0.78,
+                "value": 0.7
+              },
+              {
+                "id": "p-unwind-5-07-05",
+                "time": 1,
+                "value": 0.82
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-5-08-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-unwind-5-08-01",
+                "time": 0,
+                "value": 0.03662
+              },
+              {
+                "id": "p-unwind-5-08-02",
+                "time": 0.28,
+                "value": 0.016901
+              },
+              {
+                "id": "p-unwind-5-08-03",
+                "time": 0.55,
+                "value": 0.005634
+              },
+              {
+                "id": "p-unwind-5-08-04",
+                "time": 0.78,
+                "value": 0.025352
+              },
+              {
+                "id": "p-unwind-5-08-05",
+                "time": 1,
+                "value": 0.014085
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-5-09-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-unwind-5-09-01",
+                "time": 0,
+                "value": 0.1
+              },
+              {
+                "id": "p-unwind-5-09-02",
+                "time": 0.28,
+                "value": 0.15
+              },
+              {
+                "id": "p-unwind-5-09-03",
+                "time": 0.55,
+                "value": 0.18
+              },
+              {
+                "id": "p-unwind-5-09-04",
+                "time": 0.78,
+                "value": 0.13
+              },
+              {
+                "id": "p-unwind-5-09-05",
+                "time": 1,
+                "value": 0.09
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Unwind · Amber Float · 15 MIN",
+      "tags": [
+        "UNWIND",
+        "RELAX"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 300,
+        "beat": 7,
+        "master": 0.34,
+        "bpm": 54,
+        "pulseDepth": 0.1,
+        "pulseToneHz": 130,
+        "pulseWave": "sine",
+        "pulseDuty": 0.64,
+        "pulseSmooth": 0.98,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.045,
+        "amShape": "sine",
+        "nestOn": false,
+        "thetaRate": 5,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": false,
+        "hugginsCenter": 720,
+        "hugginsWidth": 120,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.05,
+        "hugginsSeed": 42,
+        "coherenceOn": true,
+        "coherence": 0.7,
+        "coherenceClusters": 3,
+        "coherenceRate": 0.6,
+        "coherenceDepth": 0.2,
+        "coherenceSpread": 0.36,
+        "coherenceLevel": 0.06,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.58,
+        "coherenceMix": 0.66,
+        "coherenceDrive": 0.8,
+        "coherenceFollower": 460,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.06,
+          "PINK": 0.28,
+          "BROWN": 0.5,
+          "BLUE": 0.04,
+          "VIOLET": 0.04,
+          "GREY": 0.12
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1400,
+        "veilQ": 0.65,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.5,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.29,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.13,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.025,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.14,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.09,
+        "tubeDrive": {
+          "ECC83": 0.065,
+          "12AU7": 0.11,
+          "6V6": 0.055,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-unwind-15-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-unwind-15-01-01",
+                "time": 0,
+                "value": 0.27
+              },
+              {
+                "id": "p-unwind-15-01-02",
+                "time": 0.08,
+                "value": 0.34
+              },
+              {
+                "id": "p-unwind-15-01-03",
+                "time": 0.22,
+                "value": 0.36
+              },
+              {
+                "id": "p-unwind-15-01-04",
+                "time": 0.45,
+                "value": 0.35
+              },
+              {
+                "id": "p-unwind-15-01-05",
+                "time": 0.68,
+                "value": 0.37
+              },
+              {
+                "id": "p-unwind-15-01-06",
+                "time": 0.86,
+                "value": 0.32
+              },
+              {
+                "id": "p-unwind-15-01-07",
+                "time": 1,
+                "value": 0.2
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-15-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-unwind-15-02-01",
+                "time": 0,
+                "value": 0.293478
+              },
+              {
+                "id": "p-unwind-15-02-02",
+                "time": 0.16,
+                "value": 0.26087
+              },
+              {
+                "id": "p-unwind-15-02-03",
+                "time": 0.32,
+                "value": 0.222826
+              },
+              {
+                "id": "p-unwind-15-02-04",
+                "time": 0.48,
+                "value": 0.195652
+              },
+              {
+                "id": "p-unwind-15-02-05",
+                "time": 0.64,
+                "value": 0.23913
+              },
+              {
+                "id": "p-unwind-15-02-06",
+                "time": 0.8,
+                "value": 0.211957
+              },
+              {
+                "id": "p-unwind-15-02-07",
+                "time": 1,
+                "value": 0.25
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-15-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-unwind-15-03-01",
+                "time": 0,
+                "value": 0.210127
+              },
+              {
+                "id": "p-unwind-15-03-02",
+                "time": 0.16,
+                "value": 0.18481
+              },
+              {
+                "id": "p-unwind-15-03-03",
+                "time": 0.32,
+                "value": 0.159494
+              },
+              {
+                "id": "p-unwind-15-03-04",
+                "time": 0.48,
+                "value": 0.141772
+              },
+              {
+                "id": "p-unwind-15-03-05",
+                "time": 0.64,
+                "value": 0.16962
+              },
+              {
+                "id": "p-unwind-15-03-06",
+                "time": 0.8,
+                "value": 0.151899
+              },
+              {
+                "id": "p-unwind-15-03-07",
+                "time": 1,
+                "value": 0.174684
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-15-04-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-unwind-15-04-01",
+                "time": 0,
+                "value": 0.22379
+              },
+              {
+                "id": "p-unwind-15-04-02",
+                "time": 0.16,
+                "value": 0.168347
+              },
+              {
+                "id": "p-unwind-15-04-03",
+                "time": 0.32,
+                "value": 0.107863
+              },
+              {
+                "id": "p-unwind-15-04-04",
+                "time": 0.48,
+                "value": 0.068548
+              },
+              {
+                "id": "p-unwind-15-04-05",
+                "time": 0.64,
+                "value": 0.138105
+              },
+              {
+                "id": "p-unwind-15-04-06",
+                "time": 0.8,
+                "value": 0.087702
+              },
+              {
+                "id": "p-unwind-15-04-07",
+                "time": 1,
+                "value": 0.153226
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-15-05-veilGain",
+            "parameter": "veilGain",
+            "points": [
+              {
+                "id": "p-unwind-15-05-01",
+                "time": 0,
+                "value": 0.11
+              },
+              {
+                "id": "p-unwind-15-05-02",
+                "time": 0.16,
+                "value": 0.14
+              },
+              {
+                "id": "p-unwind-15-05-03",
+                "time": 0.34,
+                "value": 0.16
+              },
+              {
+                "id": "p-unwind-15-05-04",
+                "time": 0.52,
+                "value": 0.14
+              },
+              {
+                "id": "p-unwind-15-05-05",
+                "time": 0.7,
+                "value": 0.17
+              },
+              {
+                "id": "p-unwind-15-05-06",
+                "time": 0.86,
+                "value": 0.13
+              },
+              {
+                "id": "p-unwind-15-05-07",
+                "time": 1,
+                "value": 0.08
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-15-06-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-unwind-15-06-01",
+                "time": 0,
+                "value": 0.41
+              },
+              {
+                "id": "p-unwind-15-06-02",
+                "time": 0.18,
+                "value": 0.56
+              },
+              {
+                "id": "p-unwind-15-06-03",
+                "time": 0.36,
+                "value": 0.45
+              },
+              {
+                "id": "p-unwind-15-06-04",
+                "time": 0.54,
+                "value": 0.58
+              },
+              {
+                "id": "p-unwind-15-06-05",
+                "time": 0.72,
+                "value": 0.43
+              },
+              {
+                "id": "p-unwind-15-06-06",
+                "time": 0.88,
+                "value": 0.55
+              },
+              {
+                "id": "p-unwind-15-06-07",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-15-07-dronePan",
+            "parameter": "dronePan",
+            "points": [
+              {
+                "id": "p-unwind-15-07-01",
+                "time": 0,
+                "value": 0.58
+              },
+              {
+                "id": "p-unwind-15-07-02",
+                "time": 0.18,
+                "value": 0.45
+              },
+              {
+                "id": "p-unwind-15-07-03",
+                "time": 0.36,
+                "value": 0.56
+              },
+              {
+                "id": "p-unwind-15-07-04",
+                "time": 0.54,
+                "value": 0.43
+              },
+              {
+                "id": "p-unwind-15-07-05",
+                "time": 0.72,
+                "value": 0.58
+              },
+              {
+                "id": "p-unwind-15-07-06",
+                "time": 0.88,
+                "value": 0.46
+              },
+              {
+                "id": "p-unwind-15-07-07",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-15-08-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-unwind-15-08-01",
+                "time": 0,
+                "value": 0.82
+              },
+              {
+                "id": "p-unwind-15-08-02",
+                "time": 0.16,
+                "value": 0.64
+              },
+              {
+                "id": "p-unwind-15-08-03",
+                "time": 0.32,
+                "value": 0.48
+              },
+              {
+                "id": "p-unwind-15-08-04",
+                "time": 0.48,
+                "value": 0.38
+              },
+              {
+                "id": "p-unwind-15-08-05",
+                "time": 0.64,
+                "value": 0.7
+              },
+              {
+                "id": "p-unwind-15-08-06",
+                "time": 0.8,
+                "value": 0.52
+              },
+              {
+                "id": "p-unwind-15-08-07",
+                "time": 1,
+                "value": 0.84
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-15-09-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-unwind-15-09-01",
+                "time": 0,
+                "value": 0.039437
+              },
+              {
+                "id": "p-unwind-15-09-02",
+                "time": 0.16,
+                "value": 0.025352
+              },
+              {
+                "id": "p-unwind-15-09-03",
+                "time": 0.32,
+                "value": 0.012958
+              },
+              {
+                "id": "p-unwind-15-09-04",
+                "time": 0.48,
+                "value": 0.003944
+              },
+              {
+                "id": "p-unwind-15-09-05",
+                "time": 0.64,
+                "value": 0.026479
+              },
+              {
+                "id": "p-unwind-15-09-06",
+                "time": 0.8,
+                "value": 0.009577
+              },
+              {
+                "id": "p-unwind-15-09-07",
+                "time": 1,
+                "value": 0.016901
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-unwind-15-10-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-unwind-15-10-01",
+                "time": 0,
+                "value": 0.09
+              },
+              {
+                "id": "p-unwind-15-10-02",
+                "time": 0.18,
+                "value": 0.14
+              },
+              {
+                "id": "p-unwind-15-10-03",
+                "time": 0.36,
+                "value": 0.18
+              },
+              {
+                "id": "p-unwind-15-10-04",
+                "time": 0.54,
+                "value": 0.2
+              },
+              {
+                "id": "p-unwind-15-10-05",
+                "time": 0.72,
+                "value": 0.15
+              },
+              {
+                "id": "p-unwind-15-10-06",
+                "time": 0.88,
+                "value": 0.12
+              },
+              {
+                "id": "p-unwind-15-10-07",
+                "time": 1,
+                "value": 0.08
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Perform · Kinetic Ascent · 5 MIN",
+      "tags": [
+        "PERFORMANCE",
+        "FOCUS"
+      ],
+      "time": "5 MIN",
+      "data": {
+        "carrier": 470,
+        "beat": 17,
+        "master": 0.39,
+        "bpm": 116,
+        "pulseDepth": 0.48,
+        "pulseToneHz": 185,
+        "pulseWave": "sine",
+        "pulseDuty": 0.52,
+        "pulseSmooth": 0.86,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.1,
+        "amShape": "sine",
+        "nestOn": false,
+        "thetaRate": 5,
+        "rissetOn": true,
+        "rissetDir": 1,
+        "rissetRate": 0.03,
+        "rissetLayers": 3,
+        "rissetRatio": 1.8,
+        "rissetFocus": 1.15,
+        "missingFund": true,
+        "mfPartials": 4,
+        "mfBrightness": 0.28,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": false,
+        "hugginsCenter": 720,
+        "hugginsWidth": 120,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.05,
+        "hugginsSeed": 51,
+        "coherenceOn": true,
+        "coherence": 0.64,
+        "coherenceClusters": 3,
+        "coherenceRate": 2.2,
+        "coherenceDepth": 0.38,
+        "coherenceSpread": 0.32,
+        "coherenceLevel": 0.055,
+        "coherenceCarrier": "PINK",
+        "coherenceDriver": "PULSE",
+        "coherenceInput": 0.5,
+        "coherenceMix": 0.58,
+        "coherenceDrive": 0.65,
+        "coherenceFollower": 180,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": false,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.08,
+          "PINK": 0.42,
+          "BROWN": 0.16,
+          "BLUE": 0.05,
+          "VIOLET": 0.04,
+          "GREY": 0.12
+        },
+        "veilType": "lowpass",
+        "veilCenter": 2800,
+        "veilQ": 0.8,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.12,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.33,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.055,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.12,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.065,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 5,
+        "automation": true,
+        "drift": 0.06,
+        "tubeDrive": {
+          "ECC83": 0.07,
+          "12AU7": 0.035,
+          "6V6": 0.045,
+          "EL34": 0.02
+        },
+        "automationTracks": [
+          {
+            "id": "track-perform-5-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-perform-5-01-01",
+                "time": 0,
+                "value": 0.32
+              },
+              {
+                "id": "p-perform-5-01-02",
+                "time": 0.15,
+                "value": 0.38
+              },
+              {
+                "id": "p-perform-5-01-03",
+                "time": 0.42,
+                "value": 0.42
+              },
+              {
+                "id": "p-perform-5-01-04",
+                "time": 0.76,
+                "value": 0.41
+              },
+              {
+                "id": "p-perform-5-01-05",
+                "time": 1,
+                "value": 0.34
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-5-02-bpm",
+            "parameter": "bpm",
+            "points": [
+              {
+                "id": "p-perform-5-02-01",
+                "time": 0,
+                "value": 0.493333
+              },
+              {
+                "id": "p-perform-5-02-02",
+                "time": 0.22,
+                "value": 0.56
+              },
+              {
+                "id": "p-perform-5-02-03",
+                "time": 0.5,
+                "value": 0.613333
+              },
+              {
+                "id": "p-perform-5-02-04",
+                "time": 0.78,
+                "value": 0.653333
+              },
+              {
+                "id": "p-perform-5-02-05",
+                "time": 1,
+                "value": 0.573333
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-5-03-pulseDepth",
+            "parameter": "pulseDepth",
+            "points": [
+              {
+                "id": "p-perform-5-03-01",
+                "time": 0,
+                "value": 0.34
+              },
+              {
+                "id": "p-perform-5-03-02",
+                "time": 0.22,
+                "value": 0.46
+              },
+              {
+                "id": "p-perform-5-03-03",
+                "time": 0.5,
+                "value": 0.56
+              },
+              {
+                "id": "p-perform-5-03-04",
+                "time": 0.78,
+                "value": 0.62
+              },
+              {
+                "id": "p-perform-5-03-05",
+                "time": 1,
+                "value": 0.4
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-5-04-pulseGain",
+            "parameter": "pulseGain",
+            "points": [
+              {
+                "id": "p-perform-5-04-01",
+                "time": 0,
+                "value": 0.08
+              },
+              {
+                "id": "p-perform-5-04-02",
+                "time": 0.22,
+                "value": 0.12
+              },
+              {
+                "id": "p-perform-5-04-03",
+                "time": 0.5,
+                "value": 0.16
+              },
+              {
+                "id": "p-perform-5-04-04",
+                "time": 0.78,
+                "value": 0.18
+              },
+              {
+                "id": "p-perform-5-04-05",
+                "time": 1,
+                "value": 0.09
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-5-05-rissetRate",
+            "parameter": "rissetRate",
+            "points": [
+              {
+                "id": "p-perform-5-05-01",
+                "time": 0,
+                "value": 0.048276
+              },
+              {
+                "id": "p-perform-5-05-02",
+                "time": 0.24,
+                "value": 0.137931
+              },
+              {
+                "id": "p-perform-5-05-03",
+                "time": 0.52,
+                "value": 0.275862
+              },
+              {
+                "id": "p-perform-5-05-04",
+                "time": 0.78,
+                "value": 0.344828
+              },
+              {
+                "id": "p-perform-5-05-05",
+                "time": 1,
+                "value": 0.137931
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-5-06-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-perform-5-06-01",
+                "time": 0,
+                "value": 0.369565
+              },
+              {
+                "id": "p-perform-5-06-02",
+                "time": 0.24,
+                "value": 0.413043
+              },
+              {
+                "id": "p-perform-5-06-03",
+                "time": 0.52,
+                "value": 0.467391
+              },
+              {
+                "id": "p-perform-5-06-04",
+                "time": 0.78,
+                "value": 0.445652
+              },
+              {
+                "id": "p-perform-5-06-05",
+                "time": 1,
+                "value": 0.402174
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-5-07-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-perform-5-07-01",
+                "time": 0,
+                "value": 0.341772
+              },
+              {
+                "id": "p-perform-5-07-02",
+                "time": 0.24,
+                "value": 0.405063
+              },
+              {
+                "id": "p-perform-5-07-03",
+                "time": 0.52,
+                "value": 0.468354
+              },
+              {
+                "id": "p-perform-5-07-04",
+                "time": 0.78,
+                "value": 0.443038
+              },
+              {
+                "id": "p-perform-5-07-05",
+                "time": 1,
+                "value": 0.379747
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-5-08-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-perform-5-08-01",
+                "time": 0,
+                "value": 0.05
+              },
+              {
+                "id": "p-perform-5-08-02",
+                "time": 0.24,
+                "value": 0.08
+              },
+              {
+                "id": "p-perform-5-08-03",
+                "time": 0.52,
+                "value": 0.11
+              },
+              {
+                "id": "p-perform-5-08-04",
+                "time": 0.78,
+                "value": 0.1
+              },
+              {
+                "id": "p-perform-5-08-05",
+                "time": 1,
+                "value": 0.06
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-5-09-coherenceDepth",
+            "parameter": "coherenceDepth",
+            "points": [
+              {
+                "id": "p-perform-5-09-01",
+                "time": 0,
+                "value": 0.22
+              },
+              {
+                "id": "p-perform-5-09-02",
+                "time": 0.24,
+                "value": 0.34
+              },
+              {
+                "id": "p-perform-5-09-03",
+                "time": 0.52,
+                "value": 0.5
+              },
+              {
+                "id": "p-perform-5-09-04",
+                "time": 0.78,
+                "value": 0.55
+              },
+              {
+                "id": "p-perform-5-09-05",
+                "time": 1,
+                "value": 0.3
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-5-10-pulseToneHz",
+            "parameter": "pulseToneHz",
+            "points": [
+              {
+                "id": "p-perform-5-10-01",
+                "time": 0,
+                "value": 0.144737
+              },
+              {
+                "id": "p-perform-5-10-02",
+                "time": 0.24,
+                "value": 0.177632
+              },
+              {
+                "id": "p-perform-5-10-03",
+                "time": 0.52,
+                "value": 0.223684
+              },
+              {
+                "id": "p-perform-5-10-04",
+                "time": 0.78,
+                "value": 0.25
+              },
+              {
+                "id": "p-perform-5-10-05",
+                "time": 1,
+                "value": 0.184211
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Perform · Kinetic Ascent · 15 MIN",
+      "tags": [
+        "PERFORMANCE",
+        "FOCUS"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 465,
+        "beat": 16.5,
+        "master": 0.39,
+        "bpm": 112,
+        "pulseDepth": 0.44,
+        "pulseToneHz": 180,
+        "pulseWave": "sine",
+        "pulseDuty": 0.52,
+        "pulseSmooth": 0.87,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.09,
+        "amShape": "sine",
+        "nestOn": false,
+        "thetaRate": 5,
+        "rissetOn": true,
+        "rissetDir": 1,
+        "rissetRate": 0.026,
+        "rissetLayers": 3,
+        "rissetRatio": 1.75,
+        "rissetFocus": 1.2,
+        "missingFund": true,
+        "mfPartials": 4,
+        "mfBrightness": 0.26,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": false,
+        "hugginsCenter": 720,
+        "hugginsWidth": 120,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.05,
+        "hugginsSeed": 52,
+        "coherenceOn": true,
+        "coherence": 0.66,
+        "coherenceClusters": 3,
+        "coherenceRate": 2.1,
+        "coherenceDepth": 0.34,
+        "coherenceSpread": 0.3,
+        "coherenceLevel": 0.05,
+        "coherenceCarrier": "PINK",
+        "coherenceDriver": "PULSE",
+        "coherenceInput": 0.48,
+        "coherenceMix": 0.55,
+        "coherenceDrive": 0.62,
+        "coherenceFollower": 190,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": false,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.06,
+          "PINK": 0.4,
+          "BROWN": 0.14,
+          "BLUE": 0.04,
+          "VIOLET": 0.03,
+          "GREY": 0.1
+        },
+        "veilType": "lowpass",
+        "veilCenter": 2700,
+        "veilQ": 0.75,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.15,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.32,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.05,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.11,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.06,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.055,
+        "tubeDrive": {
+          "ECC83": 0.065,
+          "12AU7": 0.035,
+          "6V6": 0.04,
+          "EL34": 0.018
+        },
+        "automationTracks": [
+          {
+            "id": "track-perform-15-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-perform-15-01-01",
+                "time": 0,
+                "value": 0.31
+              },
+              {
+                "id": "p-perform-15-01-02",
+                "time": 0.08,
+                "value": 0.36
+              },
+              {
+                "id": "p-perform-15-01-03",
+                "time": 0.2,
+                "value": 0.39
+              },
+              {
+                "id": "p-perform-15-01-04",
+                "time": 0.38,
+                "value": 0.41
+              },
+              {
+                "id": "p-perform-15-01-05",
+                "time": 0.58,
+                "value": 0.42
+              },
+              {
+                "id": "p-perform-15-01-06",
+                "time": 0.76,
+                "value": 0.4
+              },
+              {
+                "id": "p-perform-15-01-07",
+                "time": 0.9,
+                "value": 0.37
+              },
+              {
+                "id": "p-perform-15-01-08",
+                "time": 1,
+                "value": 0.3
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-15-02-bpm",
+            "parameter": "bpm",
+            "points": [
+              {
+                "id": "p-perform-15-02-01",
+                "time": 0,
+                "value": 0.48
+              },
+              {
+                "id": "p-perform-15-02-02",
+                "time": 0.1,
+                "value": 0.533333
+              },
+              {
+                "id": "p-perform-15-02-03",
+                "time": 0.24,
+                "value": 0.586667
+              },
+              {
+                "id": "p-perform-15-02-04",
+                "time": 0.4,
+                "value": 0.626667
+              },
+              {
+                "id": "p-perform-15-02-05",
+                "time": 0.58,
+                "value": 0.666667
+              },
+              {
+                "id": "p-perform-15-02-06",
+                "time": 0.74,
+                "value": 0.64
+              },
+              {
+                "id": "p-perform-15-02-07",
+                "time": 0.88,
+                "value": 0.586667
+              },
+              {
+                "id": "p-perform-15-02-08",
+                "time": 1,
+                "value": 0.52
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-15-03-pulseDepth",
+            "parameter": "pulseDepth",
+            "points": [
+              {
+                "id": "p-perform-15-03-01",
+                "time": 0,
+                "value": 0.3
+              },
+              {
+                "id": "p-perform-15-03-02",
+                "time": 0.12,
+                "value": 0.42
+              },
+              {
+                "id": "p-perform-15-03-03",
+                "time": 0.28,
+                "value": 0.52
+              },
+              {
+                "id": "p-perform-15-03-04",
+                "time": 0.46,
+                "value": 0.6
+              },
+              {
+                "id": "p-perform-15-03-05",
+                "time": 0.64,
+                "value": 0.64
+              },
+              {
+                "id": "p-perform-15-03-06",
+                "time": 0.8,
+                "value": 0.54
+              },
+              {
+                "id": "p-perform-15-03-07",
+                "time": 0.92,
+                "value": 0.42
+              },
+              {
+                "id": "p-perform-15-03-08",
+                "time": 1,
+                "value": 0.3
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-15-04-pulseGain",
+            "parameter": "pulseGain",
+            "points": [
+              {
+                "id": "p-perform-15-04-01",
+                "time": 0,
+                "value": 0.07
+              },
+              {
+                "id": "p-perform-15-04-02",
+                "time": 0.12,
+                "value": 0.11
+              },
+              {
+                "id": "p-perform-15-04-03",
+                "time": 0.28,
+                "value": 0.15
+              },
+              {
+                "id": "p-perform-15-04-04",
+                "time": 0.46,
+                "value": 0.18
+              },
+              {
+                "id": "p-perform-15-04-05",
+                "time": 0.64,
+                "value": 0.19
+              },
+              {
+                "id": "p-perform-15-04-06",
+                "time": 0.8,
+                "value": 0.15
+              },
+              {
+                "id": "p-perform-15-04-07",
+                "time": 0.92,
+                "value": 0.11
+              },
+              {
+                "id": "p-perform-15-04-08",
+                "time": 1,
+                "value": 0.07
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-15-05-rissetRate",
+            "parameter": "rissetRate",
+            "points": [
+              {
+                "id": "p-perform-15-05-01",
+                "time": 0,
+                "value": 0.034483
+              },
+              {
+                "id": "p-perform-15-05-02",
+                "time": 0.12,
+                "value": 0.117241
+              },
+              {
+                "id": "p-perform-15-05-03",
+                "time": 0.28,
+                "value": 0.227586
+              },
+              {
+                "id": "p-perform-15-05-04",
+                "time": 0.46,
+                "value": 0.324138
+              },
+              {
+                "id": "p-perform-15-05-05",
+                "time": 0.64,
+                "value": 0.37931
+              },
+              {
+                "id": "p-perform-15-05-06",
+                "time": 0.8,
+                "value": 0.275862
+              },
+              {
+                "id": "p-perform-15-05-07",
+                "time": 0.92,
+                "value": 0.158621
+              },
+              {
+                "id": "p-perform-15-05-08",
+                "time": 1,
+                "value": 0.068966
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-15-06-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-perform-15-06-01",
+                "time": 0,
+                "value": 0.358696
+              },
+              {
+                "id": "p-perform-15-06-02",
+                "time": 0.12,
+                "value": 0.402174
+              },
+              {
+                "id": "p-perform-15-06-03",
+                "time": 0.28,
+                "value": 0.445652
+              },
+              {
+                "id": "p-perform-15-06-04",
+                "time": 0.46,
+                "value": 0.478261
+              },
+              {
+                "id": "p-perform-15-06-05",
+                "time": 0.64,
+                "value": 0.456522
+              },
+              {
+                "id": "p-perform-15-06-06",
+                "time": 0.8,
+                "value": 0.429348
+              },
+              {
+                "id": "p-perform-15-06-07",
+                "time": 0.92,
+                "value": 0.402174
+              },
+              {
+                "id": "p-perform-15-06-08",
+                "time": 1,
+                "value": 0.375
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-15-07-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-perform-15-07-01",
+                "time": 0,
+                "value": 0.329114
+              },
+              {
+                "id": "p-perform-15-07-02",
+                "time": 0.12,
+                "value": 0.367089
+              },
+              {
+                "id": "p-perform-15-07-03",
+                "time": 0.28,
+                "value": 0.43038
+              },
+              {
+                "id": "p-perform-15-07-04",
+                "time": 0.46,
+                "value": 0.481013
+              },
+              {
+                "id": "p-perform-15-07-05",
+                "time": 0.64,
+                "value": 0.493671
+              },
+              {
+                "id": "p-perform-15-07-06",
+                "time": 0.8,
+                "value": 0.443038
+              },
+              {
+                "id": "p-perform-15-07-07",
+                "time": 0.92,
+                "value": 0.392405
+              },
+              {
+                "id": "p-perform-15-07-08",
+                "time": 1,
+                "value": 0.341772
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-15-08-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-perform-15-08-01",
+                "time": 0,
+                "value": 0.045
+              },
+              {
+                "id": "p-perform-15-08-02",
+                "time": 0.14,
+                "value": 0.07
+              },
+              {
+                "id": "p-perform-15-08-03",
+                "time": 0.3,
+                "value": 0.1
+              },
+              {
+                "id": "p-perform-15-08-04",
+                "time": 0.48,
+                "value": 0.12
+              },
+              {
+                "id": "p-perform-15-08-05",
+                "time": 0.66,
+                "value": 0.11
+              },
+              {
+                "id": "p-perform-15-08-06",
+                "time": 0.82,
+                "value": 0.09
+              },
+              {
+                "id": "p-perform-15-08-07",
+                "time": 1,
+                "value": 0.05
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-15-09-coherenceDepth",
+            "parameter": "coherenceDepth",
+            "points": [
+              {
+                "id": "p-perform-15-09-01",
+                "time": 0,
+                "value": 0.2
+              },
+              {
+                "id": "p-perform-15-09-02",
+                "time": 0.14,
+                "value": 0.32
+              },
+              {
+                "id": "p-perform-15-09-03",
+                "time": 0.3,
+                "value": 0.44
+              },
+              {
+                "id": "p-perform-15-09-04",
+                "time": 0.48,
+                "value": 0.56
+              },
+              {
+                "id": "p-perform-15-09-05",
+                "time": 0.66,
+                "value": 0.52
+              },
+              {
+                "id": "p-perform-15-09-06",
+                "time": 0.82,
+                "value": 0.4
+              },
+              {
+                "id": "p-perform-15-09-07",
+                "time": 1,
+                "value": 0.24
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-perform-15-10-pulseToneHz",
+            "parameter": "pulseToneHz",
+            "points": [
+              {
+                "id": "p-perform-15-10-01",
+                "time": 0,
+                "value": 0.138158
+              },
+              {
+                "id": "p-perform-15-10-02",
+                "time": 0.14,
+                "value": 0.171053
+              },
+              {
+                "id": "p-perform-15-10-03",
+                "time": 0.3,
+                "value": 0.210526
+              },
+              {
+                "id": "p-perform-15-10-04",
+                "time": 0.48,
+                "value": 0.243421
+              },
+              {
+                "id": "p-perform-15-10-05",
+                "time": 0.66,
+                "value": 0.263158
+              },
+              {
+                "id": "p-perform-15-10-06",
+                "time": 0.82,
+                "value": 0.223684
+              },
+              {
+                "id": "p-perform-15-10-07",
+                "time": 1,
+                "value": 0.164474
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Trip · Prismatic Garden · 5 MIN",
+      "tags": [
+        "TRIP"
+      ],
+      "time": "5 MIN",
+      "data": {
+        "carrier": 360,
+        "beat": 6.4,
+        "master": 0.34,
+        "bpm": 66,
+        "pulseDepth": 0.16,
+        "pulseToneHz": 145,
+        "pulseWave": "sine",
+        "pulseDuty": 0.6,
+        "pulseSmooth": 0.96,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.08,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 5.4,
+        "rissetOn": true,
+        "rissetDir": 1,
+        "rissetRate": 0.015,
+        "rissetLayers": 3,
+        "rissetRatio": 1.65,
+        "rissetFocus": 1.25,
+        "missingFund": true,
+        "mfPartials": 5,
+        "mfBrightness": 0.22,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 720,
+        "hugginsWidth": 145,
+        "hugginsPhase": 270,
+        "hugginsLevel": 0.06,
+        "hugginsSeed": 61,
+        "coherenceOn": true,
+        "coherence": 0.48,
+        "coherenceClusters": 4,
+        "coherenceRate": 0.7,
+        "coherenceDepth": 0.34,
+        "coherenceSpread": 0.78,
+        "coherenceLevel": 0.075,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "HUGGINS",
+        "coherenceInput": 0.58,
+        "coherenceMix": 0.76,
+        "coherenceDrive": 0.72,
+        "coherenceFollower": 360,
+        "coherenceTopology": "HARMONIC",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": true
+        },
+        "noiseLevels": {
+          "WHITE": 0.05,
+          "PINK": 0.28,
+          "BROWN": 0.4,
+          "BLUE": 0.03,
+          "VIOLET": 0.03,
+          "GREY": 0.18
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1500,
+        "veilQ": 0.85,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.32,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.27,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.09,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.03,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.11,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 5,
+        "automation": true,
+        "drift": 0.16,
+        "tubeDrive": {
+          "ECC83": 0.09,
+          "12AU7": 0.11,
+          "6V6": 0.04,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-trip-5-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-trip-5-01-01",
+                "time": 0,
+                "value": 0.28
+              },
+              {
+                "id": "p-trip-5-01-02",
+                "time": 0.16,
+                "value": 0.34
+              },
+              {
+                "id": "p-trip-5-01-03",
+                "time": 0.48,
+                "value": 0.37
+              },
+              {
+                "id": "p-trip-5-01-04",
+                "time": 0.78,
+                "value": 0.35
+              },
+              {
+                "id": "p-trip-5-01-05",
+                "time": 1,
+                "value": 0.28
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-5-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-trip-5-02-01",
+                "time": 0,
+                "value": 0.217391
+              },
+              {
+                "id": "p-trip-5-02-02",
+                "time": 0.25,
+                "value": 0.369565
+              },
+              {
+                "id": "p-trip-5-02-03",
+                "time": 0.5,
+                "value": 0.271739
+              },
+              {
+                "id": "p-trip-5-02-04",
+                "time": 0.76,
+                "value": 0.456522
+              },
+              {
+                "id": "p-trip-5-02-05",
+                "time": 1,
+                "value": 0.304348
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-5-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-trip-5-03-01",
+                "time": 0,
+                "value": 0.134177
+              },
+              {
+                "id": "p-trip-5-03-02",
+                "time": 0.25,
+                "value": 0.179747
+              },
+              {
+                "id": "p-trip-5-03-03",
+                "time": 0.5,
+                "value": 0.149367
+              },
+              {
+                "id": "p-trip-5-03-04",
+                "time": 0.76,
+                "value": 0.2
+              },
+              {
+                "id": "p-trip-5-03-05",
+                "time": 1,
+                "value": 0.144304
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-5-04-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-trip-5-04-01",
+                "time": 0,
+                "value": 0.072581
+              },
+              {
+                "id": "p-trip-5-04-02",
+                "time": 0.25,
+                "value": 0.254032
+              },
+              {
+                "id": "p-trip-5-04-03",
+                "time": 0.5,
+                "value": 0.112903
+              },
+              {
+                "id": "p-trip-5-04-04",
+                "time": 0.76,
+                "value": 0.375
+              },
+              {
+                "id": "p-trip-5-04-05",
+                "time": 1,
+                "value": 0.092742
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-5-05-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-trip-5-05-01",
+                "time": 0,
+                "value": 0.325
+              },
+              {
+                "id": "p-trip-5-05-02",
+                "time": 0.25,
+                "value": 0.675
+              },
+              {
+                "id": "p-trip-5-05-03",
+                "time": 0.5,
+                "value": 0.375
+              },
+              {
+                "id": "p-trip-5-05-04",
+                "time": 0.76,
+                "value": 0.7
+              },
+              {
+                "id": "p-trip-5-05-05",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-5-06-dronePan",
+            "parameter": "dronePan",
+            "points": [
+              {
+                "id": "p-trip-5-06-01",
+                "time": 0,
+                "value": 0.675
+              },
+              {
+                "id": "p-trip-5-06-02",
+                "time": 0.25,
+                "value": 0.325
+              },
+              {
+                "id": "p-trip-5-06-03",
+                "time": 0.5,
+                "value": 0.625
+              },
+              {
+                "id": "p-trip-5-06-04",
+                "time": 0.76,
+                "value": 0.3
+              },
+              {
+                "id": "p-trip-5-06-05",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-5-07-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-trip-5-07-01",
+                "time": 0,
+                "value": 0.35
+              },
+              {
+                "id": "p-trip-5-07-02",
+                "time": 0.25,
+                "value": 0.75
+              },
+              {
+                "id": "p-trip-5-07-03",
+                "time": 0.5,
+                "value": 0.48
+              },
+              {
+                "id": "p-trip-5-07-04",
+                "time": 0.76,
+                "value": 0.82
+              },
+              {
+                "id": "p-trip-5-07-05",
+                "time": 1,
+                "value": 0.42
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-5-08-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-trip-5-08-01",
+                "time": 0,
+                "value": 0.008451
+              },
+              {
+                "id": "p-trip-5-08-02",
+                "time": 0.25,
+                "value": 0.053521
+              },
+              {
+                "id": "p-trip-5-08-03",
+                "time": 0.5,
+                "value": 0.022535
+              },
+              {
+                "id": "p-trip-5-08-04",
+                "time": 0.76,
+                "value": 0.076056
+              },
+              {
+                "id": "p-trip-5-08-05",
+                "time": 1,
+                "value": 0.016901
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-5-09-coherenceSpread",
+            "parameter": "coherenceSpread",
+            "points": [
+              {
+                "id": "p-trip-5-09-01",
+                "time": 0,
+                "value": 0.85
+              },
+              {
+                "id": "p-trip-5-09-02",
+                "time": 0.25,
+                "value": 0.55
+              },
+              {
+                "id": "p-trip-5-09-03",
+                "time": 0.5,
+                "value": 0.9
+              },
+              {
+                "id": "p-trip-5-09-04",
+                "time": 0.76,
+                "value": 0.45
+              },
+              {
+                "id": "p-trip-5-09-05",
+                "time": 1,
+                "value": 0.8
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-5-10-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-trip-5-10-01",
+                "time": 0,
+                "value": 0.066667
+              },
+              {
+                "id": "p-trip-5-10-02",
+                "time": 0.25,
+                "value": 0.133333
+              },
+              {
+                "id": "p-trip-5-10-03",
+                "time": 0.5,
+                "value": 0.1
+              },
+              {
+                "id": "p-trip-5-10-04",
+                "time": 0.76,
+                "value": 0.166667
+              },
+              {
+                "id": "p-trip-5-10-05",
+                "time": 1,
+                "value": 0.083333
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-5-11-pulseGain",
+            "parameter": "pulseGain",
+            "points": [
+              {
+                "id": "p-trip-5-11-01",
+                "time": 0,
+                "value": 0.02
+              },
+              {
+                "id": "p-trip-5-11-02",
+                "time": 0.25,
+                "value": 0.04
+              },
+              {
+                "id": "p-trip-5-11-03",
+                "time": 0.5,
+                "value": 0.025
+              },
+              {
+                "id": "p-trip-5-11-04",
+                "time": 0.76,
+                "value": 0.05
+              },
+              {
+                "id": "p-trip-5-11-05",
+                "time": 1,
+                "value": 0.02
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Trip · Prismatic Garden · 15 MIN",
+      "tags": [
+        "TRIP"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 350,
+        "beat": 6.2,
+        "master": 0.34,
+        "bpm": 64,
+        "pulseDepth": 0.14,
+        "pulseToneHz": 140,
+        "pulseWave": "sine",
+        "pulseDuty": 0.62,
+        "pulseSmooth": 0.97,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.075,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 5.2,
+        "rissetOn": true,
+        "rissetDir": 1,
+        "rissetRate": 0.013,
+        "rissetLayers": 4,
+        "rissetRatio": 1.55,
+        "rissetFocus": 1.3,
+        "missingFund": true,
+        "mfPartials": 6,
+        "mfBrightness": 0.2,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 760,
+        "hugginsWidth": 160,
+        "hugginsPhase": 315,
+        "hugginsLevel": 0.055,
+        "hugginsSeed": 62,
+        "coherenceOn": true,
+        "coherence": 0.5,
+        "coherenceClusters": 5,
+        "coherenceRate": 0.65,
+        "coherenceDepth": 0.32,
+        "coherenceSpread": 0.8,
+        "coherenceLevel": 0.07,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "HUGGINS",
+        "coherenceInput": 0.55,
+        "coherenceMix": 0.78,
+        "coherenceDrive": 0.68,
+        "coherenceFollower": 390,
+        "coherenceTopology": "HARMONIC",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": true
+        },
+        "noiseLevels": {
+          "WHITE": 0.04,
+          "PINK": 0.26,
+          "BROWN": 0.38,
+          "BLUE": 0.025,
+          "VIOLET": 0.025,
+          "GREY": 0.16
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1400,
+        "veilQ": 0.8,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.34,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.26,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.085,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.025,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.115,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.15,
+        "tubeDrive": {
+          "ECC83": 0.085,
+          "12AU7": 0.115,
+          "6V6": 0.04,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-trip-15-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-trip-15-01-01",
+                "time": 0,
+                "value": 0.26
+              },
+              {
+                "id": "p-trip-15-01-02",
+                "time": 0.08,
+                "value": 0.33
+              },
+              {
+                "id": "p-trip-15-01-03",
+                "time": 0.2,
+                "value": 0.35
+              },
+              {
+                "id": "p-trip-15-01-04",
+                "time": 0.36,
+                "value": 0.37
+              },
+              {
+                "id": "p-trip-15-01-05",
+                "time": 0.52,
+                "value": 0.34
+              },
+              {
+                "id": "p-trip-15-01-06",
+                "time": 0.68,
+                "value": 0.38
+              },
+              {
+                "id": "p-trip-15-01-07",
+                "time": 0.84,
+                "value": 0.34
+              },
+              {
+                "id": "p-trip-15-01-08",
+                "time": 1,
+                "value": 0.25
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-trip-15-02-01",
+                "time": 0,
+                "value": 0.195652
+              },
+              {
+                "id": "p-trip-15-02-02",
+                "time": 0.14,
+                "value": 0.336957
+              },
+              {
+                "id": "p-trip-15-02-03",
+                "time": 0.28,
+                "value": 0.26087
+              },
+              {
+                "id": "p-trip-15-02-04",
+                "time": 0.42,
+                "value": 0.423913
+              },
+              {
+                "id": "p-trip-15-02-05",
+                "time": 0.56,
+                "value": 0.23913
+              },
+              {
+                "id": "p-trip-15-02-06",
+                "time": 0.7,
+                "value": 0.478261
+              },
+              {
+                "id": "p-trip-15-02-07",
+                "time": 0.84,
+                "value": 0.315217
+              },
+              {
+                "id": "p-trip-15-02-08",
+                "time": 1,
+                "value": 0.228261
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-trip-15-03-01",
+                "time": 0,
+                "value": 0.124051
+              },
+              {
+                "id": "p-trip-15-03-02",
+                "time": 0.14,
+                "value": 0.16962
+              },
+              {
+                "id": "p-trip-15-03-03",
+                "time": 0.28,
+                "value": 0.139241
+              },
+              {
+                "id": "p-trip-15-03-04",
+                "time": 0.42,
+                "value": 0.205063
+              },
+              {
+                "id": "p-trip-15-03-05",
+                "time": 0.56,
+                "value": 0.134177
+              },
+              {
+                "id": "p-trip-15-03-06",
+                "time": 0.7,
+                "value": 0.220253
+              },
+              {
+                "id": "p-trip-15-03-07",
+                "time": 0.84,
+                "value": 0.15443
+              },
+              {
+                "id": "p-trip-15-03-08",
+                "time": 1,
+                "value": 0.129114
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-04-beatGain",
+            "parameter": "beatGain",
+            "points": [
+              {
+                "id": "p-trip-15-04-01",
+                "time": 0,
+                "value": 0.23
+              },
+              {
+                "id": "p-trip-15-04-02",
+                "time": 0.14,
+                "value": 0.28
+              },
+              {
+                "id": "p-trip-15-04-03",
+                "time": 0.28,
+                "value": 0.24
+              },
+              {
+                "id": "p-trip-15-04-04",
+                "time": 0.42,
+                "value": 0.3
+              },
+              {
+                "id": "p-trip-15-04-05",
+                "time": 0.56,
+                "value": 0.22
+              },
+              {
+                "id": "p-trip-15-04-06",
+                "time": 0.7,
+                "value": 0.31
+              },
+              {
+                "id": "p-trip-15-04-07",
+                "time": 0.84,
+                "value": 0.25
+              },
+              {
+                "id": "p-trip-15-04-08",
+                "time": 1,
+                "value": 0.21
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-05-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-trip-15-05-01",
+                "time": 0,
+                "value": 0.05746
+              },
+              {
+                "id": "p-trip-15-05-02",
+                "time": 0.14,
+                "value": 0.21371
+              },
+              {
+                "id": "p-trip-15-05-03",
+                "time": 0.28,
+                "value": 0.092742
+              },
+              {
+                "id": "p-trip-15-05-04",
+                "time": 0.42,
+                "value": 0.354839
+              },
+              {
+                "id": "p-trip-15-05-05",
+                "time": 0.56,
+                "value": 0.077621
+              },
+              {
+                "id": "p-trip-15-05-06",
+                "time": 0.7,
+                "value": 0.435484
+              },
+              {
+                "id": "p-trip-15-05-07",
+                "time": 0.84,
+                "value": 0.143145
+              },
+              {
+                "id": "p-trip-15-05-08",
+                "time": 1,
+                "value": 0.064516
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-06-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-trip-15-06-01",
+                "time": 0,
+                "value": 0.275
+              },
+              {
+                "id": "p-trip-15-06-02",
+                "time": 0.14,
+                "value": 0.675
+              },
+              {
+                "id": "p-trip-15-06-03",
+                "time": 0.28,
+                "value": 0.36
+              },
+              {
+                "id": "p-trip-15-06-04",
+                "time": 0.42,
+                "value": 0.74
+              },
+              {
+                "id": "p-trip-15-06-05",
+                "time": 0.56,
+                "value": 0.3
+              },
+              {
+                "id": "p-trip-15-06-06",
+                "time": 0.7,
+                "value": 0.76
+              },
+              {
+                "id": "p-trip-15-06-07",
+                "time": 0.84,
+                "value": 0.35
+              },
+              {
+                "id": "p-trip-15-06-08",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-07-dronePan",
+            "parameter": "dronePan",
+            "points": [
+              {
+                "id": "p-trip-15-07-01",
+                "time": 0,
+                "value": 0.725
+              },
+              {
+                "id": "p-trip-15-07-02",
+                "time": 0.14,
+                "value": 0.325
+              },
+              {
+                "id": "p-trip-15-07-03",
+                "time": 0.28,
+                "value": 0.64
+              },
+              {
+                "id": "p-trip-15-07-04",
+                "time": 0.42,
+                "value": 0.26
+              },
+              {
+                "id": "p-trip-15-07-05",
+                "time": 0.56,
+                "value": 0.7
+              },
+              {
+                "id": "p-trip-15-07-06",
+                "time": 0.7,
+                "value": 0.24
+              },
+              {
+                "id": "p-trip-15-07-07",
+                "time": 0.84,
+                "value": 0.65
+              },
+              {
+                "id": "p-trip-15-07-08",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-08-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-trip-15-08-01",
+                "time": 0,
+                "value": 0.3
+              },
+              {
+                "id": "p-trip-15-08-02",
+                "time": 0.14,
+                "value": 0.72
+              },
+              {
+                "id": "p-trip-15-08-03",
+                "time": 0.28,
+                "value": 0.45
+              },
+              {
+                "id": "p-trip-15-08-04",
+                "time": 0.42,
+                "value": 0.84
+              },
+              {
+                "id": "p-trip-15-08-05",
+                "time": 0.56,
+                "value": 0.38
+              },
+              {
+                "id": "p-trip-15-08-06",
+                "time": 0.7,
+                "value": 0.88
+              },
+              {
+                "id": "p-trip-15-08-07",
+                "time": 0.84,
+                "value": 0.52
+              },
+              {
+                "id": "p-trip-15-08-08",
+                "time": 1,
+                "value": 0.34
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-09-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-trip-15-09-01",
+                "time": 0,
+                "value": 0.005634
+              },
+              {
+                "id": "p-trip-15-09-02",
+                "time": 0.14,
+                "value": 0.047887
+              },
+              {
+                "id": "p-trip-15-09-03",
+                "time": 0.28,
+                "value": 0.016901
+              },
+              {
+                "id": "p-trip-15-09-04",
+                "time": 0.42,
+                "value": 0.08169
+              },
+              {
+                "id": "p-trip-15-09-05",
+                "time": 0.56,
+                "value": 0.011268
+              },
+              {
+                "id": "p-trip-15-09-06",
+                "time": 0.7,
+                "value": 0.098592
+              },
+              {
+                "id": "p-trip-15-09-07",
+                "time": 0.84,
+                "value": 0.028169
+              },
+              {
+                "id": "p-trip-15-09-08",
+                "time": 1,
+                "value": 0.008451
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-10-coherenceSpread",
+            "parameter": "coherenceSpread",
+            "points": [
+              {
+                "id": "p-trip-15-10-01",
+                "time": 0,
+                "value": 0.92
+              },
+              {
+                "id": "p-trip-15-10-02",
+                "time": 0.14,
+                "value": 0.58
+              },
+              {
+                "id": "p-trip-15-10-03",
+                "time": 0.28,
+                "value": 0.88
+              },
+              {
+                "id": "p-trip-15-10-04",
+                "time": 0.42,
+                "value": 0.42
+              },
+              {
+                "id": "p-trip-15-10-05",
+                "time": 0.56,
+                "value": 0.94
+              },
+              {
+                "id": "p-trip-15-10-06",
+                "time": 0.7,
+                "value": 0.38
+              },
+              {
+                "id": "p-trip-15-10-07",
+                "time": 0.84,
+                "value": 0.78
+              },
+              {
+                "id": "p-trip-15-10-08",
+                "time": 1,
+                "value": 0.9
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-11-coherenceLevel",
+            "parameter": "coherenceLevel",
+            "points": [
+              {
+                "id": "p-trip-15-11-01",
+                "time": 0,
+                "value": 0.05625
+              },
+              {
+                "id": "p-trip-15-11-02",
+                "time": 0.16,
+                "value": 0.09375
+              },
+              {
+                "id": "p-trip-15-11-03",
+                "time": 0.34,
+                "value": 0.075
+              },
+              {
+                "id": "p-trip-15-11-04",
+                "time": 0.52,
+                "value": 0.10625
+              },
+              {
+                "id": "p-trip-15-11-05",
+                "time": 0.7,
+                "value": 0.08125
+              },
+              {
+                "id": "p-trip-15-11-06",
+                "time": 0.86,
+                "value": 0.1
+              },
+              {
+                "id": "p-trip-15-11-07",
+                "time": 1,
+                "value": 0.05
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-trip-15-12-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-trip-15-12-01",
+                "time": 0,
+                "value": 0.05
+              },
+              {
+                "id": "p-trip-15-12-02",
+                "time": 0.14,
+                "value": 0.125
+              },
+              {
+                "id": "p-trip-15-12-03",
+                "time": 0.28,
+                "value": 0.083333
+              },
+              {
+                "id": "p-trip-15-12-04",
+                "time": 0.42,
+                "value": 0.166667
+              },
+              {
+                "id": "p-trip-15-12-05",
+                "time": 0.56,
+                "value": 0.075
+              },
+              {
+                "id": "p-trip-15-12-06",
+                "time": 0.7,
+                "value": 0.183333
+              },
+              {
+                "id": "p-trip-15-12-07",
+                "time": 0.84,
+                "value": 0.1
+              },
+              {
+                "id": "p-trip-15-12-08",
+                "time": 1,
+                "value": 0.041667
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Out of Body · Orbital Passage · 5 MIN",
+      "tags": [
+        "OUT OF BODY",
+        "TRIP"
+      ],
+      "time": "5 MIN",
+      "data": {
+        "carrier": 260,
+        "beat": 4.8,
+        "master": 0.33,
+        "bpm": 58,
+        "pulseDepth": 0.12,
+        "pulseToneHz": 120,
+        "pulseWave": "sine",
+        "pulseDuty": 0.64,
+        "pulseSmooth": 0.98,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.05,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 4.8,
+        "rissetOn": true,
+        "rissetDir": -1,
+        "rissetRate": 0.012,
+        "rissetLayers": 3,
+        "rissetRatio": 1.6,
+        "rissetFocus": 1.3,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 820,
+        "hugginsWidth": 170,
+        "hugginsPhase": 360,
+        "hugginsLevel": 0.055,
+        "hugginsSeed": 71,
+        "coherenceOn": true,
+        "coherence": 0.38,
+        "coherenceClusters": 4,
+        "coherenceRate": 0.5,
+        "coherenceDepth": 0.3,
+        "coherenceSpread": 0.82,
+        "coherenceLevel": 0.065,
+        "coherenceCarrier": "GREY",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.5,
+        "coherenceMix": 0.82,
+        "coherenceDrive": 0.7,
+        "coherenceFollower": 430,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": false,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": true
+        },
+        "noiseLevels": {
+          "WHITE": 0.04,
+          "PINK": 0.16,
+          "BROWN": 0.38,
+          "BLUE": 0.025,
+          "VIOLET": 0.02,
+          "GREY": 0.18
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1050,
+        "veilQ": 0.72,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.45,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.25,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.085,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.02,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.12,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 5,
+        "automation": true,
+        "drift": 0.17,
+        "tubeDrive": {
+          "ECC83": 0.055,
+          "12AU7": 0.075,
+          "6V6": 0.035,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-obe-5-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-obe-5-01-01",
+                "time": 0,
+                "value": 0.27
+              },
+              {
+                "id": "p-obe-5-01-02",
+                "time": 0.17,
+                "value": 0.34
+              },
+              {
+                "id": "p-obe-5-01-03",
+                "time": 0.48,
+                "value": 0.36
+              },
+              {
+                "id": "p-obe-5-01-04",
+                "time": 0.78,
+                "value": 0.32
+              },
+              {
+                "id": "p-obe-5-01-05",
+                "time": 1,
+                "value": 0.25
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-5-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-obe-5-02-01",
+                "time": 0,
+                "value": 0.173913
+              },
+              {
+                "id": "p-obe-5-02-02",
+                "time": 0.24,
+                "value": 0.108696
+              },
+              {
+                "id": "p-obe-5-02-03",
+                "time": 0.5,
+                "value": 0.304348
+              },
+              {
+                "id": "p-obe-5-02-04",
+                "time": 0.76,
+                "value": 0.141304
+              },
+              {
+                "id": "p-obe-5-02-05",
+                "time": 1,
+                "value": 0.217391
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-5-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-obe-5-03-01",
+                "time": 0,
+                "value": 0.101266
+              },
+              {
+                "id": "p-obe-5-03-02",
+                "time": 0.24,
+                "value": 0.146835
+              },
+              {
+                "id": "p-obe-5-03-03",
+                "time": 0.5,
+                "value": 0.083544
+              },
+              {
+                "id": "p-obe-5-03-04",
+                "time": 0.76,
+                "value": 0.16962
+              },
+              {
+                "id": "p-obe-5-03-05",
+                "time": 1,
+                "value": 0.108861
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-5-04-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-obe-5-04-01",
+                "time": 0,
+                "value": 0.175
+              },
+              {
+                "id": "p-obe-5-04-02",
+                "time": 0.24,
+                "value": 0.775
+              },
+              {
+                "id": "p-obe-5-04-03",
+                "time": 0.5,
+                "value": 0.2
+              },
+              {
+                "id": "p-obe-5-04-04",
+                "time": 0.76,
+                "value": 0.825
+              },
+              {
+                "id": "p-obe-5-04-05",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-5-05-dronePan",
+            "parameter": "dronePan",
+            "points": [
+              {
+                "id": "p-obe-5-05-01",
+                "time": 0,
+                "value": 0.825
+              },
+              {
+                "id": "p-obe-5-05-02",
+                "time": 0.24,
+                "value": 0.225
+              },
+              {
+                "id": "p-obe-5-05-03",
+                "time": 0.5,
+                "value": 0.8
+              },
+              {
+                "id": "p-obe-5-05-04",
+                "time": 0.76,
+                "value": 0.175
+              },
+              {
+                "id": "p-obe-5-05-05",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-5-06-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-obe-5-06-01",
+                "time": 0,
+                "value": 0.25
+              },
+              {
+                "id": "p-obe-5-06-02",
+                "time": 0.24,
+                "value": 0.72
+              },
+              {
+                "id": "p-obe-5-06-03",
+                "time": 0.5,
+                "value": 0.35
+              },
+              {
+                "id": "p-obe-5-06-04",
+                "time": 0.76,
+                "value": 0.8
+              },
+              {
+                "id": "p-obe-5-06-05",
+                "time": 1,
+                "value": 0.3
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-5-07-coherenceSpread",
+            "parameter": "coherenceSpread",
+            "points": [
+              {
+                "id": "p-obe-5-07-01",
+                "time": 0,
+                "value": 0.95
+              },
+              {
+                "id": "p-obe-5-07-02",
+                "time": 0.24,
+                "value": 0.5
+              },
+              {
+                "id": "p-obe-5-07-03",
+                "time": 0.5,
+                "value": 0.9
+              },
+              {
+                "id": "p-obe-5-07-04",
+                "time": 0.76,
+                "value": 0.45
+              },
+              {
+                "id": "p-obe-5-07-05",
+                "time": 1,
+                "value": 0.85
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-5-08-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-obe-5-08-01",
+                "time": 0,
+                "value": 0
+              },
+              {
+                "id": "p-obe-5-08-02",
+                "time": 0.24,
+                "value": 0.033803
+              },
+              {
+                "id": "p-obe-5-08-03",
+                "time": 0.5,
+                "value": 0.008451
+              },
+              {
+                "id": "p-obe-5-08-04",
+                "time": 0.76,
+                "value": 0.047887
+              },
+              {
+                "id": "p-obe-5-08-05",
+                "time": 1,
+                "value": 0.003944
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-5-09-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-obe-5-09-01",
+                "time": 0,
+                "value": 0.058333
+              },
+              {
+                "id": "p-obe-5-09-02",
+                "time": 0.24,
+                "value": 0.133333
+              },
+              {
+                "id": "p-obe-5-09-03",
+                "time": 0.5,
+                "value": 0.091667
+              },
+              {
+                "id": "p-obe-5-09-04",
+                "time": 0.76,
+                "value": 0.166667
+              },
+              {
+                "id": "p-obe-5-09-05",
+                "time": 1,
+                "value": 0.083333
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-5-10-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-obe-5-10-01",
+                "time": 0,
+                "value": 0.05746
+              },
+              {
+                "id": "p-obe-5-10-02",
+                "time": 0.24,
+                "value": 0.21371
+              },
+              {
+                "id": "p-obe-5-10-03",
+                "time": 0.5,
+                "value": 0.082661
+              },
+              {
+                "id": "p-obe-5-10-04",
+                "time": 0.76,
+                "value": 0.274194
+              },
+              {
+                "id": "p-obe-5-10-05",
+                "time": 1,
+                "value": 0.072581
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-5-11-pulseGain",
+            "parameter": "pulseGain",
+            "points": [
+              {
+                "id": "p-obe-5-11-01",
+                "time": 0,
+                "value": 0.015
+              },
+              {
+                "id": "p-obe-5-11-02",
+                "time": 0.24,
+                "value": 0.035
+              },
+              {
+                "id": "p-obe-5-11-03",
+                "time": 0.5,
+                "value": 0.02
+              },
+              {
+                "id": "p-obe-5-11-04",
+                "time": 0.76,
+                "value": 0.04
+              },
+              {
+                "id": "p-obe-5-11-05",
+                "time": 1,
+                "value": 0.015
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Out of Body · Orbital Passage · 15 MIN",
+      "tags": [
+        "OUT OF BODY",
+        "TRIP"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 250,
+        "beat": 4.6,
+        "master": 0.32,
+        "bpm": 56,
+        "pulseDepth": 0.1,
+        "pulseToneHz": 115,
+        "pulseWave": "sine",
+        "pulseDuty": 0.66,
+        "pulseSmooth": 0.99,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.045,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 4.6,
+        "rissetOn": true,
+        "rissetDir": -1,
+        "rissetRate": 0.01,
+        "rissetLayers": 4,
+        "rissetRatio": 1.5,
+        "rissetFocus": 1.35,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 840,
+        "hugginsWidth": 180,
+        "hugginsPhase": 360,
+        "hugginsLevel": 0.05,
+        "hugginsSeed": 72,
+        "coherenceOn": true,
+        "coherence": 0.36,
+        "coherenceClusters": 5,
+        "coherenceRate": 0.45,
+        "coherenceDepth": 0.28,
+        "coherenceSpread": 0.86,
+        "coherenceLevel": 0.06,
+        "coherenceCarrier": "GREY",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.47,
+        "coherenceMix": 0.84,
+        "coherenceDrive": 0.66,
+        "coherenceFollower": 470,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": false,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": true
+        },
+        "noiseLevels": {
+          "WHITE": 0.03,
+          "PINK": 0.14,
+          "BROWN": 0.36,
+          "BLUE": 0.02,
+          "VIOLET": 0.018,
+          "GREY": 0.16
+        },
+        "veilType": "lowpass",
+        "veilCenter": 980,
+        "veilQ": 0.68,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.48,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.24,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.08,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.018,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.12,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.16,
+        "tubeDrive": {
+          "ECC83": 0.05,
+          "12AU7": 0.075,
+          "6V6": 0.035,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-obe-15-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-obe-15-01-01",
+                "time": 0,
+                "value": 0.24
+              },
+              {
+                "id": "p-obe-15-01-02",
+                "time": 0.08,
+                "value": 0.31
+              },
+              {
+                "id": "p-obe-15-01-03",
+                "time": 0.2,
+                "value": 0.34
+              },
+              {
+                "id": "p-obe-15-01-04",
+                "time": 0.38,
+                "value": 0.36
+              },
+              {
+                "id": "p-obe-15-01-05",
+                "time": 0.56,
+                "value": 0.33
+              },
+              {
+                "id": "p-obe-15-01-06",
+                "time": 0.72,
+                "value": 0.36
+              },
+              {
+                "id": "p-obe-15-01-07",
+                "time": 0.88,
+                "value": 0.31
+              },
+              {
+                "id": "p-obe-15-01-08",
+                "time": 1,
+                "value": 0.22
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-15-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-obe-15-02-01",
+                "time": 0,
+                "value": 0.195652
+              },
+              {
+                "id": "p-obe-15-02-02",
+                "time": 0.12,
+                "value": 0.119565
+              },
+              {
+                "id": "p-obe-15-02-03",
+                "time": 0.26,
+                "value": 0.282609
+              },
+              {
+                "id": "p-obe-15-02-04",
+                "time": 0.4,
+                "value": 0.097826
+              },
+              {
+                "id": "p-obe-15-02-05",
+                "time": 0.54,
+                "value": 0.336957
+              },
+              {
+                "id": "p-obe-15-02-06",
+                "time": 0.68,
+                "value": 0.141304
+              },
+              {
+                "id": "p-obe-15-02-07",
+                "time": 0.82,
+                "value": 0.304348
+              },
+              {
+                "id": "p-obe-15-02-08",
+                "time": 1,
+                "value": 0.184783
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-15-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-obe-15-03-01",
+                "time": 0,
+                "value": 0.093671
+              },
+              {
+                "id": "p-obe-15-03-02",
+                "time": 0.12,
+                "value": 0.139241
+              },
+              {
+                "id": "p-obe-15-03-03",
+                "time": 0.26,
+                "value": 0.075949
+              },
+              {
+                "id": "p-obe-15-03-04",
+                "time": 0.4,
+                "value": 0.167089
+              },
+              {
+                "id": "p-obe-15-03-05",
+                "time": 0.54,
+                "value": 0.088608
+              },
+              {
+                "id": "p-obe-15-03-06",
+                "time": 0.68,
+                "value": 0.179747
+              },
+              {
+                "id": "p-obe-15-03-07",
+                "time": 0.82,
+                "value": 0.083544
+              },
+              {
+                "id": "p-obe-15-03-08",
+                "time": 1,
+                "value": 0.108861
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-15-04-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-obe-15-04-01",
+                "time": 0,
+                "value": 0.14
+              },
+              {
+                "id": "p-obe-15-04-02",
+                "time": 0.12,
+                "value": 0.79
+              },
+              {
+                "id": "p-obe-15-04-03",
+                "time": 0.26,
+                "value": 0.175
+              },
+              {
+                "id": "p-obe-15-04-04",
+                "time": 0.4,
+                "value": 0.86
+              },
+              {
+                "id": "p-obe-15-04-05",
+                "time": 0.54,
+                "value": 0.15
+              },
+              {
+                "id": "p-obe-15-04-06",
+                "time": 0.68,
+                "value": 0.81
+              },
+              {
+                "id": "p-obe-15-04-07",
+                "time": 0.82,
+                "value": 0.225
+              },
+              {
+                "id": "p-obe-15-04-08",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-15-05-dronePan",
+            "parameter": "dronePan",
+            "points": [
+              {
+                "id": "p-obe-15-05-01",
+                "time": 0,
+                "value": 0.86
+              },
+              {
+                "id": "p-obe-15-05-02",
+                "time": 0.12,
+                "value": 0.21
+              },
+              {
+                "id": "p-obe-15-05-03",
+                "time": 0.26,
+                "value": 0.825
+              },
+              {
+                "id": "p-obe-15-05-04",
+                "time": 0.4,
+                "value": 0.14
+              },
+              {
+                "id": "p-obe-15-05-05",
+                "time": 0.54,
+                "value": 0.85
+              },
+              {
+                "id": "p-obe-15-05-06",
+                "time": 0.68,
+                "value": 0.19
+              },
+              {
+                "id": "p-obe-15-05-07",
+                "time": 0.82,
+                "value": 0.775
+              },
+              {
+                "id": "p-obe-15-05-08",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-15-06-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-obe-15-06-01",
+                "time": 0,
+                "value": 0.22
+              },
+              {
+                "id": "p-obe-15-06-02",
+                "time": 0.12,
+                "value": 0.68
+              },
+              {
+                "id": "p-obe-15-06-03",
+                "time": 0.26,
+                "value": 0.3
+              },
+              {
+                "id": "p-obe-15-06-04",
+                "time": 0.4,
+                "value": 0.8
+              },
+              {
+                "id": "p-obe-15-06-05",
+                "time": 0.54,
+                "value": 0.26
+              },
+              {
+                "id": "p-obe-15-06-06",
+                "time": 0.68,
+                "value": 0.84
+              },
+              {
+                "id": "p-obe-15-06-07",
+                "time": 0.82,
+                "value": 0.38
+              },
+              {
+                "id": "p-obe-15-06-08",
+                "time": 1,
+                "value": 0.28
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-15-07-coherenceSpread",
+            "parameter": "coherenceSpread",
+            "points": [
+              {
+                "id": "p-obe-15-07-01",
+                "time": 0,
+                "value": 0.96
+              },
+              {
+                "id": "p-obe-15-07-02",
+                "time": 0.12,
+                "value": 0.52
+              },
+              {
+                "id": "p-obe-15-07-03",
+                "time": 0.26,
+                "value": 0.92
+              },
+              {
+                "id": "p-obe-15-07-04",
+                "time": 0.4,
+                "value": 0.42
+              },
+              {
+                "id": "p-obe-15-07-05",
+                "time": 0.54,
+                "value": 0.95
+              },
+              {
+                "id": "p-obe-15-07-06",
+                "time": 0.68,
+                "value": 0.38
+              },
+              {
+                "id": "p-obe-15-07-07",
+                "time": 0.82,
+                "value": 0.82
+              },
+              {
+                "id": "p-obe-15-07-08",
+                "time": 1,
+                "value": 0.9
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-15-08-coherenceRate",
+            "parameter": "coherenceRate",
+            "points": [
+              {
+                "id": "p-obe-15-08-01",
+                "time": 0,
+                "value": 0
+              },
+              {
+                "id": "p-obe-15-08-02",
+                "time": 0.12,
+                "value": 0.028169
+              },
+              {
+                "id": "p-obe-15-08-03",
+                "time": 0.26,
+                "value": 0.003944
+              },
+              {
+                "id": "p-obe-15-08-04",
+                "time": 0.4,
+                "value": 0.04507
+              },
+              {
+                "id": "p-obe-15-08-05",
+                "time": 0.54,
+                "value": 0.00169
+              },
+              {
+                "id": "p-obe-15-08-06",
+                "time": 0.68,
+                "value": 0.053521
+              },
+              {
+                "id": "p-obe-15-08-07",
+                "time": 0.82,
+                "value": 0.014085
+              },
+              {
+                "id": "p-obe-15-08-08",
+                "time": 1,
+                "value": 0.002817
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-15-09-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-obe-15-09-01",
+                "time": 0,
+                "value": 0.041667
+              },
+              {
+                "id": "p-obe-15-09-02",
+                "time": 0.12,
+                "value": 0.116667
+              },
+              {
+                "id": "p-obe-15-09-03",
+                "time": 0.26,
+                "value": 0.075
+              },
+              {
+                "id": "p-obe-15-09-04",
+                "time": 0.4,
+                "value": 0.158333
+              },
+              {
+                "id": "p-obe-15-09-05",
+                "time": 0.54,
+                "value": 0.066667
+              },
+              {
+                "id": "p-obe-15-09-06",
+                "time": 0.68,
+                "value": 0.175
+              },
+              {
+                "id": "p-obe-15-09-07",
+                "time": 0.82,
+                "value": 0.091667
+              },
+              {
+                "id": "p-obe-15-09-08",
+                "time": 1,
+                "value": 0.041667
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-15-10-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-obe-15-10-01",
+                "time": 0,
+                "value": 0.048387
+              },
+              {
+                "id": "p-obe-15-10-02",
+                "time": 0.12,
+                "value": 0.183468
+              },
+              {
+                "id": "p-obe-15-10-03",
+                "time": 0.26,
+                "value": 0.068548
+              },
+              {
+                "id": "p-obe-15-10-04",
+                "time": 0.4,
+                "value": 0.254032
+              },
+              {
+                "id": "p-obe-15-10-05",
+                "time": 0.54,
+                "value": 0.05746
+              },
+              {
+                "id": "p-obe-15-10-06",
+                "time": 0.68,
+                "value": 0.304435
+              },
+              {
+                "id": "p-obe-15-10-07",
+                "time": 0.82,
+                "value": 0.102823
+              },
+              {
+                "id": "p-obe-15-10-08",
+                "time": 1,
+                "value": 0.05746
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-obe-15-11-pulseGain",
+            "parameter": "pulseGain",
+            "points": [
+              {
+                "id": "p-obe-15-11-01",
+                "time": 0,
+                "value": 0.012
+              },
+              {
+                "id": "p-obe-15-11-02",
+                "time": 0.14,
+                "value": 0.028
+              },
+              {
+                "id": "p-obe-15-11-03",
+                "time": 0.28,
+                "value": 0.016
+              },
+              {
+                "id": "p-obe-15-11-04",
+                "time": 0.42,
+                "value": 0.036
+              },
+              {
+                "id": "p-obe-15-11-05",
+                "time": 0.58,
+                "value": 0.014
+              },
+              {
+                "id": "p-obe-15-11-06",
+                "time": 0.72,
+                "value": 0.04
+              },
+              {
+                "id": "p-obe-15-11-07",
+                "time": 0.86,
+                "value": 0.02
+              },
+              {
+                "id": "p-obe-15-11-08",
+                "time": 1,
+                "value": 0.01
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Past Lives · Gentle Return · 5 MIN",
+      "tags": [
+        "PAST LIVES",
+        "RELAX"
+      ],
+      "time": "5 MIN",
+      "data": {
+        "carrier": 300,
+        "beat": 7.2,
+        "master": 0.33,
+        "bpm": 54,
+        "pulseDepth": 0.08,
+        "pulseToneHz": 125,
+        "pulseWave": "sine",
+        "pulseDuty": 0.65,
+        "pulseSmooth": 0.99,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.04,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 4.8,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 680,
+        "hugginsWidth": 135,
+        "hugginsPhase": 240,
+        "hugginsLevel": 0.035,
+        "hugginsSeed": 81,
+        "coherenceOn": true,
+        "coherence": 0.66,
+        "coherenceClusters": 3,
+        "coherenceRate": 0.55,
+        "coherenceDepth": 0.2,
+        "coherenceSpread": 0.38,
+        "coherenceLevel": 0.055,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.48,
+        "coherenceMix": 0.66,
+        "coherenceDrive": 0.6,
+        "coherenceFollower": 460,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.04,
+          "PINK": 0.22,
+          "BROWN": 0.42,
+          "BLUE": 0.02,
+          "VIOLET": 0.02,
+          "GREY": 0.1
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1200,
+        "veilQ": 0.65,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.5,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.28,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.1,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.015,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.12,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 5,
+        "automation": true,
+        "drift": 0.1,
+        "tubeDrive": {
+          "ECC83": 0.06,
+          "12AU7": 0.09,
+          "6V6": 0.04,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-past-5-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-past-5-01-01",
+                "time": 0,
+                "value": 0.26
+              },
+              {
+                "id": "p-past-5-01-02",
+                "time": 0.16,
+                "value": 0.34
+              },
+              {
+                "id": "p-past-5-01-03",
+                "time": 0.38,
+                "value": 0.35
+              },
+              {
+                "id": "p-past-5-01-04",
+                "time": 0.62,
+                "value": 0.33
+              },
+              {
+                "id": "p-past-5-01-05",
+                "time": 0.84,
+                "value": 0.35
+              },
+              {
+                "id": "p-past-5-01-06",
+                "time": 1,
+                "value": 0.23
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-5-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-past-5-02-01",
+                "time": 0,
+                "value": 0.282609
+              },
+              {
+                "id": "p-past-5-02-02",
+                "time": 0.2,
+                "value": 0.217391
+              },
+              {
+                "id": "p-past-5-02-03",
+                "time": 0.4,
+                "value": 0.152174
+              },
+              {
+                "id": "p-past-5-02-04",
+                "time": 0.62,
+                "value": 0.173913
+              },
+              {
+                "id": "p-past-5-02-05",
+                "time": 0.82,
+                "value": 0.25
+              },
+              {
+                "id": "p-past-5-02-06",
+                "time": 1,
+                "value": 0.326087
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-5-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-past-5-03-01",
+                "time": 0,
+                "value": 0.227848
+              },
+              {
+                "id": "p-past-5-03-02",
+                "time": 0.2,
+                "value": 0.16962
+              },
+              {
+                "id": "p-past-5-03-03",
+                "time": 0.4,
+                "value": 0.108861
+              },
+              {
+                "id": "p-past-5-03-04",
+                "time": 0.62,
+                "value": 0.116456
+              },
+              {
+                "id": "p-past-5-03-05",
+                "time": 0.82,
+                "value": 0.194937
+              },
+              {
+                "id": "p-past-5-03-06",
+                "time": 1,
+                "value": 0.240506
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-5-04-bpm",
+            "parameter": "bpm",
+            "points": [
+              {
+                "id": "p-past-5-04-01",
+                "time": 0,
+                "value": 0.2
+              },
+              {
+                "id": "p-past-5-04-02",
+                "time": 0.2,
+                "value": 0.146667
+              },
+              {
+                "id": "p-past-5-04-03",
+                "time": 0.4,
+                "value": 0.093333
+              },
+              {
+                "id": "p-past-5-04-04",
+                "time": 0.62,
+                "value": 0.106667
+              },
+              {
+                "id": "p-past-5-04-05",
+                "time": 0.82,
+                "value": 0.173333
+              },
+              {
+                "id": "p-past-5-04-06",
+                "time": 1,
+                "value": 0.226667
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-5-05-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-past-5-05-01",
+                "time": 0,
+                "value": 0.183468
+              },
+              {
+                "id": "p-past-5-05-02",
+                "time": 0.2,
+                "value": 0.112903
+              },
+              {
+                "id": "p-past-5-05-03",
+                "time": 0.4,
+                "value": 0.05746
+              },
+              {
+                "id": "p-past-5-05-04",
+                "time": 0.62,
+                "value": 0.06754
+              },
+              {
+                "id": "p-past-5-05-05",
+                "time": 0.82,
+                "value": 0.143145
+              },
+              {
+                "id": "p-past-5-05-06",
+                "time": 1,
+                "value": 0.233871
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-5-06-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-past-5-06-01",
+                "time": 0,
+                "value": 0.82
+              },
+              {
+                "id": "p-past-5-06-02",
+                "time": 0.2,
+                "value": 0.58
+              },
+              {
+                "id": "p-past-5-06-03",
+                "time": 0.4,
+                "value": 0.4
+              },
+              {
+                "id": "p-past-5-06-04",
+                "time": 0.62,
+                "value": 0.5
+              },
+              {
+                "id": "p-past-5-06-05",
+                "time": 0.82,
+                "value": 0.72
+              },
+              {
+                "id": "p-past-5-06-06",
+                "time": 1,
+                "value": 0.86
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-5-07-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-past-5-07-01",
+                "time": 0,
+                "value": 0
+              },
+              {
+                "id": "p-past-5-07-02",
+                "time": 0.2,
+                "value": 0.066667
+              },
+              {
+                "id": "p-past-5-07-03",
+                "time": 0.4,
+                "value": 0.125
+              },
+              {
+                "id": "p-past-5-07-04",
+                "time": 0.62,
+                "value": 0.133333
+              },
+              {
+                "id": "p-past-5-07-05",
+                "time": 0.82,
+                "value": 0.05
+              },
+              {
+                "id": "p-past-5-07-06",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-5-08-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-past-5-08-01",
+                "time": 0,
+                "value": 0.08
+              },
+              {
+                "id": "p-past-5-08-02",
+                "time": 0.2,
+                "value": 0.13
+              },
+              {
+                "id": "p-past-5-08-03",
+                "time": 0.4,
+                "value": 0.18
+              },
+              {
+                "id": "p-past-5-08-04",
+                "time": 0.62,
+                "value": 0.17
+              },
+              {
+                "id": "p-past-5-08-05",
+                "time": 0.82,
+                "value": 0.11
+              },
+              {
+                "id": "p-past-5-08-06",
+                "time": 1,
+                "value": 0.07
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-5-09-beatGain",
+            "parameter": "beatGain",
+            "points": [
+              {
+                "id": "p-past-5-09-01",
+                "time": 0,
+                "value": 0.31
+              },
+              {
+                "id": "p-past-5-09-02",
+                "time": 0.2,
+                "value": 0.27
+              },
+              {
+                "id": "p-past-5-09-03",
+                "time": 0.4,
+                "value": 0.22
+              },
+              {
+                "id": "p-past-5-09-04",
+                "time": 0.62,
+                "value": 0.23
+              },
+              {
+                "id": "p-past-5-09-05",
+                "time": 0.82,
+                "value": 0.29
+              },
+              {
+                "id": "p-past-5-09-06",
+                "time": 1,
+                "value": 0.33
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-5-10-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-past-5-10-01",
+                "time": 0,
+                "value": 0.5
+              },
+              {
+                "id": "p-past-5-10-02",
+                "time": 0.2,
+                "value": 0.4
+              },
+              {
+                "id": "p-past-5-10-03",
+                "time": 0.4,
+                "value": 0.575
+              },
+              {
+                "id": "p-past-5-10-04",
+                "time": 0.62,
+                "value": 0.44
+              },
+              {
+                "id": "p-past-5-10-05",
+                "time": 0.82,
+                "value": 0.54
+              },
+              {
+                "id": "p-past-5-10-06",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Past Lives · Gentle Return · 15 MIN",
+      "tags": [
+        "PAST LIVES",
+        "RELAX"
+      ],
+      "time": "15 MIN",
+      "data": {
+        "carrier": 300,
+        "beat": 7,
+        "master": 0.32,
+        "bpm": 52,
+        "pulseDepth": 0.07,
+        "pulseToneHz": 120,
+        "pulseWave": "sine",
+        "pulseDuty": 0.66,
+        "pulseSmooth": 0.99,
+        "mode": "binaural",
+        "waveform": "sine",
+        "amDepth": 0.035,
+        "amShape": "sine",
+        "nestOn": true,
+        "thetaRate": 4.6,
+        "rissetOn": false,
+        "rissetDir": 1,
+        "rissetRate": 0.02,
+        "rissetLayers": 3,
+        "rissetRatio": 2,
+        "rissetFocus": 1,
+        "missingFund": false,
+        "mfPartials": 5,
+        "mfBrightness": 0.25,
+        "gammaOn": false,
+        "gammaRate": 40,
+        "gammaCarrierHz": 220,
+        "gammaDepth": 0.25,
+        "gammaDuty": 0.5,
+        "gammaEdge": 0.85,
+        "gammaLevel": 0.04,
+        "gammaWave": "sine",
+        "hugginsOn": true,
+        "hugginsCenter": 660,
+        "hugginsWidth": 145,
+        "hugginsPhase": 225,
+        "hugginsLevel": 0.03,
+        "hugginsSeed": 82,
+        "coherenceOn": true,
+        "coherence": 0.68,
+        "coherenceClusters": 3,
+        "coherenceRate": 0.5,
+        "coherenceDepth": 0.18,
+        "coherenceSpread": 0.36,
+        "coherenceLevel": 0.05,
+        "coherenceCarrier": "BROWN",
+        "coherenceDriver": "LFO",
+        "coherenceInput": 0.45,
+        "coherenceMix": 0.64,
+        "coherenceDrive": 0.58,
+        "coherenceFollower": 500,
+        "coherenceTopology": "INTERLEAVED",
+        "coherenceOutput": "ALL",
+        "textureOn": false,
+        "textureLevel": 0.12,
+        "textureGrainMs": 220,
+        "textureScatter": 0.45,
+        "noiseActive": {
+          "WHITE": false,
+          "PINK": true,
+          "BROWN": true,
+          "BLUE": false,
+          "VIOLET": false,
+          "GREY": false
+        },
+        "noiseLevels": {
+          "WHITE": 0.03,
+          "PINK": 0.2,
+          "BROWN": 0.4,
+          "BLUE": 0.018,
+          "VIOLET": 0.018,
+          "GREY": 0.09
+        },
+        "veilType": "lowpass",
+        "veilCenter": 1150,
+        "veilQ": 0.62,
+        "veilGainDb": 0,
+        "veilSweepRate": 0,
+        "veilSweepDepth": 0,
+        "veilTilt": -0.52,
+        "comodOn": false,
+        "comodRate": 4,
+        "comodDepth": 0.14,
+        "comodShape": "sine",
+        "layers": {
+          "beat": {
+            "gain": 0.27,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "veil": {
+            "gain": 0.095,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "pulse": {
+            "gain": 0.012,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          },
+          "drone": {
+            "gain": 0.12,
+            "pan": 0,
+            "muted": false,
+            "solo": false
+          }
+        },
+        "sessionLength": 15,
+        "automation": true,
+        "drift": 0.09,
+        "tubeDrive": {
+          "ECC83": 0.055,
+          "12AU7": 0.09,
+          "6V6": 0.04,
+          "EL34": 0
+        },
+        "automationTracks": [
+          {
+            "id": "track-past-15-01-master",
+            "parameter": "master",
+            "points": [
+              {
+                "id": "p-past-15-01-01",
+                "time": 0,
+                "value": 0.24
+              },
+              {
+                "id": "p-past-15-01-02",
+                "time": 0.08,
+                "value": 0.31
+              },
+              {
+                "id": "p-past-15-01-03",
+                "time": 0.2,
+                "value": 0.34
+              },
+              {
+                "id": "p-past-15-01-04",
+                "time": 0.36,
+                "value": 0.35
+              },
+              {
+                "id": "p-past-15-01-05",
+                "time": 0.54,
+                "value": 0.33
+              },
+              {
+                "id": "p-past-15-01-06",
+                "time": 0.7,
+                "value": 0.34
+              },
+              {
+                "id": "p-past-15-01-07",
+                "time": 0.84,
+                "value": 0.36
+              },
+              {
+                "id": "p-past-15-01-08",
+                "time": 0.94,
+                "value": 0.32
+              },
+              {
+                "id": "p-past-15-01-09",
+                "time": 1,
+                "value": 0.2
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-15-02-carrier",
+            "parameter": "carrier",
+            "points": [
+              {
+                "id": "p-past-15-02-01",
+                "time": 0,
+                "value": 0.304348
+              },
+              {
+                "id": "p-past-15-02-02",
+                "time": 0.12,
+                "value": 0.255435
+              },
+              {
+                "id": "p-past-15-02-03",
+                "time": 0.25,
+                "value": 0.206522
+              },
+              {
+                "id": "p-past-15-02-04",
+                "time": 0.4,
+                "value": 0.157609
+              },
+              {
+                "id": "p-past-15-02-05",
+                "time": 0.56,
+                "value": 0.141304
+              },
+              {
+                "id": "p-past-15-02-06",
+                "time": 0.7,
+                "value": 0.184783
+              },
+              {
+                "id": "p-past-15-02-07",
+                "time": 0.82,
+                "value": 0.244565
+              },
+              {
+                "id": "p-past-15-02-08",
+                "time": 0.92,
+                "value": 0.304348
+              },
+              {
+                "id": "p-past-15-02-09",
+                "time": 1,
+                "value": 0.347826
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-15-03-beat",
+            "parameter": "beat",
+            "points": [
+              {
+                "id": "p-past-15-03-01",
+                "time": 0,
+                "value": 0.240506
+              },
+              {
+                "id": "p-past-15-03-02",
+                "time": 0.12,
+                "value": 0.202532
+              },
+              {
+                "id": "p-past-15-03-03",
+                "time": 0.25,
+                "value": 0.159494
+              },
+              {
+                "id": "p-past-15-03-04",
+                "time": 0.4,
+                "value": 0.118987
+              },
+              {
+                "id": "p-past-15-03-05",
+                "time": 0.56,
+                "value": 0.103797
+              },
+              {
+                "id": "p-past-15-03-06",
+                "time": 0.7,
+                "value": 0.134177
+              },
+              {
+                "id": "p-past-15-03-07",
+                "time": 0.82,
+                "value": 0.18481
+              },
+              {
+                "id": "p-past-15-03-08",
+                "time": 0.92,
+                "value": 0.227848
+              },
+              {
+                "id": "p-past-15-03-09",
+                "time": 1,
+                "value": 0.253165
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-15-04-bpm",
+            "parameter": "bpm",
+            "points": [
+              {
+                "id": "p-past-15-04-01",
+                "time": 0,
+                "value": 0.213333
+              },
+              {
+                "id": "p-past-15-04-02",
+                "time": 0.12,
+                "value": 0.173333
+              },
+              {
+                "id": "p-past-15-04-03",
+                "time": 0.25,
+                "value": 0.133333
+              },
+              {
+                "id": "p-past-15-04-04",
+                "time": 0.4,
+                "value": 0.1
+              },
+              {
+                "id": "p-past-15-04-05",
+                "time": 0.56,
+                "value": 0.08
+              },
+              {
+                "id": "p-past-15-04-06",
+                "time": 0.7,
+                "value": 0.12
+              },
+              {
+                "id": "p-past-15-04-07",
+                "time": 0.82,
+                "value": 0.166667
+              },
+              {
+                "id": "p-past-15-04-08",
+                "time": 0.92,
+                "value": 0.213333
+              },
+              {
+                "id": "p-past-15-04-09",
+                "time": 1,
+                "value": 0.24
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-15-05-veilCenter",
+            "parameter": "veilCenter",
+            "points": [
+              {
+                "id": "p-past-15-05-01",
+                "time": 0,
+                "value": 0.21371
+              },
+              {
+                "id": "p-past-15-05-02",
+                "time": 0.12,
+                "value": 0.158266
+              },
+              {
+                "id": "p-past-15-05-03",
+                "time": 0.25,
+                "value": 0.102823
+              },
+              {
+                "id": "p-past-15-05-04",
+                "time": 0.4,
+                "value": 0.064516
+              },
+              {
+                "id": "p-past-15-05-05",
+                "time": 0.56,
+                "value": 0.050403
+              },
+              {
+                "id": "p-past-15-05-06",
+                "time": 0.7,
+                "value": 0.077621
+              },
+              {
+                "id": "p-past-15-05-07",
+                "time": 0.82,
+                "value": 0.138105
+              },
+              {
+                "id": "p-past-15-05-08",
+                "time": 0.92,
+                "value": 0.203629
+              },
+              {
+                "id": "p-past-15-05-09",
+                "time": 1,
+                "value": 0.254032
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-15-06-coherence",
+            "parameter": "coherence",
+            "points": [
+              {
+                "id": "p-past-15-06-01",
+                "time": 0,
+                "value": 0.86
+              },
+              {
+                "id": "p-past-15-06-02",
+                "time": 0.12,
+                "value": 0.72
+              },
+              {
+                "id": "p-past-15-06-03",
+                "time": 0.25,
+                "value": 0.58
+              },
+              {
+                "id": "p-past-15-06-04",
+                "time": 0.4,
+                "value": 0.42
+              },
+              {
+                "id": "p-past-15-06-05",
+                "time": 0.56,
+                "value": 0.36
+              },
+              {
+                "id": "p-past-15-06-06",
+                "time": 0.7,
+                "value": 0.5
+              },
+              {
+                "id": "p-past-15-06-07",
+                "time": 0.82,
+                "value": 0.68
+              },
+              {
+                "id": "p-past-15-06-08",
+                "time": 0.92,
+                "value": 0.82
+              },
+              {
+                "id": "p-past-15-06-09",
+                "time": 1,
+                "value": 0.9
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-15-07-hugginsLevel",
+            "parameter": "hugginsLevel",
+            "points": [
+              {
+                "id": "p-past-15-07-01",
+                "time": 0,
+                "value": 0
+              },
+              {
+                "id": "p-past-15-07-02",
+                "time": 0.12,
+                "value": 0.041667
+              },
+              {
+                "id": "p-past-15-07-03",
+                "time": 0.25,
+                "value": 0.083333
+              },
+              {
+                "id": "p-past-15-07-04",
+                "time": 0.4,
+                "value": 0.125
+              },
+              {
+                "id": "p-past-15-07-05",
+                "time": 0.56,
+                "value": 0.141667
+              },
+              {
+                "id": "p-past-15-07-06",
+                "time": 0.7,
+                "value": 0.108333
+              },
+              {
+                "id": "p-past-15-07-07",
+                "time": 0.82,
+                "value": 0.058333
+              },
+              {
+                "id": "p-past-15-07-08",
+                "time": 0.92,
+                "value": 0.02
+              },
+              {
+                "id": "p-past-15-07-09",
+                "time": 1,
+                "value": 0
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-15-08-droneGain",
+            "parameter": "droneGain",
+            "points": [
+              {
+                "id": "p-past-15-08-01",
+                "time": 0,
+                "value": 0.07
+              },
+              {
+                "id": "p-past-15-08-02",
+                "time": 0.12,
+                "value": 0.1
+              },
+              {
+                "id": "p-past-15-08-03",
+                "time": 0.25,
+                "value": 0.14
+              },
+              {
+                "id": "p-past-15-08-04",
+                "time": 0.4,
+                "value": 0.18
+              },
+              {
+                "id": "p-past-15-08-05",
+                "time": 0.56,
+                "value": 0.2
+              },
+              {
+                "id": "p-past-15-08-06",
+                "time": 0.7,
+                "value": 0.17
+              },
+              {
+                "id": "p-past-15-08-07",
+                "time": 0.82,
+                "value": 0.12
+              },
+              {
+                "id": "p-past-15-08-08",
+                "time": 0.92,
+                "value": 0.08
+              },
+              {
+                "id": "p-past-15-08-09",
+                "time": 1,
+                "value": 0.06
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-15-09-beatGain",
+            "parameter": "beatGain",
+            "points": [
+              {
+                "id": "p-past-15-09-01",
+                "time": 0,
+                "value": 0.32
+              },
+              {
+                "id": "p-past-15-09-02",
+                "time": 0.12,
+                "value": 0.29
+              },
+              {
+                "id": "p-past-15-09-03",
+                "time": 0.25,
+                "value": 0.25
+              },
+              {
+                "id": "p-past-15-09-04",
+                "time": 0.4,
+                "value": 0.22
+              },
+              {
+                "id": "p-past-15-09-05",
+                "time": 0.56,
+                "value": 0.21
+              },
+              {
+                "id": "p-past-15-09-06",
+                "time": 0.7,
+                "value": 0.24
+              },
+              {
+                "id": "p-past-15-09-07",
+                "time": 0.82,
+                "value": 0.29
+              },
+              {
+                "id": "p-past-15-09-08",
+                "time": 0.92,
+                "value": 0.33
+              },
+              {
+                "id": "p-past-15-09-09",
+                "time": 1,
+                "value": 0.34
+              }
+            ],
+            "snap": false
+          },
+          {
+            "id": "track-past-15-10-veilPan",
+            "parameter": "veilPan",
+            "points": [
+              {
+                "id": "p-past-15-10-01",
+                "time": 0,
+                "value": 0.5
+              },
+              {
+                "id": "p-past-15-10-02",
+                "time": 0.12,
+                "value": 0.44
+              },
+              {
+                "id": "p-past-15-10-03",
+                "time": 0.25,
+                "value": 0.57
+              },
+              {
+                "id": "p-past-15-10-04",
+                "time": 0.4,
+                "value": 0.41
+              },
+              {
+                "id": "p-past-15-10-05",
+                "time": 0.56,
+                "value": 0.58
+              },
+              {
+                "id": "p-past-15-10-06",
+                "time": 0.7,
+                "value": 0.44
+              },
+              {
+                "id": "p-past-15-10-07",
+                "time": 0.82,
+                "value": 0.54
+              },
+              {
+                "id": "p-past-15-10-08",
+                "time": 0.92,
+                "value": 0.48
+              },
+              {
+                "id": "p-past-15-10-09",
+                "time": 1,
+                "value": 0.5
+              }
+            ],
+            "snap": false
+          }
+        ]
+      }
+    }
+  ]
+}
