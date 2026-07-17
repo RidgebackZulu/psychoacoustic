@@ -774,8 +774,18 @@ function Spectrum({ analyser, running }: { analyser: AnalyserNode | null; runnin
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     let frame = 0;
+    let lastDraw = 0;
     const data = new Uint8Array(analyser?.frequencyBinCount || 1024);
-    const draw = () => {
+    const draw = (now: number) => {
+      // These displays are decorative telemetry, not timing sources. Capping
+      // them avoids spending a full refresh-rate budget on canvas shadows and
+      // gradients, which is especially costly under React/Next development
+      // instrumentation and on high-refresh-rate displays.
+      if (now - lastDraw < 1000 / 30) {
+        frame = requestAnimationFrame(draw);
+        return;
+      }
+      lastDraw = now;
       const dpr = window.devicePixelRatio || 1;
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
@@ -805,7 +815,7 @@ function Spectrum({ analyser, running }: { analyser: AnalyserNode | null; runnin
       ctx.fillStyle = "rgba(104, 227, 215, .055)"; ctx.lineTo(width, height); ctx.lineTo(0, height); ctx.fill();
       frame = requestAnimationFrame(draw);
     };
-    draw();
+    frame = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frame);
   }, [analyser, running]);
   return <canvas ref={canvasRef} className="spectrum-canvas" aria-label="Real-time frequency spectrum" />;
@@ -819,8 +829,14 @@ function Scope({ analyser, running }: { analyser: AnalyserNode | null; running: 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     let frame = 0;
+    let lastDraw = 0;
     const data = new Uint8Array(analyser?.fftSize || 2048);
-    const draw = () => {
+    const draw = (now: number) => {
+      if (now - lastDraw < 1000 / 30) {
+        frame = requestAnimationFrame(draw);
+        return;
+      }
+      lastDraw = now;
       const dpr = window.devicePixelRatio || 1, w = canvas.clientWidth, h = canvas.clientHeight;
       if (canvas.width !== w * dpr || canvas.height !== h * dpr) { canvas.width = w * dpr; canvas.height = h * dpr; }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
@@ -834,7 +850,7 @@ function Scope({ analyser, running }: { analyser: AnalyserNode | null; running: 
       }
       ctx.stroke(); ctx.shadowBlur = 0; frame = requestAnimationFrame(draw);
     };
-    draw(); return () => cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(draw); return () => cancelAnimationFrame(frame);
   }, [analyser, running]);
   return <canvas ref={canvasRef} className="scope-canvas" aria-label="Waveform oscilloscope" />;
 }
@@ -842,23 +858,22 @@ function Scope({ analyser, running }: { analyser: AnalyserNode | null; running: 
 function VUMeter({ analyser, label, running }: { analyser: AnalyserNode | null; label: string; running: boolean }) {
   const [level, setLevel] = useState(-42);
   useEffect(() => {
+    if (!analyser || !running) return;
     let frame = 0; let last = 0;
-    const data = new Uint8Array(analyser?.fftSize || 2048);
+    const data = new Uint8Array(analyser.fftSize);
     const tick = (now: number) => {
       if (now - last > 55) {
-        let db = -42;
-        if (analyser && running) {
-          analyser.getByteTimeDomainData(data);
-          let sum = 0; for (const v of data) { const n = v / 128 - 1; sum += n * n; }
-          db = 20 * Math.log10(Math.max(0.0001, Math.sqrt(sum / data.length)));
-        }
+        analyser.getByteTimeDomainData(data);
+        let sum = 0; for (const v of data) { const n = v / 128 - 1; sum += n * n; }
+        const db = 20 * Math.log10(Math.max(0.0001, Math.sqrt(sum / data.length)));
         setLevel(db); last = now;
       }
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick); return () => cancelAnimationFrame(frame);
   }, [analyser, running]);
-  const angle = clamp(((level + 42) / 42) * 86 - 43, -43, 43);
+  const displayedLevel = analyser && running ? level : -42;
+  const angle = clamp(((displayedLevel + 42) / 42) * 86 - 43, -43, 43);
   return (
     <div className="vu-meter">
       <div className="vu-scale"><span>-20</span><span>-7</span><span>0</span><span>+3</span></div>
@@ -2104,9 +2119,13 @@ export default function Home() {
   useEffect(() => {
     if (!running) return;
     if (!sessionOriginRef.current) sessionOriginRef.current = performance.now() - elapsed * 1000;
-    const timer = window.setInterval(() => { const next = (performance.now() - sessionOriginRef.current) / 1000; setElapsed(next); if (next >= sessionLength * 60) stopAudio(); }, 100);
+    // Automation needs reasonably fine control updates. With automation
+    // bypassed, the session clock and exposure display do not need to force the
+    // entire ~1,400-node console through React ten times per second.
+    const updateInterval = automation ? 100 : 250;
+    const timer = window.setInterval(() => { const next = (performance.now() - sessionOriginRef.current) / 1000; setElapsed(next); if (next >= sessionLength * 60) stopAudio(); }, updateInterval);
     return () => window.clearInterval(timer);
-  }, [running, sessionLength, stopAudio]);
+  }, [automation, running, sessionLength, stopAudio]);
 
   const seekSession = useCallback((nextProgress: number) => {
     const nextElapsed = clamp(nextProgress, 0, 1) * sessionLength * 60;
