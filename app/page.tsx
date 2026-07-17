@@ -195,7 +195,7 @@ const presets = {
 // Program library — tag/time vocabulary for the preset flyout. User additions
 // and deletions persist to localStorage; factory programs carry fixed tags.
 const DEFAULT_PRESET_TAGS = ["RELAX", "UNWIND", "SLEEP", "TRIP", "OUT OF BODY", "PAST LIVES", "FOCUS", "PERFORMANCE"];
-const DEFAULT_PRESET_TIMES = ["10 MIN", "15 MIN", "20 MIN", "30 MIN", "45 MIN", "60 MIN", "90 MIN"];
+const DEFAULT_PRESET_TIMES = ["5 MIN", "10 MIN", "15 MIN", "20 MIN", "30 MIN", "45 MIN", "60 MIN", "90 MIN"];
 const BUILTIN_PRESET_TAGS: Record<keyof typeof presets, string[]> = {
   Focus: ["FOCUS"],
   Unwind: ["UNWIND", "RELAX"],
@@ -1542,7 +1542,9 @@ export default function Home() {
   const [presetTagFilter, setPresetTagFilter] = useState<string | null>(null);
   const [presetTags, setPresetTags] = useState<string[]>(DEFAULT_PRESET_TAGS);
   const [presetTimes, setPresetTimes] = useState<string[]>(DEFAULT_PRESET_TIMES);
-  const [saveDraft, setSaveDraft] = useState<{ name: string; tags: string[]; time: string } | null>(null);
+  // editName === null → saving the current console; a string → editing an
+  // existing preset's labels (its audio snapshot is preserved, rename allowed).
+  const [saveDraft, setSaveDraft] = useState<{ name: string; tags: string[]; time: string; editName: string | null } | null>(null);
   const [vocabEdit, setVocabEdit] = useState(false);
   const [newTagText, setNewTagText] = useState("");
   const [newTimeText, setNewTimeText] = useState("");
@@ -2245,14 +2247,29 @@ export default function Home() {
       name: loaded ? loaded.name : `Setting ${userPresets.length + 1}`,
       tags: loaded?.tags ?? [],
       time: loaded?.time ?? suggestedTime,
+      editName: null,
     });
+  };
+  // Edit an existing preset's labels without recapturing the console snapshot.
+  const openEditPresetDialog = (name: string) => {
+    const target = userPresets.find((p) => p.name === name);
+    if (!target) return;
+    setVocabEdit(false); setNewTagText(""); setNewTimeText("");
+    setSaveDraft({ name: target.name, tags: target.tags ?? [], time: target.time ?? "", editName: target.name });
   };
   const confirmSavePreset = () => {
     const name = saveDraft?.name.trim();
     if (!saveDraft || !name) return;
-    const entry: UserPreset = { name, data: collectSnapshot(), tags: saveDraft.tags, time: saveDraft.time || undefined };
-    persistPresets([...userPresets.filter((p) => p.name !== name), entry].sort((a, b) => a.name.localeCompare(b.name)));
-    setSelectedPreset(name); setSaveDraft(null);
+    // Editing preserves the stored audio snapshot; saving captures the console.
+    const original = saveDraft.editName ? userPresets.find((p) => p.name === saveDraft.editName) : null;
+    const data = original ? original.data : collectSnapshot();
+    const entry: UserPreset = { name, data, tags: saveDraft.tags, time: saveDraft.time || undefined };
+    const list = [...userPresets.filter((p) => p.name !== name && p.name !== saveDraft.editName), entry].sort((a, b) => a.name.localeCompare(b.name));
+    persistPresets(list);
+    // Keep the loaded-preset indicator in sync across a rename.
+    if (saveDraft.editName && selectedPreset === saveDraft.editName) setSelectedPreset(name);
+    else if (!saveDraft.editName) setSelectedPreset(name);
+    setSaveDraft(null);
   };
   const loadUserPreset = (name: string) => {
     const found = userPresets.find((p) => p.name === name); if (found) { applySnapshot(found.data); setSelectedPreset(name); }
@@ -2480,6 +2497,7 @@ export default function Home() {
                 <b>{p.name}</b>
                 <span className="pm-chips">{(p.tags ?? []).map((tag) => <i key={tag}>{tag}</i>)}{p.time && <i className="time">{p.time}</i>}</span>
               </button>
+              <button className="pm-edit" aria-label={`Edit tags and length for ${p.name}`} title="Edit tags & length" onClick={() => openEditPresetDialog(p.name)}>✎</button>
               <button className="pm-del" aria-label={`Delete saved setting ${p.name}`} title="Delete this saved setting" onClick={() => deleteUserPreset(p.name)}>×</button>
             </div>)}
             {userPresets.length === 0 && <p className="pm-empty">Nothing saved yet — dial in the console, then tap SAVE CURRENT.</p>}
@@ -2495,7 +2513,7 @@ export default function Home() {
 
       {saveDraft && <div className="preset-save-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSaveDraft(null); }}>
         <section className="preset-save-dialog" role="dialog" aria-modal="true" aria-labelledby="preset-save-title">
-          <header><div><small>SAVE SETTING</small><h2 id="preset-save-title">Name &amp; label this program</h2></div><button onClick={() => setSaveDraft(null)} aria-label="Close save dialog">×</button></header>
+          <header><div><small>{saveDraft.editName ? "EDIT PROGRAM" : "SAVE SETTING"}</small><h2 id="preset-save-title">{saveDraft.editName ? "Edit tags & length" : "Name & label this program"}</h2></div><button onClick={() => setSaveDraft(null)} aria-label="Close save dialog">×</button></header>
           <label className="ps-field"><span>NAME</span><input value={saveDraft.name} onChange={(event) => setSaveDraft({ ...saveDraft, name: event.target.value })} maxLength={40} placeholder="Setting name" /></label>
           <div className="ps-field">
             <span>TAGS <em>{vocabEdit ? "tap × to remove from library" : "choose any"}</em></span>
@@ -2520,7 +2538,7 @@ export default function Home() {
               <div className="ps-add"><input value={newTimeText} onChange={(event) => setNewTimeText(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addPresetTime(); }} maxLength={24} inputMode="numeric" placeholder="Minutes" /><button onClick={addPresetTime}>＋ LENGTH</button></div>
             </>}
           </div>
-          <footer><button onClick={() => setSaveDraft(null)}>CANCEL</button><button className="confirm" disabled={!saveDraft.name.trim()} onClick={confirmSavePreset}>SAVE PROGRAM</button></footer>
+          <footer><button onClick={() => setSaveDraft(null)}>CANCEL</button><button className="confirm" disabled={!saveDraft.name.trim()} onClick={confirmSavePreset}>{saveDraft.editName ? "UPDATE PROGRAM" : "SAVE PROGRAM"}</button></footer>
         </section>
       </div>}
 
